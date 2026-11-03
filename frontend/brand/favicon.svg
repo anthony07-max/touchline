@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="alt" x1="30" y1="40" x2="56" y2="14" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#FF3DCB"/>
+    </linearGradient>
+    <linearGradient id="real" x1="6" y1="0" x2="58" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2DE2FF" stop-opacity=".35"/><stop offset=".45" stop-color="#2DE2FF"/><stop offset="1" stop-color="#2DE2FF" stop-opacity=".25"/>
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="62" height="62" rx="16" fill="#0A1020" stroke="#1C2742" stroke-width="2"/>
+  <!-- the touchline: real match continues -->
+  <path d="M8 42 H56" stroke="url(#real)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+  <!-- the branch: alternate timeline as a forward arrow -->
+  <path d="M28 42 C38 42 40 20 51 19" stroke="url(#alt)" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M44.5 13.5 L52.5 19 L45.5 25" stroke="#FF3DCB" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="28" cy="42" r="5.5" fill="#05070D" stroke="#00F5A0" stroke-width="3"/>
+</svg>

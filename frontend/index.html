@@ -1,0 +1,240 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="theme-color" content="#05070D"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Touchline - Alternate Timeline</title>
+<link rel="icon" href="/static/brand/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/static/brand/theme.css">
+<style>
+header{position:sticky;top:0;z-index:20;padding:12px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#05070Dcc;backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+header .logo{height:34px;display:block}
+nav{position:sticky;top:59px;z-index:19;display:flex;gap:6px;padding:10px 24px;background:#05070Daa;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{background:transparent;color:var(--mut);border:1px solid transparent;white-space:nowrap}
+nav button.on{color:var(--txt);border-color:var(--line2);background:#0F1830}
+nav button[data-t=copilot].on,nav button[data-t=replay].on{border-image:none;box-shadow:inset 0 -2px 0 var(--alt2)}
+.grid{display:grid;grid-template-columns:minmax(300px,1.1fr) minmax(280px,.8fr) minmax(320px,1.15fr);gap:16px;padding:20px 24px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:20px 24px}
+@media(max-width:1100px){.grid,.grid2{grid-template-columns:1fr;padding:14px}header{padding:10px 14px}nav{padding:8px 14px;top:55px}.hero{padding:48px 18px 28px!important}.hero svg.lines{opacity:.45}}
+label{display:flex;justify-content:space-between;align-items:center;margin:6px 0;color:var(--mut);gap:8px;font-size:13px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+ul{padding-left:18px;margin:6px 0}li{margin:4px 0}.ev{font-size:12px;padding:3px 0;border-bottom:1px dashed #1C274280}
+.tab{display:none}.tab.on{display:block;animation:fade .4s var(--ease) both}details summary{cursor:pointer;color:var(--mut);margin:8px 0}
+.hero{position:relative;padding:90px 24px 50px;text-align:center;overflow:hidden}
+.hero h1{font-size:clamp(34px,6vw,72px);line-height:1.02;margin:18px auto 14px;max-width:1000px;letter-spacing:-.035em;font-weight:700}
+.hero h1 .a{background:var(--alt);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 .v{color:var(--volt)}.hero h1 .c{color:var(--real)}
+.hero p{max-width:640px;margin:0 auto;color:var(--mut);font-size:17px}
+.hero .cta{margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.hero .cta button{padding:13px 22px;font-size:15px}
+.hero svg.lines{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.9}
+.hero .draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 3.2s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 24px 40px;max-width:1200px;margin:0 auto}
+@media(max-width:800px){.feat{grid-template-columns:1fr}}
+.feat .card b{font-family:"Space Grotesk";font-size:17px;display:block;margin:6px 0}
+.legend{display:flex;gap:18px;justify-content:center;margin-top:22px;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:22px;height:3px;border-radius:3px;vertical-align:middle;margin-right:6px}
+</style></head><body>
+<header><a href="#" onclick="tab('home');return false"><img class="logo" src="/static/brand/logo.svg" alt="Touchline"></a><span class="badge warn">DEMO DATA · fictional</span>
+<span class="badge alt">Alternate outputs = hypothetical simulations</span><a class="badge" href="/static/live.html">● Live mode</a><span style="flex:1"></span>
+<span id="acct" class="row"></span></header>
+<nav id="nav"></nav>
+
+<section class="tab on" id="tab-home"><div class="hero">
+<svg class="lines" viewBox="0 0 1200 520" preserveAspectRatio="none"><defs><linearGradient id="hg" x1="0" x2="1"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#FF3DCB"/></linearGradient></defs>
+<path d="M-20 400 H1220" stroke="#2DE2FF" stroke-opacity=".35" stroke-width="2" fill="none"/>
+<path class="draw" d="M420 400 C620 400 640 150 1220 120" stroke="url(#hg)" stroke-width="3" fill="none" filter="drop-shadow(0 0 12px #FF3DCB)"/>
+<path class="draw" style="animation-delay:.6s" d="M420 400 C700 400 760 260 1220 250" stroke="url(#hg)" stroke-opacity=".45" stroke-width="2" fill="none"/>
+<circle cx="420" cy="400" r="8" fill="#05070D" stroke="#00F5A0" stroke-width="3"/></svg>
+<img src="/static/brand/mark.svg" width="72" height="72" alt="">
+<h1>Don't just watch football.<br><span class="v">Manage it.</span> <span class="c">Change it.</span> <span class="a">Outsmart it.</span></h1>
+<p>Branch any match into an alternate timeline. Change the tactics, watch the opponent AI react, and see thousands of simulated futures in seconds.</p>
+<div class="cta"><button onclick="tab('match')">Enter the demo match →</button><button class="altbtn" onclick="tab('copilot')">Ask the AI copilot</button><button class="sec" onclick="location.href='/static/live.html'">Live mode</button></div>
+<div class="legend"><span><i style="background:var(--real)"></i>Real match</span><span><i style="background:var(--alt)"></i>Alternate timeline</span><span><i style="background:var(--volt)"></i>You</span><span><i style="background:var(--opp)"></i>Opponent</span></div>
+</div><div class="feat">
+<div class="card world-real"><h2>World A</h2><b>The real match</b><span class="mut">Scores, events and line-ups from the data feed, never modified.</span></div>
+<div class="card"><h2>World B</h2><b>Your management</b><span class="mut">Formation, press, line, roles, set pieces and substitutions, all wired into the engine.</span></div>
+<div class="card world-alt"><h2>World C</h2><b>The alternate timeline</b><span class="mut">Monte Carlo futures with win/draw/loss, xG ranges and the reasons the numbers moved.</span></div>
+</div></section>
+<section class="tab" id="tab-match"><div class="grid">
+<div class="card world-real"><h2>World A · Real match (demo feed)</h2>
+ <div class="row"><div class="score" id="realScore"></div><div class="mut" id="teams"></div></div>
+ <label>Branch alternate timeline at minute <input id="minute" type="number" min="0" max="89" value="55" style="width:70px"></label>
+ <svg id="pitch" viewBox="0 0 680 440" style="width:100%;background:#071526;border-radius:12px;border:1px solid #1C2742"></svg>
+ <div class="mut" style="font-size:12px">Volt = you, coral = opponent. Ring = energy. Orange outline = out of position. Letter = assigned role.</div>
+ <h2 style="margin-top:12px">Real timeline (demo)</h2><div id="realTl"></div></div>
+<div class="card"><h2>World B · Manager control panel</h2><div id="tac"></div>
+ <details><summary>Player roles</summary><div id="roles"></div></details>
+ <h2 style="margin-top:10px">Substitution</h2>
+ <label>Off <select id="subOut"><option value="">-- none --</option></select></label>
+ <label>On <select id="subIn"></select></label>
+ <label>At minute <input id="subMin" type="number" value="60" style="width:70px"></label>
+ <h2 style="margin-top:10px">Opponent AI</h2>
+ <label>Personality <select id="pers"></select></label><label>Difficulty <select id="diff"></select></label>
+ <label>Monte Carlo runs <input id="runs" type="number" value="3000" style="width:90px"></label>
+ <div class="row" style="margin-top:10px"><button id="simBtn" class="altbtn" onclick="sim()">SIMULATE ALTERNATE TIMELINE</button>
+ <input id="scName" placeholder="scenario name" style="width:130px"><button class="sec" onclick="save()">Save</button></div>
+ <div id="msg" class="mut" style="margin-top:6px;font-size:12px"></div></div>
+<div class="card world-alt"><h2>World C · Alternate timeline</h2><div id="out" class="mut">Pick tactics and press SIMULATE, or ask the copilot.</div></div>
+</div></section>
+
+<section class="tab" id="tab-copilot"><div class="grid2">
+<div class="card"><h2>AI tactical copilot</h2>
+ <div class="mut" id="llm" style="font-size:12px"></div>
+ <div class="row" style="margin:8px 0"><select id="qPreset" onchange="$('q').value=this.value">
+ <option value="">Common questions...</option><option>Why are we losing control of midfield?</option><option>How do I stop their left winger?</option>
+ <option>Why is my striker isolated?</option><option>Where is their defensive weakness?</option><option>Should I increase the pressing intensity?</option>
+ <option>Which substitution would improve our chances?</option><option>How do I exploit the space behind their defence?</option>
+ <option>Why is my defensive line being exposed?</option><option>Which formation gives us the best chance of winning?</option></select></div>
+ <textarea id="q" rows="2" style="width:100%" placeholder="Ask about the current match state (uses minute + tactics from the Match tab)"></textarea>
+ <div class="row" style="margin-top:8px"><button onclick="askCopilot()">Ask copilot</button></div>
+ <div id="cop" style="margin-top:10px"></div></div>
+<div class="card world-alt"><h2>Recommendation in the alternate timeline</h2><div id="copSim" class="mut">Use "SIMULATE AI RECOMMENDATION" to load the advice into the alternate timeline.</div></div>
+</div></section>
+
+<section class="tab" id="tab-replay"><div class="card world-alt" style="margin:20px 24px"><h2>2D replay</h2>
+ <div class="row"><button class="sec" onclick="rp.mode='alt';rpReset()" id="rpAlt">Alternate (simulated run)</button>
+ <button class="sec" onclick="rp.mode='real';rpReset()" id="rpReal">Real (demo feed)</button>
+ <button onclick="rpToggle()" id="rpPlay">Play</button><button class="sec" onclick="rpStep(-5)">&laquo; 5'</button><button class="sec" onclick="rpStep(5)">5' &raquo;</button>
+ <input type="range" id="rpSlider" min="0" max="90" value="0" style="flex:1" oninput="rpSeek(+this.value)"><span id="rpClock" class="score" style="font-size:18px"></span></div>
+ <canvas id="cv" width="1020" height="620" style="width:100%;max-width:1020px;background:#071526;border-radius:12px;border:1px solid #1C2742;margin-top:8px"></canvas>
+ <div id="rpInfo" class="mut"></div><div id="rpLog" style="max-height:160px;overflow:auto"></div></div></section>
+
+<section class="tab" id="tab-lab"><div class="card" style="margin:20px 24px"><h2>Scenario comparison lab</h2>
+ <div class="mut">Tick scenarios to compare. Requires an account (scenarios are saved per user).</div><div id="scen" style="margin-top:8px"></div>
+ <button class="sec" style="margin-top:8px" onclick="labCompare()">Compare selected</button><div id="lab" style="margin-top:10px"></div></div></section>
+
+<section class="tab" id="tab-play"><div class="grid2">
+<div class="card"><h2>Daily tactical challenge</h2><div id="chBrief"></div>
+ <div class="mut" style="font-size:12px">Your current Match-tab tactics are submitted. Score 50 = no better than standing still, 100 = matches the copilot's best tested option.</div>
+ <button style="margin-top:8px" onclick="submitChallenge()">Submit decision</button><div id="chRes"></div>
+ <h2 style="margin-top:14px">Leaderboard (today)</h2><div id="lb"></div></div>
+<div class="card"><h2>Fantasy club &amp; leagues</h2>
+ <label>Club name <input id="clubName" value="Touchline FC"></label>
+ <div class="mut" style="font-size:12px">Pick 11 (one GK) from the demo squad:</div><div id="squad" style="columns:2;font-size:13px"></div>
+ <button class="sec" onclick="saveClub()">Save club</button>
+ <div class="row" style="margin-top:12px"><input id="lgName" placeholder="league name"><button class="sec" onclick="createLeague()">Create</button>
+ <input id="lgCode" placeholder="code" style="width:90px"><button class="sec" onclick="joinLeague()">Join</button></div>
+ <div id="leagues"></div></div></div></section>
+
+<section class="tab" id="tab-autopsy"><div class="card" style="margin:20px 24px"><h2>Post-match autopsy</h2><div id="aut"></div></div></section>
+
+<section class="tab" id="tab-account"><div class="grid2"><div class="card"><h2>Account</h2>
+ <label>Email <input id="em" value=""></label><label>Password <input id="pw" type="password"></label>
+ <div class="row"><button onclick="authDo('login')">Log in</button><button class="sec" onclick="authDo('register')">Register</button><button class="sec" onclick="logout()">Log out</button></div>
+ <div id="me" style="margin-top:10px"></div></div>
+<div class="card"><h2>Plans</h2><div id="plans"></div><button style="margin-top:8px" onclick="upgrade()">Upgrade to Pro</button><div id="bill" class="mut"></div></div></div></section>
+
+<script>
+let META,MATCH,LAST,TOKEN=localStorage.tl_token||'';const $=id=>document.getElementById(id),pct=x=>(x*100).toFixed(1)+'%';
+async function j(u,o={}){o.headers={...(o.headers||{}),...(TOKEN?{Authorization:'Bearer '+TOKEN}:{})};const r=await fetch(u,o);const t=await r.text();let d;try{d=JSON.parse(t)}catch{d=t}if(!r.ok)throw new Error((d&&d.detail)?(typeof d.detail=='string'?d.detail:JSON.stringify(d.detail)):t);return d}
+const post=(u,b)=>j(u,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b||{})});
+const TABS=[['home','Home'],['match','Match'],['copilot','AI Copilot'],['replay','2D Replay'],['lab','Scenario Lab'],['play','Challenge & Leagues'],['autopsy','Autopsy'],['account','Account & Plan']];
+function tab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on',e.id=='tab-'+t));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t==t));
+ if(t=='lab')loadScen();if(t=='play')loadPlay();if(t=='autopsy')loadAut();if(t=='account')loadMe();if(t=='replay')rpReset()}
+$('nav').innerHTML=TABS.map(([k,v])=>`<button class="sec" data-t="${k}" onclick="tab('${k}')">${v}</button>`).join('');
+async function init(){META=await j('/api/meta');$('llm').textContent='Engine: '+META.llm;
+ $('tac').innerHTML=`<label>Formation <select id="t_formation">${META.formations.map(f=>`<option>${f}</option>`)}</select></label>`+
+  Object.entries(META.options).map(([k,v])=>`<label>${k.replaceAll('_',' ')} <select id="t_${k}">${v.map(o=>`<option>${o}</option>`)}</select></label>`).join('');
+ $('pers').innerHTML=META.personalities.map(p=>`<option ${p=='counter'?'selected':''}>${p}</option>`).join('');
+ $('diff').innerHTML=META.difficulties.map(p=>`<option ${p=='normal'?'selected':''}>${p}</option>`).join('');
+ $('tac').querySelectorAll('select').forEach(s=>s.onchange=drawPitch);$('minute').onchange=load;renderAcct();await load();tab('home')}
+function renderAcct(){const u=META.user;$('acct').innerHTML=u?`<span class="badge ${u.plan=='pro'?'pro':''}">${u.plan.toUpperCase()}</span><span class="mut">${u.email}</span>`:`<button class="sec" onclick="tab('account')">Log in / Register</button>`}
+let ROLES={};
+async function load(){MATCH=await j('/api/match/demo?minute='+$('minute').value);const t=MATCH.home.tactics;
+ for(const k in t)if($('t_'+k))$('t_'+k).value=t[k];ROLES={...t.roles};
+ $('realScore').textContent=`${MATCH.score[0]} - ${MATCH.score[1]}  (${MATCH.minute}')`;$('teams').textContent=`${MATCH.home.name} vs ${MATCH.away.name}`;
+ $('subOut').innerHTML='<option value="">-- none --</option>'+MATCH.home.starters.filter(p=>p.group!='GK').map(p=>`<option value="${p.id}">${p.name} (${p.group}, ${Math.round(p.energy*100)}%)</option>`).join('');
+ $('subIn').innerHTML=MATCH.home.bench.map(p=>`<option value="${p.id}">${p.name} (${p.group})</option>`).join('');
+ $('subMin').value=Math.max(+$('minute').value+1,60);
+ $('roles').innerHTML=MATCH.home.starters.filter(p=>p.group!='GK').map(p=>`<label>${p.name} <select data-pid="${p.id}" onchange="ROLES[this.dataset.pid]=this.value;if(!this.value)delete ROLES[this.dataset.pid];drawPitch()"><option value="">default</option>${Object.entries(META.roles).filter(([r,l])=>l.includes(p.group)).map(([r])=>`<option ${ROLES[p.id]==r?'selected':''}>${r}</option>`).join('')}</select></label>`).join('');
+ $('realTl').innerHTML=MATCH.full_timeline.map(e=>`<div class="ev ${e.type=='goal'?'goal':''}" style="opacity:${e.minute<=MATCH.minute?1:.35}">${e.minute}' ${e.team=='home'?'NOR':'RIV'} ${e.type.toUpperCase()} - ${e.detail}${e.xg?' (xG '+e.xg+')':''}</div>`).join('')+`<div class="mut" style="font-size:12px">Faded events happen after your branch point in the real (demo) match.</div>`;drawPitch()}
+const LAY={"4-3-3":[4,3,3],"4-2-3-1":[4,2,3,1],"4-4-2":[4,4,2],"3-5-2":[3,5,2],"5-3-2":[5,3,2],"4-5-1":[4,5,1],"3-4-3":[3,4,3]};
+function layout(team,form,home,W=680,H=440,push=0){const lines=LAY[form]||[4,3,3],out=[];const byId=Object.fromEntries(team.starters.map(p=>[p.id,p]));
+ const sl=team.slots,gk=sl.find(s=>s.line=='GK');const X=f=>home?f*W:W-f*W;out.push({p:byId[gk.id],x:X(.06),y:H/2,pen:1});
+ const rest=sl.filter(s=>s.line!='GK');let i=0;lines.forEach((n,li)=>{const f=.17+li*(.3/(lines.length-1||1))+push;for(let k=0;k<n;k++){if(rest[i])out.push({p:byId[rest[i].id],x:X(f),y:H*(k+1)/(n+1),pen:rest[i].penalty});i++}});return out}
+const pitchSVG=`<rect x="10" y="10" width="660" height="420" fill="none" stroke="#2DE2FF55" stroke-width="2"/><line x1="340" y1="10" x2="340" y2="430" stroke="#2DE2FF55"/><circle cx="340" cy="220" r="50" fill="none" stroke="#2DE2FF55"/><rect x="10" y="130" width="70" height="180" fill="none" stroke="#2DE2FF55"/><rect x="600" y="130" width="70" height="180" fill="none" stroke="#2DE2FF55"/>`;
+function drawPitch(){if(!MATCH)return;const f=$('t_formation').value;const of=(LAST&&LAST.after.opponent.tactics.formation)||MATCH.away.tactics.formation;
+ const dot=(o,c)=>`<g><circle cx="${o.x}" cy="${o.y}" r="14" fill="${c}" stroke="${o.pen<1?'#FFB547':'#0000'}" stroke-width="3"/><circle cx="${o.x}" cy="${o.y}" r="17" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="2" stroke-dasharray="${(o.p.energy*107).toFixed(0)} 200"/>${ROLES[o.p.id]&&c=='#00F5A0'?`<text x="${o.x}" y="${o.y+4}" font-size="11" text-anchor="middle" fill="#04130c" font-weight="700">${ROLES[o.p.id][0].toUpperCase()}</text>`:''}<text x="${o.x}" y="${o.y+30}" fill="#fff" font-size="10" text-anchor="middle">${o.p.name}</text></g>`;
+ $('pitch').innerHTML=pitchSVG+layout(MATCH.home,f,true).map(o=>dot(o,'#00F5A0')).join('')+layout(MATCH.away,of,false).map(o=>dot(o,'#FF7A59')).join('')+`<text x="20" y="28" fill="#fff" font-size="12">You: ${f}</text><text x="660" y="28" fill="#fff" font-size="12" text-anchor="end">Opp: ${of}</text>`}
+function tactics(){const t={formation:$('t_formation').value,roles:{...ROLES}};for(const k in META.options)t[k]=$('t_'+k).value;return t}
+function setTactics(t){for(const k in t)if($('t_'+k))$('t_'+k).value=t[k];ROLES={...(t.roles||{})};document.querySelectorAll('#roles select').forEach(s=>s.value=ROLES[s.dataset.pid]||'');drawPitch()}
+let EXTRA_SUBS=null;
+function req(){const subs=EXTRA_SUBS||($('subOut').value?[{minute:+$('subMin').value,out_id:$('subOut').value,in_id:$('subIn').value}]:[]);
+ return {minute:+$('minute').value,tactics:tactics(),subs,opponent_personality:$('pers').value,difficulty:$('diff').value,runs:+$('runs').value,seed:42}}
+const bar=p=>`<div class="bar"><div class="w" style="width:${p.user_win*100}%">W ${pct(p.user_win)}</div><div class="d" style="width:${p.draw*100}%">D ${pct(p.draw)}</div><div class="l" style="width:${p.user_loss*100}%">L ${pct(p.user_loss)}</div></div>`;
+async function sim(target='out'){$(target).innerHTML='Running Monte Carlo...';try{LAST=await post('/api/simulate',req());$(target).innerHTML=renderSim(LAST);drawPitch();return LAST}catch(e){$(target).innerHTML=`<span style="color:var(--bad)">${e.message}</span>`}}
+function renderSim(r){const b=r.before,a=r.after,ci=a.probabilities.ci95;
+ const row=(n,x,y,f=v=>v.toFixed(2),inv=false)=>`<tr><td>${n}</td><td>${f(x)}</td><td>${f(y)}</td><td style="color:${(y>=x)!=inv?'#00F5A0':'#ff5d6c'}">${y-x>=0?'+':''}${f(y-x)}</td></tr>`;
+ return `<div class="hyp"><div class="tag">HYPOTHETICAL SIMULATION - ${a.runs} Monte Carlo runs from ${a.from_minute}' at ${a.start_score.join('-')}</div>
+ <div class="mut" style="margin-top:6px">Current tactics (opponent reacting)</div>${bar(b.probabilities)}<div class="mut" style="margin-top:6px">Your changes</div>${bar(a.probabilities)}
+ <div class="mut" style="font-size:11px">95% CI win ${pct(ci.user_win[0])}-${pct(ci.user_win[1])}, draw ${pct(ci.draw[0])}-${pct(ci.draw[1])}, loss ${pct(ci.user_loss[0])}-${pct(ci.user_loss[1])}</div>
+ <table style="margin-top:8px"><tr><th></th><th>Before</th><th>After</th><th>&Delta;</th></tr>${row('xG for (rest of match)',b.xg.user_mean,a.xg.user_mean)}${row('xG against',b.xg.opp_mean,a.xg.opp_mean,undefined,true)}
+ ${row('Shots for',b.shots.user_mean,a.shots.user_mean,v=>v.toFixed(1))}${row('Shots against',b.shots.opp_mean,a.shots.opp_mean,v=>v.toFixed(1),true)}${row('Possession',b.possession_user,a.possession_user,v=>(v*100).toFixed(0)+'%')}${row('P(we score)',b.p_user_scores,a.p_user_scores,pct)}${row('P(we concede)',b.p_user_concedes,a.p_user_concedes,pct,true)}</table>
+ <h2 style="margin-top:10px">Why it changed</h2><ul>${r.explanation.map(x=>`<li>${x}</li>`).join('')}</ul>
+ <h2>Opponent (${a.opponent.personality}, ${a.opponent.difficulty})</h2><div class="mut">${a.opponent.tactics.formation}, press ${a.opponent.tactics.pressing}, line ${a.opponent.tactics.defensive_line}, ${a.opponent.tactics.build_up} build-up, ${a.opponent.tactics.transition}. Re-reacted to the score in ${pct(a.opponent_in_game_switch_rate)} of runs.</div>
+ <h2 style="margin-top:10px">Most likely final scores</h2>${a.score_distribution.slice(0,5).map(s=>`<span class="badge" style="margin:2px;display:inline-block">${s.score}: ${pct(s.p)}</span>`).join('')}
+ <div class="row" style="margin-top:8px"><button class="sec" onclick="tab('replay')">Watch a simulated run in 2D</button></div><div class="mut" style="margin-top:6px">Real match final (demo): 1-2. The real timeline is unchanged.</div></div>`}
+async function save(){try{await post('/api/scenarios',{name:$('scName').value||('Scenario '+new Date().toLocaleTimeString()),request:req()});$('msg').textContent='Saved.'}catch(e){$('msg').textContent=e.message}}
+// ---- copilot
+let ADV=null;
+async function askCopilot(){$('cop').innerHTML='Analysing match state and testing candidate adjustments...';
+ try{ADV=await post('/api/copilot',{...req(),question:$('q').value});const a=ADV,r=a.recommendation;
+ $('cop').innerHTML=`<div class="hyp"><div class="tag">${a.label}</div><h2 style="margin-top:8px">1. Diagnosis</h2><ul>${a.diagnosis.map(x=>`<li>${x}</li>`).join('')}</ul>
+ <h2>2. Recommended adjustment</h2><div class="goal">${r.label}</div><div class="mut">Expected points ${r.expected_points_gain>=0?'+':''}${r.expected_points_gain}</div>
+ <h2 style="margin-top:8px">3. Expected benefits</h2><ul>${a.benefits.map(x=>`<li>${x}</li>`).join('')}</ul><h2>4. Risks</h2><ul>${a.risks.map(x=>`<li>${x}</li>`).join('')}</ul>
+ <h2>5. Opponent's likely response</h2><ul>${a.opponent_response.map(x=>`<li>${x}</li>`).join('')}</ul>
+ <h2>Other options tested</h2><ul>${a.alternatives.map(x=>`<li>${x.label} (${x.expected_points_gain>=0?'+':''}${x.expected_points_gain} pts)</li>`).join('')}</ul>
+ <div class="row"><button class="altbtn" onclick="simRec()">SIMULATE AI RECOMMENDATION</button></div></div>`}catch(e){$('cop').innerHTML=`<span style="color:var(--bad)">${e.message}</span>`}}
+async function simRec(){const before=tactics();setTactics(ADV.recommendation.tactics);EXTRA_SUBS=ADV.recommendation.subs.length?ADV.recommendation.subs:null;
+ const r=await sim('copSim');EXTRA_SUBS=null;window._prevTac=before;
+ $('copSim').innerHTML+=`<div class="row" style="margin-top:8px"><button onclick="acceptRec()">Accept</button><button class="bad" onclick="rejectRec()">Reject</button><button class="sec" onclick="modifyRec()">Modify</button></div>`}
+function acceptRec(){if(ADV.recommendation.subs[0]){const s=ADV.recommendation.subs[0];$('subOut').value=s.out_id;$('subIn').value=s.in_id;$('subMin').value=s.minute}$('out').innerHTML=renderSim(LAST);$('msg').textContent='AI recommendation accepted into the alternate timeline.';tab('match')}
+function rejectRec(){setTactics(window._prevTac);$('copSim').innerHTML='Recommendation rejected - your previous tactics are restored.'}
+function modifyRec(){acceptRec();$('msg').textContent='Recommendation loaded - adjust any control and press SIMULATE.'}
+// ---- replay
+const rp={mode:'alt',t:0,playing:false,timer:null};
+function rpFrames(){if(rp.mode=='alt'&&LAST){const a=LAST.after;return {start:a.from_minute,frames:a.replay_frames,events:a.sample_replay,score0:a.start_score}}
+ const fr=[];let ball=.5,s=[0,0];const ev=MATCH.full_timeline.map(e=>({...e,side:e.team}));for(let m=1;m<=90;m++){const e=ev.find(x=>x.minute==m);if(e&&e.type=='goal')s=[s[0]+(e.side=='home'),s[1]+(e.side=='away')];
+ ball=e&&e.type!='sub'?(e.side=='home'?.9:.1):.5+.25*Math.sin(m*1.7);fr.push({minute:m,poss:ball>.5?'home':'away',ball,score:[...s]})}
+ return {start:0,frames:fr,events:ev.map(e=>({minute:e.minute,type:e.type,team:e.team=='home'?MATCH.home.name:MATCH.away.name,side:e.side,text:e.detail,xg:e.xg}))}}
+function rpReset(){if(!MATCH)return;const d=rpFrames();rp.d=d;rp.t=0;$('rpSlider').max=Math.max(d.frames.length*10-1,0);$('rpAlt').disabled=!LAST;
+ $('rpInfo').textContent=rp.mode=='alt'?(LAST?`HYPOTHETICAL: one of ${LAST.after.runs} simulated runs from ${d.start}'. Ball path is a visual reconstruction of the run's possession/shots.`:'Run a simulation first.'):'REAL (demo feed): only recorded events are shown; positions are formation-based, not tracking data.';
+ $('rpLog').innerHTML=d.events.map(e=>`<div class="ev ${e.type=='goal'?'goal':''}">${e.minute}' ${e.team} ${e.type.toUpperCase()} ${e.xg!=null?'xG '+e.xg:''} ${e.text||''}</div>`).join('');rpDraw()}
+function rpToggle(){rp.playing=!rp.playing;$('rpPlay').textContent=rp.playing?'Pause':'Play';clearInterval(rp.timer);if(rp.playing)rp.timer=setInterval(()=>{rp.t++;if(rp.t>=+$('rpSlider').max){rp.playing=false;$('rpPlay').textContent='Play';clearInterval(rp.timer)}rpDraw()},60)}
+function rpStep(m){rp.t=Math.max(0,Math.min(+$('rpSlider').max,rp.t+m*10));rpDraw()}function rpSeek(v){rp.t=v;rpDraw()}
+function rpDraw(){const c=$('cv'),g=c.getContext('2d'),W=c.width,H=c.height,d=rp.d;if(!d||!d.frames.length){g.clearRect(0,0,W,H);return}
+ $('rpSlider').value=rp.t;const i=Math.min(Math.floor(rp.t/10),d.frames.length-1),f=d.frames[i],nx=d.frames[Math.min(i+1,d.frames.length-1)],k=(rp.t%10)/10;
+ const bx=(f.ball+(nx.ball-f.ball)*k);g.fillStyle='#071526';g.fillRect(0,0,W,H);g.strokeStyle=rp.mode=='alt'?'#8B5CF6aa':'#2DE2FF77';g.lineWidth=2;g.strokeRect(15,15,W-30,H-30);g.beginPath();g.moveTo(W/2,15);g.lineTo(W/2,H-15);g.stroke();g.beginPath();g.arc(W/2,H/2,75,0,7);g.stroke();g.strokeRect(15,H/2-135,105,270);g.strokeRect(W-120,H/2-135,105,270);
+ const shift=(bx-.5)*.35;const tm=(team,form,home,col)=>layout(team,form,home,W,H,0).forEach((o,idx)=>{let x=o.x+(idx?shift*W*(home?1:1)*.6:0),y=o.y+Math.sin((rp.t+idx*13)/9)*6;g.fillStyle=col;g.beginPath();g.arc(x,y,13,0,7);g.fill();g.fillStyle='#fff';g.font='11px system-ui';g.textAlign='center';g.fillText(o.p.name.split(' ').pop(),x,y+27)});
+ const hf=rp.mode=='alt'&&LAST?LAST.after.user_tactics.formation:MATCH.home.tactics.formation,af=rp.mode=='alt'&&LAST?LAST.after.opponent.tactics.formation:MATCH.away.tactics.formation;
+ tm(MATCH.home,hf,true,'#00F5A0');tm(MATCH.away,af,false,'#FF7A59');
+ const ev=d.events.filter(e=>e.minute==f.minute&&(e.type=='shot'||e.type=='goal'));let by=H/2+Math.sin(rp.t/7)*H*.25;
+ if(ev.length){const e=ev[0];const tx=e.side=='home'?W-20:20;g.strokeStyle=e.type=='goal'?'#00F5A0':'#FFB547';g.setLineDash([6,6]);g.beginPath();g.moveTo(bx*W,by);g.lineTo(tx,H/2);g.stroke();g.setLineDash([]);g.fillStyle=e.type=='goal'?'#00F5A0':'#FFB547';g.font='bold 22px system-ui';g.textAlign='center';g.fillText(e.type=='goal'?'GOAL!':'SHOT'+(e.xg!=null?' xG '+e.xg:''),W/2,48)}
+ g.fillStyle='#fff';g.beginPath();g.arc(bx*W,by,7,0,7);g.fill();
+ g.fillStyle='#000a';g.fillRect(W/2-120,H-50,240,34);g.fillStyle='#fff';g.font='bold 18px system-ui';g.textAlign='center';g.fillText(`${f.score[0]} - ${f.score[1]}   ${f.minute}'  ${rp.mode=='alt'?'ALT':'REAL'}`,W/2,H-27);
+ g.fillStyle=rp.mode=='alt'?'#FF3DCB':'#2DE2FF';g.font='600 12px Space Grotesk';g.textAlign='left';g.fillText(rp.mode=='alt'?'HYPOTHETICAL SIMULATION':'REAL MATCH (DEMO DATA)',24,34);$('rpClock').textContent=f.minute+"'"}
+// ---- lab
+async function loadScen(){if(!TOKEN){$('scen').innerHTML='<div class="mut">Log in to save and compare scenarios.</div>';return}const s=await j('/api/scenarios');
+ $('scen').innerHTML=s.length?`<table><tr><th></th><th>Name</th><th>Min</th><th>Win</th><th>Draw</th><th>Loss</th><th>xG f/a</th></tr>${s.map(x=>{const p=x.result.probabilities;return `<tr><td><input type="checkbox" class="lc" value="${x.id}" checked></td><td>${x.name}</td><td>${x.request.minute}'</td><td>${pct(p.user_win)}</td><td>${pct(p.draw)}</td><td>${pct(p.user_loss)}</td><td>${x.result.xg.user_mean.toFixed(2)}/${x.result.xg.opp_mean.toFixed(2)}</td></tr>`}).join('')}</table>`:'<div class="mut">None saved yet.</div>'}
+async function labCompare(){const ids=[...document.querySelectorAll('.lc:checked')].map(x=>x.value).join(',');if(!ids)return;const r=await j('/api/scenarios/compare?ids='+ids);
+ const keys=['formation','pressing','defensive_line','tempo','build_up','transition','defensive_approach'];
+ $('lab').innerHTML=`<table><tr><th>Scenario</th><th>Exp. points</th><th>W/D/L</th>${keys.map(k=>`<th>${k.replace('_',' ')}</th>`).join('')}</tr>${r.scenarios.map(s=>`<tr style="${s.id==r.best?'color:var(--acc);font-weight:700':''}"><td>${s.name}</td><td>${s.exp_points.toFixed(2)}</td><td>${pct(s.win)} / ${pct(s.draw)} / ${pct(s.loss)}</td>${keys.map(k=>`<td>${s.tactics[k]||'-'}</td>`).join('')}</tr>`).join('')}</table><div class="mut">${r.note}</div>`}
+// ---- play
+async function loadPlay(){const c=await j('/api/challenge/today');$('chBrief').innerHTML=`<div class="hyp"><div class="tag">TODAY'S CHALLENGE (${c.date})</div><div style="margin-top:4px">${c.brief}</div></div>`;
+ const lb=await j('/api/challenge/leaderboard');$('lb').innerHTML=lb.length?`<table>${lb.map(r=>`<tr><td>#${r.rank}</td><td>${r.manager}</td><td>${r.score}</td></tr>`).join('')}</table>`:'<div class="mut">No entries yet.</div>';
+ const m=await j('/api/match/demo?minute=0');const all=[...m.home.starters,...m.home.bench];const st=new Set(m.home.starters.map(p=>p.id));
+ $('squad').innerHTML=all.map(p=>`<label style="justify-content:flex-start"><input type="checkbox" class="sq" value="${p.id}" ${st.has(p.id)?'checked':''}> ${p.name} <span class="mut">${p.group}</span></label>`).join('');
+ if(TOKEN){const l=await j('/api/leagues');$('leagues').innerHTML=l.map(x=>`<h2 style="margin-top:10px">${x.name} <span class="mut">code ${x.code}</span></h2><table>${x.table.map((t,i)=>`<tr><td>${i+1}</td><td>${t.manager}</td><td>${t.points} pts</td><td>${t.played} played</td></tr>`).join('')}</table>`).join('')||'<div class="mut">No leagues yet.</div>'}else $('leagues').innerHTML='<div class="mut">Log in to create or join leagues.</div>'}
+async function submitChallenge(){try{const r=await post('/api/challenge/submit',{tactics:tactics()});$('chRes').innerHTML=`<div class="hyp"><div class="score">${r.decision_score}/100</div><div>Expected points ${r.expected_points_gain>=0?'+':''}${r.expected_points_gain} (best known: ${r.best_known}, +${r.best_known_gain})</div><ul>${r.explanation.slice(0,3).map(x=>`<li>${x}</li>`).join('')}</ul></div>`;loadPlay()}catch(e){$('chRes').innerHTML=`<span style="color:var(--bad)">${e.message}</span>`}}
+async function saveClub(){try{await post('/api/club',{name:$('clubName').value,starters:[...document.querySelectorAll('.sq:checked')].map(x=>x.value)});alert('Club saved');load()}catch(e){alert(e.message)}}
+async function createLeague(){try{await post('/api/leagues',{name:$('lgName').value});loadPlay()}catch(e){alert(e.message)}}
+async function joinLeague(){try{await post('/api/leagues/join/'+$('lgCode').value);loadPlay()}catch(e){alert(e.message)}}
+// ---- autopsy
+async function loadAut(){const a=await j('/api/autopsy');$('aut').innerHTML=`<div class="tag">${a.label}</div><div class="score">Northbridge ${a.final_score[0]} - ${a.final_score[1]} Riverside</div>
+ <div>xG ${a.xg.home.toFixed(2)} - ${a.xg.away.toFixed(2)}</div><h2 style="margin-top:10px">Findings</h2><ul>${a.findings.map(x=>`<li>${x}</li>`).join('')}</ul>
+ <h2>Key moments</h2>${a.key_moments.map(e=>`<div class="ev ${e.type=='goal'?'goal':''}">${e.minute}' ${e.team=='home'?'NOR':'RIV'} ${e.type} - ${e.detail}</div>`).join('')}
+ <h2 style="margin-top:10px">Model win probability at checkpoints</h2>${a.model_checkpoints.length?`<table><tr><th>Minute</th><th>Home win</th><th>Draw</th><th>Away win</th></tr>${a.model_checkpoints.map(c=>`<tr><td>${c.minute}'</td><td>${pct(c.home_win)}</td><td>${pct(c.draw)}</td><td>${pct(c.away_win)}</td></tr>`).join('')}</table>`:`<div class="badge">${a.upsell}</div>`}`}
+// ---- account
+async function authDo(kind){try{const r=await post('/api/auth/'+kind,{email:$('em').value,password:$('pw').value});TOKEN=r.token;localStorage.tl_token=TOKEN;META=await j('/api/meta');renderAcct();loadMe();load()}catch(e){$('me').innerHTML=`<span style="color:var(--bad)">${e.message}</span>`}}
+async function logout(){await post('/api/auth/logout');TOKEN='';localStorage.removeItem('tl_token');META=await j('/api/meta');renderAcct();loadMe()}
+async function loadMe(){$('plans').innerHTML=`<table><tr><th></th><th>Free</th><th>Pro (&pound;${META.plans.pro.price_gbp}/mo)</th></tr>${Object.keys(META.plans.free).filter(k=>k!='price_gbp').map(k=>`<tr><td>${k.replaceAll('_',' ')}</td><td>${META.plans.free[k]}</td><td>${META.plans.pro[k]}</td></tr>`).join('')}</table>`;
+ if(!TOKEN){$('me').innerHTML='<div class="mut">Not logged in.</div>';return}try{const m=await j('/api/me');$('me').innerHTML=`<div>${m.email} - <b>${m.plan.toUpperCase()}</b></div><div class="mut">Copilot used today: ${m.copilot_used_today}/${m.entitlements.copilot_per_day}</div>${m.club?`<div class="mut">Club: ${m.club.name}</div>`:''}`}catch{TOKEN='';localStorage.removeItem('tl_token')}}
+async function upgrade(){try{const r=await post('/api/billing/checkout');$('bill').textContent=r.message||JSON.stringify(r)}catch(e){$('bill').textContent=e.message}}
+init();
+</script></body></html>

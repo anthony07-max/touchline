@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 72" width="360" height="72">
+  <defs>
+    <linearGradient id="alt" x1="34" y1="44" x2="62" y2="16" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8B5CF6"/><stop offset="1" stop-color="#FF3DCB"/></linearGradient>
+    <linearGradient id="real" x1="10" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#2DE2FF" stop-opacity=".35"/><stop offset=".45" stop-color="#2DE2FF"/><stop offset="1" stop-color="#2DE2FF" stop-opacity=".25"/></linearGradient>
+    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#EAF0FF"/><stop offset=".62" stop-color="#EAF0FF"/><stop offset=".78" stop-color="#8B5CF6"/><stop offset="1" stop-color="#FF3DCB"/></linearGradient>
+  </defs>
+  <g transform="translate(4 4)">
+    <rect x="1" y="1" width="62" height="62" rx="16" fill="#0A1020" stroke="#1C2742" stroke-width="2"/>
+    <path d="M8 42 H56" stroke="url(#real)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M28 42 C38 42 40 20 51 19" stroke="url(#alt)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M44.5 13.5 L52.5 19 L45.5 25" stroke="#FF3DCB" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="28" cy="42" r="5.5" fill="#05070D" stroke="#00F5A0" stroke-width="3"/>
+  </g>
+  <text x="84" y="47" font-family="'Space Grotesk','Inter',system-ui,sans-serif" font-weight="700" font-size="34" letter-spacing="5" fill="url(#word)">TOUCHLINE</text>
+</svg>
