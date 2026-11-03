@@ -207,6 +207,11 @@ def live_sim(r: LiveSimIn):
             "opponent": {k: v for k, v in a["opponent"].items() if k != "in_game_variants"}}
 
 
+@router.get("/live/play")
+def live_play():
+    return FileResponse(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "live.html"))
+
+
 @router.get("/live")
 def live_page():
-    return FileResponse(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "live.html"))
+    return FileResponse(os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "welcome.html"))

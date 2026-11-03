@@ -1,0 +1,129 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Touchline</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070D">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="/static/brand/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/static/brand/theme.css">
+<style>
+:root{--void:#05070D;--navy:#0A1020;--volt:#00F5A0;--cyan:#2DE2FF;--opp:#FF7A59;--altg:linear-gradient(135deg,#8B5CF6,#FF3DCB)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--void);color:#E8EEFF;font-family:inherit;overflow:hidden}
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(60% 40% at 20% 10%,#00F5A022,transparent 70%),radial-gradient(50% 40% at 90% 30%,#8B5CF633,transparent 70%),radial-gradient(60% 50% at 50% 110%,#2DE2FF22,transparent 70%),var(--void)}
+.bg:after{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:44px 44px;mask:radial-gradient(circle at 50% 40%,#000,transparent 75%);animation:drift 24s linear infinite}
+@keyframes drift{to{background-position:44px 88px}}
+.scr{position:fixed;inset:0;z-index:1;overflow-y:auto;padding:calc(env(safe-area-inset-top) + 18px) 18px calc(env(safe-area-inset-bottom) + 28px);opacity:0;pointer-events:none;transform:translateY(24px) scale(.98);transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.2,.8,.2,1)}
+.scr.on{opacity:1;pointer-events:auto;transform:none}
+.in{max-width:520px;margin:0 auto}
+/* splash */
+#splash{display:flex;align-items:center;justify-content:center;text-align:center}
+.logo{width:min(62vw,260px);filter:drop-shadow(0 0 40px #00F5A055);opacity:0;transform:scale(.7);animation:reveal 1.4s .2s cubic-bezier(.2,.9,.2,1) forwards}
+@keyframes reveal{60%{opacity:1;transform:scale(1.04)}to{opacity:1;transform:scale(1)}}
+.ring{position:absolute;width:320px;height:320px;border-radius:50%;border:1px solid #00F5A044;animation:ring 3s 1s ease-out infinite;opacity:0}
+@keyframes ring{0%{transform:scale(.4);opacity:.8}to{transform:scale(1.6);opacity:0}}
+.wel{font-size:13px;letter-spacing:.42em;text-transform:uppercase;color:#9AA6C8;margin-top:28px;opacity:0;animation:up .9s 1.2s forwards}
+.wel b{display:block;font-size:30px;letter-spacing:.06em;color:#fff;margin-top:8px;background:linear-gradient(90deg,#fff,#00F5A0,#2DE2FF);-webkit-background-clip:text;color:transparent}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.enter{margin-top:40px;opacity:0;animation:up .9s 1.8s forwards}
+.btn{appearance:none;border:0;border-radius:999px;padding:16px 40px;font:600 15px/1 inherit;letter-spacing:.2em;text-transform:uppercase;color:#05070D;background:var(--volt);box-shadow:0 10px 40px -8px #00F5A0aa,inset 0 1px 0 #ffffff88;cursor:pointer;transition:transform .12s,box-shadow .12s;text-decoration:none;display:inline-block}
+.btn:active,.press:active{transform:scale(.96);filter:brightness(1.15)}
+.hint{display:block;font-size:11px;color:#6B7699;margin-top:14px;letter-spacing:.2em;animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.35}}
+/* header */
+.hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}.hd img{height:30px}.hd .sp{flex:1}
+.back{background:#ffffff0d;border:1px solid #ffffff1a;color:#cfd8f5;border-radius:12px;padding:8px 12px;font:500 13px inherit}
+h2{font-size:26px;margin:4px 0 4px;letter-spacing:.01em}.sub{color:#8A95B8;font-size:14px;margin:0 0 18px}
+.glass{background:linear-gradient(160deg,#ffffff10,#ffffff04);border:1px solid #ffffff17;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:22px}
+.mode{position:relative;display:block;padding:20px;margin-bottom:14px;color:inherit;text-decoration:none;overflow:hidden;transition:transform .15s,border-color .2s;opacity:0;animation:up .6s forwards}
+.mode:before{content:"";position:absolute;inset:auto -30% -60% auto;width:200px;height:200px;border-radius:50%;background:var(--g,#00F5A0);opacity:.16;filter:blur(40px)}
+.mode h3{margin:0 0 4px;font-size:19px}.mode p{margin:0;color:#8A95B8;font-size:13px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:5px 9px;border-radius:999px;background:#ffffff10;margin-bottom:10px}
+.live{background:#FF3B5C22;color:#FF7B91}.dot{width:7px;height:7px;border-radius:50%;background:#FF3B5C;box-shadow:0 0 10px #FF3B5C;animation:pulse 1.4s infinite}
+.hero{--g:#2DE2FF;border-color:#2DE2FF44;box-shadow:0 20px 60px -30px #2DE2FF88}
+.teams{display:flex;align-items:center;justify-content:space-between;margin:14px 0 10px}.teams div{text-align:center;flex:1;font-weight:600;font-size:14px}.teams img{width:46px;height:46px;display:block;margin:0 auto 6px;object-fit:contain}
+.vs{color:#6B7699;font-size:12px;letter-spacing:.2em}
+.cd{font-variant-numeric:tabular-nums;font-size:22px;text-align:center;color:var(--cyan);letter-spacing:.08em}
+.soon{opacity:.62}.soon .tag{color:#c6b4ff}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* setup */
+.lbl{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#6B7699;margin:20px 0 10px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}.opt{flex:1 1 30%;min-width:96px;padding:14px 10px;text-align:center;border-radius:16px;font-size:13px;cursor:pointer;transition:all .15s;user-select:none}
+.opt small{display:block;color:#7c87ab;font-size:11px;margin-top:4px}
+.opt.sel{border-color:var(--volt);background:#00F5A014;box-shadow:0 0 0 1px #00F5A0 inset,0 10px 30px -14px #00F5A0}
+.opt.sel.o{border-color:var(--opp);background:#FF7A5914;box-shadow:0 0 0 1px #FF7A59 inset,0 10px 30px -14px #FF7A59}
+.pitch{position:relative;aspect-ratio:3/4;border-radius:18px;margin-top:4px;background:linear-gradient(#0d2a1f,#081a14);border:1px solid #00F5A033;overflow:hidden}
+.pitch:before{content:"";position:absolute;inset:8%;border:1px solid #ffffff22;border-radius:4px}.pitch:after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:1px solid #ffffff22}
+.pl{position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:9px;width:64px;color:#dfe;opacity:0;animation:up .4s forwards}.pl i{display:block;width:22px;height:22px;margin:0 auto 3px;border-radius:50%;background:var(--volt);box-shadow:0 0 12px #00F5A099;font:700 9px/22px inherit;color:#05070D;font-style:normal}
+.ko{position:sticky;bottom:0;margin-top:22px;padding-top:12px;background:linear-gradient(transparent,var(--void) 40%)}.ko .btn{width:100%}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translate(-50%,40px);opacity:0;z-index:9;padding:12px 18px;border-radius:14px;font-size:13px;transition:.3s}.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style></head><body><div class="bg"></div>
+
+<section class="scr on" id="splash"><div><div class="ring" style="left:50%;top:50%;margin:-160px"></div>
+<img class="logo" src="/static/brand/logo.svg" onerror="this.src='/static/brand/mark.svg'" alt="Touchline">
+<div class="wel">Welcome to<b>Touchline</b></div>
+<div class="enter"><button class="btn" id="enterBtn">Enter</button><span class="hint">TAP TO START</span></div></div></section>
+
+<section class="scr" id="modes"><div class="in">
+<div class="hd"><img src="/static/brand/mark.svg" alt=""><span class="sp"></span><button class="back press" onclick="go('profile')">⚙︎ Profile</button></div>
+<h2>Choose your game</h2><p class="sub">Every match is a decision. Pick how you play tonight.</p>
+<a class="mode glass hero press" style="animation-delay:.05s" href="#" onclick="go('setup');return false">
+ <span class="tag live" id="liveTag"><span class="dot"></span><span id="liveTxt">Tonight · Live</span></span>
+ <h3>Live Match</h3><p id="mInfo">UEFA Champions League · Old Trafford</p>
+ <div class="teams"><div><img id="hL" src="https://media.api-sports.io/football/teams/33.png" alt="">Man United</div><span class="vs">VS</span><div><img id="aL" src="https://media.api-sports.io/football/teams/497.png" alt="">AS Roma</div></div>
+ <div class="cd" id="cd">20:00 UK</div></a>
+<a class="mode glass press" style="--g:#00F5A0;animation-delay:.12s" href="/manager"><span class="tag">Career</span><h3>Manager Career</h3><p>Tactics, simulations, daily challenge and the scenario lab.</p></a>
+<a class="mode glass press" style="--g:#FF3DCB;animation-delay:.19s" href="#" onclick="go('setup');return false"><span class="tag" style="background:linear-gradient(135deg,#8B5CF633,#FF3DCB33)">What if…</span><h3>Alternate Timelines</h3><p>Branch tonight's real match at any minute and rewrite what happens next.</p></a>
+<div class="row2"><div class="mode glass soon press" style="--g:#8B5CF6;animation-delay:.26s" onclick="toast('Fantasy opens soon. We\'ll let you know.')"><span class="tag">Coming soon</span><h3>Fantasy</h3><p>Draft, captain, compete.</p></div>
+<div class="mode glass press" style="--g:#2DE2FF;animation-delay:.33s" onclick="go('profile')"><span class="tag">You</span><h3>Settings</h3><p>Profile and preferences.</p></div></div>
+</div></section>
+
+<section class="scr" id="setup"><div class="in">
+<div class="hd"><button class="back press" onclick="go('modes')">‹ Modes</button><span class="sp"></span><span class="tag live"><span class="dot"></span>Live</span></div>
+<h2>Pre-match</h2><p class="sub">Man United vs AS Roma · Set your terms before kick-off.</p>
+<div class="lbl">Your side</div><div class="seg" data-k="side">
+ <div class="opt glass press sel" data-v="home"><img src="https://media.api-sports.io/football/teams/33.png" width="34" alt=""><br>Man United<small>Home</small></div>
+ <div class="opt glass press" data-v="away"><img src="https://media.api-sports.io/football/teams/497.png" width="34" alt=""><br>AS Roma<small>Away</small></div></div>
+<div class="lbl">Opponent AI personality</div><div class="seg o" data-k="pers">
+ <div class="opt glass press" data-v="high-press">High Press<small>4-3-3 · suffocating</small></div>
+ <div class="opt glass press" data-v="counter">Counter<small>4-5-1 · deep, lethal</small></div>
+ <div class="opt glass press" data-v="possession">Possession<small>4-3-3 · patient</small></div>
+ <div class="opt glass press sel" data-v="flexible">Flexible<small>4-2-3-1 · adaptive</small></div>
+ <div class="opt glass press" data-v="direct">Direct<small>4-4-2 · route one</small></div></div>
+<div class="lbl">Difficulty</div><div class="seg" data-k="diff">
+ <div class="opt glass press" data-v="easy">Easy<small>1 reaction</small></div>
+ <div class="opt glass press sel" data-v="normal">Normal<small>2 reactions</small></div>
+ <div class="opt glass press" data-v="hard">Hard<small>4 reactions</small></div></div>
+<div class="lbl">Match preview · <span id="pvT">Man United</span></div>
+<div class="pitch glass" id="pitch"></div>
+<div class="ko"><a class="btn" id="koBtn" href="/live/play">Kick off</a></div>
+</div></section>
+
+<section class="scr" id="profile"><div class="in">
+<div class="hd"><button class="back press" onclick="go('modes')">‹ Modes</button></div>
+<h2>Profile</h2><p class="sub">Your manager identity.</p>
+<div class="glass" style="padding:18px"><div class="lbl" style="margin-top:0">Manager name</div>
+<input id="mgr" placeholder="The Gaffer" style="width:100%;padding:14px;border-radius:14px;border:1px solid #ffffff22;background:#ffffff08;color:#fff;font:15px inherit">
+<div class="lbl">Haptics &amp; motion</div><div class="seg" data-k="motion"><div class="opt glass press sel" data-v="full">Full</div><div class="opt glass press" data-v="reduced">Reduced</div></div>
+<p class="sub" style="margin-top:16px">Accounts, billing and push alerts arrive with the app. Your picks are saved on this device.</p></div>
+</div></section>
+<div class="toast glass" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id),S=JSON.parse(localStorage.tl_prefs||'{}');S.side??='home';S.pers??='flexible';S.diff??='normal';
+let SQ=null,KO=Date.parse('2026-11-03T20:00:00Z');
+function buzz(){try{if(S.motion!=='reduced')navigator.vibrate&&navigator.vibrate(8)}catch(e){}}
+function go(id){buzz();document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));$(id).scrollTop=0;history.replaceState(null,'','#'+id);if(id==='setup')preview()}
+function toast(t){buzz();const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
+$('enterBtn').onclick=()=>go('modes');$('splash').addEventListener('click',e=>{if(e.target.id!=='enterBtn')go('modes')});
+document.querySelectorAll('.seg').forEach(g=>{const k=g.dataset.k;g.querySelectorAll('.opt').forEach(o=>{if(S[k])o.classList.toggle('sel',o.dataset.v===S[k]);if(g.classList.contains('o'))o.classList.add('o');o.onclick=()=>{buzz();g.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===o));S[k]=o.dataset.v;save();if(k==='side')preview()}})});
+$('mgr').value=S.mgr||'';$('mgr').oninput=e=>{S.mgr=e.target.value;save()};
+function save(){localStorage.tl_prefs=JSON.stringify(S);$('koBtn').href='/live/play?'+new URLSearchParams({side:S.side,pers:S.pers,diff:S.diff})}save();
+function tick(){const d=KO-Date.now(),e=$('cd');if(d>0){const h=Math.floor(d/36e5),m=Math.floor(d%36e5/6e4),s=Math.floor(d%6e4/1e3);e.textContent='Kick-off in '+(h?h+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}else if(!e.dataset.live)e.textContent='In play · tap to join'}
+setInterval(tick,1000);tick();
+fetch('/api/live/match').then(r=>r.json()).then(d=>{const L=d.live||d;if(L.kickoff_utc)KO=Date.parse(L.kickoff_utc);const st=L.status||{};const sc=L.score||{};
+ if(st.elapsed!=null||['1H','HT','2H','ET','P','FT','AET','PEN'].includes(st.short)){const e=$('cd');e.dataset.live=1;e.textContent=(sc.home??0)+' – '+(sc.away??0)+'  ·  '+(st.short==='FT'?'Full time':(st.elapsed??'')+"'");$('liveTxt').textContent=st.short==='FT'?'Full time':'Live now'}
+ if(L.league)$('mInfo').textContent=L.league+' · '+(L.venue||'')}).catch(()=>{});
+const F={GK:[[50,90]],DEF:[[15,72],[38,76],[62,76],[85,72]],MID:[[25,52],[50,56],[75,52]],FWD:[[20,28],[50,22],[80,28]]};
+function preview(){const p=$('pitch');$('pvT').textContent=S.side==='away'?'AS Roma':'Man United';
+ const draw=()=>{const sq=(SQ&&SQ[S.side]&&SQ[S.side].squad)||[];const by={GK:[],DEF:[],MID:[],FWD:[]};sq.forEach(x=>{const g=x.group||"MID";(by[g]||by.MID).push(x)});let h='',i=0;
+  for(const g in F)F[g].forEach((xy,j)=>{const pl=by[g][j]||{};const nm=(pl.name||g).split(' ').slice(-1)[0];h+=`<div class="pl" style="left:${xy[0]}%;top:${xy[1]}%;animation-delay:${i++*40}ms"><i>${pl.number||''}</i>${nm}</div>`});p.innerHTML=h};
+ draw();if(!SQ)fetch('/api/live/squads').then(r=>r.json()).then(d=>{SQ=d;draw()}).catch(()=>{})}
+const h=location.hash.slice(1);if(['modes','setup','profile'].includes(h))go(h);
+</script></body></html>

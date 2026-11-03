@@ -10,7 +10,7 @@
 button,select{margin:3px}.ev{padding:5px 0;border-bottom:1px solid var(--line)}.new{color:var(--volt);animation:fade .6s both}
 td{padding:4px}#res .card,#res>div{border-radius:12px}
 #ctl{margin-top:10px}#ctl button[onclick="sim()"]{background:var(--alt);color:#fff;box-shadow:0 8px 28px -10px #FF3DCB99}</style></head><body>
-<div class="top"><a href="/"><img src="/static/brand/logo.svg" alt="Touchline"></a><span class="live-dot"></span><h1>Live</h1><span class="tag">real data: API-Football</span></div><div class="wrap">
+<div class="top"><a href="/live"><img src="/static/brand/logo.svg" alt="Touchline"></a><span class="live-dot"></span><h1>Live</h1><span class="tag">real data: API-Football</span></div><div class="wrap">
 <div class="card world-real"><div id="hdr" class="muted"></div><div class="score" id="score">–</div><div id="clock" style="text-align:center"></div><div id="meta" class="muted" style="text-align:center"></div></div>
 <div class="grid"><div class="card"><b>Events</b><div id="events"></div></div><div class="card"><b>Team stats</b><div id="stats"></div></div></div>
 <div class="card"><b>Line-ups</b><div id="lineups" class="grid"></div></div>
@@ -49,4 +49,4 @@ const pc=x=>(x*100).toFixed(0)+'%';
 async function sim(){const t={};for(const k in OPTS)t[k]=$('t_'+k).value;$('res').textContent='Simulating…';
 const r=await fetch('/api/live/simulate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({branch_id:B.branch_id,tactics:t,subs:SUBS,opponent_personality:$('pers').value,difficulty:$('diff').value})});const d=await r.json();if(!r.ok){$('res').textContent=d.detail;return}
 $('res').innerHTML=`<p><b>Win ${pc(d.after.user_win)} · Draw ${pc(d.after.draw)} · Loss ${pc(d.after.user_loss)}</b> <span class="muted">(unchanged tactics: ${pc(d.before.user_win)}/${pc(d.before.draw)}/${pc(d.before.user_loss)})</span><br>Rest-of-match xG you ${d.xg.user_mean.toFixed(2)} vs opp ${d.xg.opp_mean.toFixed(2)}</p><ul>${d.explanation.map(x=>'<li>'+x+'</li>').join('')}</ul><span class="muted">${d.label}</span>`}
-</script></body></html>
+</script><script>(function(){const q=new URLSearchParams(location.search);for(const k of ['side','pers','diff']){const v=q.get(k),el=document.getElementById(k);if(v&&el&&[...el.options].some(o=>(o.value||o.text)===v))el.value=v}})();</script></body></html>

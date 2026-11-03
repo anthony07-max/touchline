@@ -372,6 +372,11 @@ app.include_router(mobile_router)
 
 @app.get("/")
 def index():
+    return FileResponse(os.path.join(FRONT, "welcome.html"))
+
+
+@app.get("/manager")
+def manager():
     return FileResponse(os.path.join(FRONT, "index.html"))
 
 
