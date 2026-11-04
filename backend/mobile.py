@@ -73,7 +73,7 @@ def should_send(uid: int, ntype: str, now_utc: Optional[dt.datetime] = None) -> 
     return True, "ok"
 
 
-def notify(uid: int, ntype: str, title: str, body: str, now_utc=None) -> Dict:
+def notify(uid: int, ntype: str, title: str, body: str, now_utc=None, url: Optional[str] = None) -> Dict:
     """Queue a push. Sends via Expo Push API only if EXPO_PUSH_ENABLED=1 (optionally EXPO_ACCESS_TOKEN)."""
     _init()
     ok, why = should_send(uid, ntype, now_utc)
@@ -85,12 +85,21 @@ def notify(uid: int, ntype: str, title: str, body: str, now_utc=None) -> Dict:
     status = "dry-run"
     if os.getenv("EXPO_PUSH_ENABLED") == "1" and tokens:
         hdr = {"Authorization": "Bearer " + os.environ["EXPO_ACCESS_TOKEN"]} if os.getenv("EXPO_ACCESS_TOKEN") else {}
-        httpx.post("https://exp.host/--/api/v2/push/send", json=[{"to": t, "title": title, "body": body, "data": {"type": ntype}} for t in tokens],
+        httpx.post("https://exp.host/--/api/v2/push/send", json=[{"to": t, "title": title, "body": body, "data": {"type": ntype, "url": url or "/"}} for t in tokens],
                    headers=hdr, timeout=10)
         status = "sent"
     db.q("INSERT INTO push_outbox(user_id,type,title,body,status,created_at) VALUES (?,?,?,?,?,?)",
          (uid, ntype, title, body, status, time.time()))
     return {"sent": status == "sent", "status": status, "tokens": len(tokens)}
+
+
+def notify_app_users(ntype: str, title: str, body: str, url: Optional[str] = None) -> int:
+    """Fan a match alert out to every user with a registered app push token (prefs, quiet hours and caps apply)."""
+    _init(); n = 0
+    for r in db.q("SELECT DISTINCT user_id FROM push_tokens"):
+        try: n += bool(notify(r["user_id"], ntype, title, body, url=url).get("sent"))
+        except Exception: pass
+    return n
 
 
 # ---------- entitlements (Stripe web + RevenueCat mobile, no duplicates) ----------

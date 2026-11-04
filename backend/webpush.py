@@ -101,6 +101,11 @@ def notify_fixture(fid: int, kind: str, title: str, body: str, elite: bool = Tru
     if db.q("SELECT 1 FROM web_push_log WHERE fixture_id=? AND kind=?", (fid, kind), one=True): return 0
     subs = [s for s in db.q("SELECT * FROM web_push_subs") if fid in json.loads(s["follow_json"]) or (elite and s["all_elite"])]
     for s in subs: send(s, {"title": title, "body": body, "url": url or f"/match/{fid}", "tag": f"{kind}-{fid}"})
+    if elite:  # native app users (Expo); dry-run unless EXPO_PUSH_ENABLED=1
+        try:
+            from . import mobile
+            mobile.notify_app_users("opponent_formation" if kind == "lineups" else "kickoff", title, body, url or f"/match/{fid}")
+        except Exception: pass
     db.q("INSERT OR IGNORE INTO web_push_log(fixture_id,kind,sent,created_at) VALUES (?,?,?,?)", (fid, kind, len(subs), time.time()))
     return len(subs)
 
