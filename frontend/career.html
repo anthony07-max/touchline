@@ -1,0 +1,235 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Kickvana · Manager Career</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070D">
+<link rel="icon" href="/static/brand/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/static/brand/theme.css">
+<style>
+body{padding:0}.wrap{max-width:1080px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 10px) 16px calc(env(safe-area-inset-bottom) + 96px)}
+.hd{display:flex;align-items:center;gap:10px;margin-bottom:6px}.sp{flex:1}.back{background:#ffffff0d;border:1px solid #ffffff1a;color:#cfd8f5;border-radius:12px;padding:8px 12px;font:500 13px Inter;text-decoration:none}
+h2{font:700 26px "Space Grotesk";margin:10px 0 2px;background:linear-gradient(90deg,#fff,#c6b4ff,#FF3DCB);-webkit-background-clip:text;color:transparent}
+h3{font:700 16px "Space Grotesk";margin:0 0 8px}.sub,.mut{color:#8592B0;font-size:12px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;gap:2px;padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);background:#05070Dee;backdrop-filter:blur(14px);border-top:1px solid #1C2742}
+.tabs button{flex:1;max-width:120px;background:none;border:0;color:#8592B0;font:600 11px Inter;padding:6px 2px;border-radius:12px;cursor:pointer}
+.tabs button i{display:block;font-style:normal;font-size:18px;line-height:1.2}.tabs button.on{color:#fff;background:#00F5A014;box-shadow:inset 0 -2px 0 #00F5A0}
+.pg{display:none;animation:fade .3s var(--ease)}.pg.on{display:block}@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.g{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.c{background:linear-gradient(180deg,#0F1830cc,#0A1020cc);border:1px solid #1C2742;border-radius:18px;padding:14px}
+.kpi{font:700 26px "Space Grotesk"}.kpi small{font:500 12px Inter;color:#8592B0;margin-left:4px}
+.bar{height:8px;border-radius:5px;background:#ffffff12;overflow:hidden}.bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#00F5A0,#2DE2FF);transition:width .5s var(--ease)}
+.bar.m i{background:linear-gradient(90deg,#8B5CF6,#FF3DCB)}.bar.w i{background:linear-gradient(90deg,#FFB547,#FF4D6D)}
+button.b{border:0;border-radius:999px;padding:11px 16px;font:700 12px Inter;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:#05070D;background:#00F5A0;box-shadow:0 8px 28px -10px #00F5A0}
+button.b.alt{color:#fff;background:linear-gradient(135deg,#8B5CF6,#FF3DCB);box-shadow:0 8px 28px -10px #FF3DCB}
+button.b.ghost{color:#cfd8f5;background:#ffffff0d;border:1px solid #ffffff1c;box-shadow:none}button.b:disabled{opacity:.4}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{padding:6px 11px;border-radius:999px;border:1px solid #ffffff1c;background:#ffffff08;font:600 12px Inter;color:#aeb8d6;cursor:pointer}.chip.on{border-color:#00F5A0;color:#fff;background:#00F5A018}
+table{width:100%;border-collapse:collapse;font-size:13px}th{color:#8592B0;font:600 11px Inter;text-align:left;padding:8px 6px;border-bottom:1px solid #1C2742;cursor:pointer;white-space:nowrap}
+td{padding:8px 6px;border-bottom:1px solid #ffffff08;white-space:nowrap}tr.me td{background:#00F5A00f}tr.click{cursor:pointer}tr.click:hover td{background:#ffffff06}
+.ovr{display:inline-flex;align-items:center;justify-content:center;width:34px;height:26px;border-radius:8px;font:700 13px "Space Grotesk";color:#05070D}
+.pos{font:700 10px Inter;padding:3px 6px;border-radius:6px;background:#ffffff10;color:#cfd8f5}
+.scroll{overflow-x:auto}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+input,select{background:#ffffff0a;color:#fff;border:1px solid #ffffff1c;border-radius:12px;padding:9px 10px;font:13px Inter}
+input[type=range]{width:100%;accent-color:#00F5A0;padding:0;border:0;background:none}
+.pitch{position:relative;aspect-ratio:68/100;max-height:72vh;border-radius:18px;background:repeating-linear-gradient(#0d2a1f 0 10%,#0b2419 10% 20%);border:1px solid #00F5A033;overflow:hidden;touch-action:none;margin:0 auto}
+.pitch:before{content:"";position:absolute;inset:4%;border:1px solid #ffffff22;border-radius:4px}
+.pitch:after{content:"";position:absolute;left:4%;right:4%;top:50%;border-top:1px solid #ffffff22}
+.pitch .box{position:absolute;left:28%;right:28%;height:13%;border:1px solid #ffffff22}.pitch .circ{position:absolute;left:50%;top:50%;width:26%;aspect-ratio:1;border:1px solid #ffffff22;border-radius:50%;transform:translate(-50%,-50%)}
+.tok{position:absolute;transform:translate(-50%,-50%);text-align:center;width:76px;cursor:grab;user-select:none;z-index:2;transition:left .15s,top .15s}
+.tok.drag{transition:none;cursor:grabbing;z-index:5}.tok b{display:flex;align-items:center;justify-content:center;width:38px;height:38px;margin:0 auto 2px;border-radius:50%;background:#00F5A0;color:#05070D;font:800 12px "Space Grotesk";box-shadow:0 0 18px #00F5A088}
+.tok.sel b{background:#FF3DCB;box-shadow:0 0 22px #FF3DCB}.tok span{display:block;font:600 10px Inter;color:#eaf0ff;text-shadow:0 1px 3px #000}.tok em{font:700 9px Inter;color:#9ff;font-style:normal}
+.sl label{display:flex;justify-content:space-between;font:600 12px Inter;margin-top:8px}.sl label small{color:#8592B0;font-weight:500}
+.attr{display:grid;grid-template-columns:80px 1fr 30px;gap:8px;align-items:center;font-size:12px;margin:5px 0}
+.modal{position:fixed;inset:0;z-index:50;background:#05070Dcc;backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}.sheet{width:100%;max-width:560px;max-height:88vh;overflow:auto;background:#0A1020;border:1px solid #2A3A5E;border-radius:22px 22px 0 0;padding:18px 16px calc(env(safe-area-inset-bottom) + 18px);animation:up .3s var(--ease)}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media(min-width:760px){.modal{align-items:center}.sheet{border-radius:22px}}
+.news div{padding:8px 0;border-bottom:1px solid #ffffff08;font-size:13px}.news .good{color:#00F5A0}.news .bad{color:#FF4D6D}.news .transfer{color:#c6b4ff}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:60;background:#0F1830;border:1px solid #2A3A5E;border-radius:14px;padding:10px 16px;font-size:13px;display:none;max-width:90vw}
+.score{font:700 44px "Space Grotesk";text-align:center;letter-spacing:.04em}.ev{font-size:12px;padding:5px 0;border-bottom:1px solid #ffffff08}.ev.goal{color:#00F5A0;font-weight:700}.ev.tactic,.ev.talk{color:#c6b4ff}.ev.sub{color:#2DE2FF}
+canvas{width:100%;border-radius:16px;border:1px solid #00F5A033;display:block}
+.split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px}@media(max-width:820px){.split{grid-template-columns:1fr}}
+.pill{display:inline-block;padding:3px 9px;border-radius:999px;font:700 10px Inter;letter-spacing:.08em;text-transform:uppercase;background:#00F5A022;color:#00F5A0}.pill.red{background:#FF4D6D22;color:#FF4D6D}.pill.mag{background:#FF3DCB22;color:#FF3DCB}
+.clubs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.clubs .c{cursor:pointer;text-align:center}.clubs .c.on{border-color:#00F5A0;box-shadow:0 0 0 1px #00F5A0}
+</style></head><body><div class="toast" id="toast"></div><div class="wrap">
+<div class="hd"><a class="back" href="/">‹ Home</a><span class="sp"></span><span id="hdClub" class="row"></span><img src="/static/brand/mark.svg" height="26" alt=""></div>
+
+<section class="pg" id="pg-start"><h2>Manager Career</h2><p class="sub">Choose a club in the Kickvana League. Every club, crest and player is generated for Kickvana, so this is your world to build.</p>
+<div class="row" style="margin:10px 0"><input id="mgr" placeholder="Your manager name" maxlength="40" style="flex:1;min-width:180px"><button class="b" id="startBtn">Take the job</button></div>
+<div class="clubs" id="clubs"></div></section>
+
+<section class="pg" id="pg-club"></section>
+<section class="pg" id="pg-squad"></section>
+<section class="pg" id="pg-tactics"></section>
+<section class="pg" id="pg-transfers"></section>
+<section class="pg" id="pg-match"></section>
+<section class="pg" id="pg-league"></section>
+</div>
+<nav class="tabs" id="tabs" style="display:none">
+<button data-p="club"><i>◎</i>Club</button><button data-p="squad"><i>☰</i>Squad</button><button data-p="tactics"><i>⌗</i>Tactics</button>
+<button data-p="transfers"><i>⇄</i>Transfers</button><button data-p="match"><i>▶</i>Matchday</button><button data-p="league"><i>≡</i>League</button></nav>
+<div class="modal" id="modal" onclick="if(event.target===this)closeM()"><div class="sheet" id="sheet"></div></div>
+<script>
+const $=id=>document.getElementById(id);let KEY=localStorage.kv_career||'',S=null,SQ=null,TAC=null,SEL=null,LIVE=null,PICKCLUB='c4';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function api(path,opt={}){const r=await fetch('/api/career'+path,{...opt,headers:{'content-type':'application/json','X-Career-Key':KEY,...(opt.headers||{})},body:opt.body?JSON.stringify(opt.body):undefined});
+ const d=await r.json().catch(()=>({}));if(!r.ok){const m=typeof d.detail==='string'?d.detail:'Something went wrong';if(!opt.quiet)toast(m);throw new Error(m)}return d}
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',3200)}
+const money=v=>(v<0?'-':'')+'£'+Math.abs(v).toFixed(1)+'m';
+function badge(c,sz=28){const [a,b]=c.colours;const path=c.badge==='round'?`<circle cx="20" cy="20" r="18" fill="${b}" stroke="${a}" stroke-width="3"/>`:c.badge==='hex'?`<path d="M20 2l16 9v18l-16 9-16-9V11z" fill="${b}" stroke="${a}" stroke-width="3"/>`:`<path d="M20 2l16 5v12c0 10-7 16-16 19C11 35 4 29 4 19V7z" fill="${b}" stroke="${a}" stroke-width="3"/>`;
+ return `<svg width="${sz}" height="${sz}" viewBox="0 0 40 40" aria-label="${esc(c.name)} badge">${path}<path d="M9 24h22" stroke="${a}" stroke-width="2" opacity=".5"/><text x="20" y="21" text-anchor="middle" font-family="Space Grotesk" font-weight="700" font-size="10" fill="${a}">${c.short}</text></svg>`}
+const oc=o=>o>=80?'#00F5A0':o>=72?'#2DE2FF':o>=64?'#FFB547':'#FF7A59';
+const ovr=o=>`<span class="ovr" style="background:${oc(o)}">${o}</span>`;
+function show(p){document.querySelectorAll('.pg').forEach(e=>e.classList.toggle('on',e.id==='pg-'+p));document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+ location.hash=p;({club:rClub,squad:rSquad,tactics:rTactics,transfers:rTransfers,match:rMatch,league:rLeague}[p]||(()=>{}))();scrollTo({top:0})}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>show(b.dataset.p));
+function openM(h){$('sheet').innerHTML=h;$('modal').classList.add('on')}function closeM(){$('modal').classList.remove('on')}
+
+// ---------- start
+async function start(){const d=await (await fetch('/api/career/clubs')).json();
+ $('clubs').innerHTML=d.clubs.map(c=>`<div class="c ${c.id===PICKCLUB?'on':''}" data-id="${c.id}">${badge(c,52)}<div style="font:700 14px 'Space Grotesk';margin-top:6px">${esc(c.name)}</div><div class="mut">Rep ${c.reputation} · ${esc(c.expectation)}</div></div>`).join('');
+ $('clubs').querySelectorAll('.c').forEach(e=>e.onclick=()=>{PICKCLUB=e.dataset.id;start()});
+ $('startBtn').onclick=async()=>{const r=await fetch('/api/career/new',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({club_id:PICKCLUB,manager:$('mgr').value||'You'})});const d=await r.json();KEY=d.key;localStorage.kv_career=KEY;await boot()}}
+
+// ---------- club hub
+async function rClub(){S=await api('');hdr();const b=S.board,f=S.finances,n=S.next_fixture;
+ const conf=b.confidence,cc=conf>=60?'':conf>=30?' w':' w';
+ $('pg-club').innerHTML=`<h2>${esc(S.club.name)}</h2><p class="sub">Season ${S.season} · Week ${Math.min(S.week,S.weeks)} of ${S.weeks} · ${S.window_open?'<span class="pill">Transfer window open</span>':'<span class="pill red">Window closed</span>'}</p>
+ ${S.status==='sacked'?`<div class="c" style="border-color:#FF4D6D"><h3>You have been sacked</h3><p class="mut">The board lost confidence. Take a new job at another club, or start over.</p><div class="row"><button class="b" onclick="newJob()">Find a new job</button><button class="b ghost" onclick="reset()">New career</button></div></div>`:''}
+ <div class="g" style="margin-top:10px">
+ <div class="c"><h3>Next match</h3>${n?`<div class="row" style="gap:12px">${badge(S.club,44)}<b style="font:700 18px 'Space Grotesk'">${n.home?'vs':'@'}</b>${badge(n.opponent,44)}<div><b>${esc(n.opponent.name)}</b><div class="mut">Week ${n.week} · ${n.home?'Home':'Away'}</div></div></div>
+  <div class="row" style="margin-top:12px"><button class="b" onclick="show('match')">${S.live_in_progress?'Resume match':'Go to matchday'}</button><button class="b ghost" onclick="quickSim()">Quick sim week</button></div>`:'<p class="mut">No fixture.</p>'}</div>
+ <div class="c"><h3>Board confidence</h3><div class="kpi">${conf}<small>/ 100</small></div><div class="bar${cc}"><i style="width:${conf}%"></i></div><p class="mut" style="margin-top:8px">Expectation: <b style="color:#fff">${esc(b.expectation)}</b> · You're ${ord(S.position)}. Below 15 and you're out.</p>${spark(b.history.map(h=>h.confidence))}</div>
+ <div class="c"><h3>Finances</h3><div class="row" style="justify-content:space-between"><div><div class="mut">Balance</div><div class="kpi" style="color:${f.balance<0?'#FF4D6D':'#fff'}">${money(f.balance)}</div></div><div><div class="mut">Transfer budget</div><div class="kpi">${money(f.transfer_budget)}</div></div></div>
+  <div class="mut" style="margin-top:8px">Wage bill £${f.wage_bill}k / £${f.wage_budget}k a week</div><div class="bar m"><i style="width:${Math.min(100,f.wage_bill/f.wage_budget*100)}%"></i></div>
+  <div class="mut" style="margin-top:8px">Last weeks: ${f.recent_income.map((x,i)=>`<span title="gate+TV minus wages">${(x.gate+x.tv-(f.recent_expenses[i]||{}).wages||0)>=0?'+':''}${((x.gate+x.tv)-((f.recent_expenses[i]||{}).wages||0)).toFixed(2)}</span>`).join(' · ')||'none yet'}</div></div>
+ <div class="c"><h3>Youth academy</h3>${S.academy.prospects.length?S.academy.prospects.map(p=>`<div class="row" style="justify-content:space-between;padding:6px 0;border-bottom:1px solid #ffffff08">${ovr(p.ovr)}<div style="flex:1"><b>${esc(p.name)}</b><div class="mut">${p.pos} · ${p.age} · potential <b style="color:#FF3DCB">${p.potential}</b></div></div><button class="b" style="padding:8px 10px" onclick="youth('${p.id}',true)">Promote</button><button class="b ghost" style="padding:8px 10px" onclick="youth('${p.id}',false)">Release</button></div>`).join(''):`<p class="mut">${S.academy.done?'This season\'s intake has been decided.':'Intake day is week '+S.academy.intake_week+'. New 16–17 year-olds with real potential arrive.'}</p>`}</div>
+ <div class="c news"><h3>Inbox</h3>${S.news.map(x=>`<div class="${x.kind}"><span class="mut">S${x.season} W${x.week}</span> ${esc(x.text)}</div>`).join('')}</div>
+ ${S.seasons.length?`<div class="c"><h3>Honours & history</h3>${S.seasons.map(x=>`<div class="mut">Season ${x.season}: ${ord(x.pos)}, ${x.pts} pts (${x.verdict} target) · champions ${esc(x.champion)}</div>`).join('')}</div>`:''}
+ </div><p class="mut" style="margin-top:14px">Kickvana League clubs, crests and players are fictional and generated. <a href="#" onclick="reset();return false">Start a new career</a></p>`}
+const ord=n=>n+(n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
+function spark(xs){if(xs.length<2)return '';const w=240,h=40,pts=xs.map((v,i)=>`${i/(xs.length-1)*w},${h-v/100*h}`).join(' ');return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:40px;margin-top:6px"><polyline points="${pts}" fill="none" stroke="#00F5A0" stroke-width="2"/></svg>`}
+function hdr(){if(!S)return;$('hdClub').innerHTML=`${badge(S.club,26)}<span style="font:600 12px Inter">${esc(S.club.short)}</span>`}
+async function quickSim(){const d=await api('/advance',{method:'POST'});weekToast(d);rClub()}
+function weekToast(d){const w=d.week_summary;if(w&&w.result)toast(`Week ${w.week}: ${w.result[0]}–${w.result[1]} vs ${w.opponent}. Board ${w.board_delta>=0?'+':''}${w.board_delta}`)}
+async function youth(id,keep){await api('/academy',{method:'POST',body:{player_id:id,keep}});toast(keep?'Promoted to the first-team squad':'Released');rClub()}
+async function newJob(){await api('/new-job',{method:'POST'});rClub()}
+function reset(){if(confirm('Start a new career? Your current save will be left behind.')){localStorage.removeItem('kv_career');KEY='';boot()}}
+
+// ---------- squad
+let SORT='ovr',DIR=-1,FPOS='ALL';
+async function rSquad(){SQ=await api('/squad');const A=SQ.attrs;
+ let ps=SQ.players.filter(p=>FPOS==='ALL'||p.pos===FPOS||(FPOS==='XI'&&p.starter));
+ const val=p=>A.includes(SORT)?p.attrs[SORT]:p[SORT];ps.sort((a,b)=>(val(a)>val(b)?1:val(a)<val(b)?-1:0)*DIR);
+ const cols=[['name','Player'],['pos','Pos'],['age','Age'],['ovr','OVR'],...A.map(a=>[a,a.slice(0,3).toUpperCase()]),['form','Form'],['fitness','Fit'],['morale','Mor'],['wage','Wage'],['value','Value'],['contract_until','Contract']];
+ $('pg-squad').innerHTML=`<h2>Squad</h2><p class="sub">${SQ.players.length} players · tap a column to sort, a row for the full player card.</p>
+ <div class="row" style="margin:8px 0">${['ALL','XI',...SQ.positions].map(p=>`<span class="chip ${FPOS===p?'on':''}" onclick="FPOS='${p}';rSquad()">${p==='XI'?'Starting XI':p}</span>`).join('')}</div>
+ <div class="c scroll"><table><tr>${cols.map(([k,l])=>`<th onclick="srt('${k}')">${l}${SORT===k?(DIR<0?' ▾':' ▴'):''}</th>`).join('')}</tr>
+ ${ps.map(p=>`<tr class="click" onclick="card('${p.id}')"><td><b>${esc(p.name)}</b>${p.starter?' <span class="pill" style="font-size:8px">XI</span>':''}${p.listed?' <span class="pill mag" style="font-size:8px">Listed</span>':''}${p.youth?' <span class="pill" style="font-size:8px;background:#2DE2FF22;color:#2DE2FF">Academy</span>':''}</td><td><span class="pos">${p.pos}</span></td><td>${p.age}</td><td>${ovr(p.ovr)}</td>${A.map(a=>`<td style="color:${oc(p.attrs[a])}">${p.attrs[a]}</td>`).join('')}<td>${p.form}</td><td>${bar(p.fitness)}</td><td>${bar(p.morale,'m')}</td><td>£${p.wage}k</td><td>${money(p.value)}</td><td>S${p.contract_until}</td></tr>`).join('')}</table></div>`}
+const bar=(v,c='')=>`<div class="bar ${c}" style="width:46px;display:inline-block;vertical-align:middle"><i style="width:${v}%"></i></div> <span class="mut">${v}</span>`;
+function srt(k){if(SORT===k)DIR=-DIR;else{SORT=k;DIR=['name','pos'].includes(k)?1:-1}rSquad()}
+async function card(id,ctx){const p=await api('/player/'+id);const mine=S&&p.club_id===S.club.id;
+ openM(`<div class="row" style="gap:12px">${ovr(p.ovr)}<div style="flex:1"><h3 style="margin:0;font-size:20px">${esc(p.name)}</h3><div class="mut">${p.pos} · Age ${p.age} · Potential <b style="color:#FF3DCB">${p.potential}</b> · Best at ${p.best_positions.join(', ')}</div></div>${p.club?badge(p.club,40):''}</div>
+ <div style="margin:14px 0">${Object.entries(p.attrs).map(([k,v])=>`<div class="attr"><span style="text-transform:capitalize">${k}</span><div class="bar"><i style="width:${v}%;background:${oc(v)}"></i></div><b>${v}</b></div>`).join('')}</div>
+ <div class="g" style="grid-template-columns:repeat(3,1fr);gap:8px;text-align:center"><div class="c"><div class="mut">Form</div><b>${p.form}/10</b></div><div class="c"><div class="mut">Fitness</div><b>${p.fitness}%</b></div><div class="c"><div class="mut">Morale</div><b>${p.morale}</b></div>
+ <div class="c"><div class="mut">Value</div><b>${money(p.value)}</b></div><div class="c"><div class="mut">Wage</div><b>£${p.wage}k/wk</b></div><div class="c"><div class="mut">Contract</div><b>to S${p.contract_until}</b></div></div>
+ ${mine?`<div class="row" style="margin-top:12px"><button class="b ghost" onclick="listP('${p.id}')">${p.listed?'Remove from transfer list':'Add to transfer list'}</button></div>`:
+ `<div class="c" style="margin-top:12px"><h3>Make an offer</h3><div class="mut">${p.club?esc(p.club.name)+' value him around '+money(p.asking_price):'Free agent: no fee needed'} · wants about £${p.wage_demand}k a week${p.negotiation?` · talks: <b>${p.negotiation.status}</b>${p.negotiation.counter?' (they want '+money(p.negotiation.counter)+')':''}${p.negotiation.wage_demand?' (wants £'+p.negotiation.wage_demand+'k)':''}`:''}</div>
+  <div class="row" style="margin-top:8px"><label class="mut">Fee £m <input id="bf" type="number" step="0.1" min="0" value="${p.negotiation?.counter??(p.club?Math.round(p.asking_price*0.85*10)/10:0)}" style="width:96px"></label><label class="mut">Wage £k/wk <input id="bw" type="number" min="0" value="${p.negotiation?.wage_demand??Math.max(1,p.wage_demand-1)}" style="width:80px"></label></div>
+  <div class="row" style="margin-top:10px"><button class="b alt" onclick="bid('${p.id}')">Submit bid</button><button class="b ghost" onclick="walkAway('${p.id}')">Walk away</button></div><div id="bidRes" class="mut" style="margin-top:8px"></div></div>`}
+ <button class="b ghost" style="margin-top:12px;width:100%" onclick="closeM()">Close</button>`)}
+async function listP(id){const r=await api('/player/'+id+'/list',{method:'POST'});toast(r.listed?'Listed: clubs may now bid':'Removed from the list');closeM();rSquad()}
+
+// ---------- tactics
+async function rTactics(){const d=await api('/tactics');TAC=d;if(!SQ)SQ=await api('/squad');SEL=null;drawTac()}
+const LBL={pressing:['Stand off','Press high'],defensive_line:['Deep','High line'],tempo:['Patient','Fast'],width:['Narrow','Wide'],directness:['Short passing','Direct']};
+function drawTac(){const t=TAC.tactics,P=Object.fromEntries(SQ.players.map(p=>[p.id,p]));const on=new Set(t.slots.map(s=>s.player_id));
+ $('pg-tactics').innerHTML=`<h2>Tactics board</h2><p class="sub">Drag players to reshape (positions update automatically), tap one to change role or swap from the bench. Instructions feed straight into the match engine.</p>
+ <div class="row" style="margin:8px 0">${Object.keys(TAC.presets).map(f=>`<span class="chip ${t.formation===f?'on':''}" onclick="preset('${f}')">${f}</span>`).join('')}<span class="chip ${t.formation==='custom'?'on':''}">Custom</span></div>
+ <div class="split"><div><div class="pitch" id="pitch"><div class="box" style="top:4%"></div><div class="box" style="bottom:4%"></div><div class="circ"></div>${t.slots.map((s,i)=>{const p=P[s.player_id];return `<div class="tok ${SEL===i?'sel':''}" data-i="${i}" style="left:${s.x}%;top:${s.y}%"><b>${p?p.ovr:'?'}</b><span>${esc(p?p.name.split(' ').slice(-1)[0]:'')}</span><em>${s.pos} · ${s.role}</em></div>`}).join('')}</div></div>
+ <div><div class="c sl"><h3>Team instructions</h3>${TAC.sliders.map(k=>`<label>${k.replace('_',' ').replace(/^./,c=>c.toUpperCase())} <small id="v_${k}">${t.sliders[k]}</small></label><input type="range" min="0" max="100" value="${t.sliders[k]}" oninput="TAC.tactics.sliders['${k}']=+this.value;$('v_${k}').textContent=this.value"><div class="row mut" style="justify-content:space-between;font-size:10px"><span>${LBL[k][0]}</span><span>${LBL[k][1]}</span></div>`).join('')}
+ <div class="row" style="margin-top:12px"><button class="b" onclick="saveTac()">Save tactics</button><button class="b ghost" onclick="previewTac()">Preview vs next opponent</button></div><div id="prev" class="mut" style="margin-top:8px"></div></div>
+ <div class="c" style="margin-top:12px" id="slotEd">${SEL===null?'<p class="mut">Tap a player on the board to edit their role or swap them.</p>':slotEd(P,on)}</div>
+ <div class="c" style="margin-top:12px"><h3>Bench</h3>${SQ.players.filter(p=>!on.has(p.id)).sort((a,b)=>b.ovr-a.ovr).map(p=>`<div class="row" style="padding:4px 0">${ovr(p.ovr)}<span class="pos">${p.pos}</span><span style="flex:1">${esc(p.name)}</span><span class="mut">fit ${p.fitness}</span></div>`).join('')}</div></div></div>`;
+ dragInit()}
+function slotEd(P,on){const s=TAC.tactics.slots[SEL],p=P[s.player_id];return `<h3>${esc(p.name)} · ${s.pos}</h3><label class="mut">Role <select onchange="TAC.tactics.slots[SEL].role=this.value;drawTac()">${TAC.roles[s.pos].map(r=>`<option ${r===s.role?'selected':''}>${r}</option>`).join('')}</select></label>
+ <div class="mut" style="margin-top:8px">Swap with</div><select style="width:100%" onchange="if(this.value){swapIn(this.value)}"><option value="">Choose a player…</option>${SQ.players.filter(x=>x.id!==p.id).sort((a,b)=>b.ovr-a.ovr).map(x=>`<option value="${x.id}">${x.pos} ${esc(x.name)} (${x.ovr})${on.has(x.id)?' · in XI':''}</option>`).join('')}</select>`}
+function swapIn(id){const t=TAC.tactics,j=t.slots.findIndex(s=>s.player_id===id);if(j>=0)t.slots[j].player_id=t.slots[SEL].player_id;t.slots[SEL].player_id=id;drawTac()}
+function zone(x,y){if(y>=86)return'GK';if(y>=64)return(x<25||x>75)?'FB':'CB';if(y>=53)return(x<18||x>82)?'FB':'DM';if(y>=40)return(x<22||x>78)?'W':'CM';if(y>=27)return(x<30||x>70)?'W':'AM';return(x<28||x>72)?'W':'ST'}
+function dragInit(){const pitch=$('pitch');pitch.querySelectorAll('.tok').forEach(el=>{el.onpointerdown=e=>{e.preventDefault();const i=+el.dataset.i,r=pitch.getBoundingClientRect();let moved=false;el.classList.add('drag');el.setPointerCapture(e.pointerId);
+ el.onpointermove=m=>{moved=true;const x=Math.max(3,Math.min(97,(m.clientX-r.left)/r.width*100)),y=Math.max(5,Math.min(95,(m.clientY-r.top)/r.height*100));el.style.left=x+'%';el.style.top=y+'%';const s=TAC.tactics.slots[i];s.x=+x.toFixed(1);s.y=+y.toFixed(1);const z=zone(s.x,s.y);if(z!==s.pos){s.pos=z;if(!TAC.roles[z].includes(s.role))s.role=TAC.roles[z][0]}el.querySelector('em').textContent=s.pos+' · '+s.role};
+ el.onpointerup=()=>{el.onpointermove=null;el.classList.remove('drag');if(moved)TAC.tactics.formation='custom';SEL=i;drawTac()}}})}
+async function preset(f){const r=await api('/tactics/auto?formation='+f,{method:'POST'});r.tactics.sliders=TAC.tactics.sliders;TAC.tactics=r.tactics;SQ=await api('/squad');SEL=null;drawTac();toast(f+' loaded with your best XI')}
+const tacBody=()=>({formation:TAC.tactics.formation,sliders:TAC.tactics.sliders,slots:TAC.tactics.slots.map(s=>({x:s.x,y:s.y,player_id:s.player_id,role:s.role}))});
+async function saveTac(){const r=await api('/tactics',{method:'PUT',body:tacBody()});TAC.tactics=r.tactics;SQ=await api('/squad');drawTac();toast('Tactics saved. They will be used in your next match.')}
+async function previewTac(){$('prev').textContent='Simulating 100 matches…';const r=await api('/tactics/preview?runs=100',{method:'POST',body:tacBody()});
+ $('prev').innerHTML=`Projection vs next opponent: <b style="color:#00F5A0">W ${Math.round(r.win*100)}%</b> · D ${Math.round(r.draw*100)}% · L ${Math.round(r.loss*100)}% · avg ${r.goals_for}–${r.goals_against}, ${r.shots} shots`}
+
+// ---------- transfers
+let TF={pos:'',max_age:'',min_ovr:'',max_value:''};
+async function rTransfers(){const qs=new URLSearchParams(Object.entries(TF).filter(([k,v])=>v!=='')).toString();const [d,t]=await Promise.all([api('/transfers/search?'+qs),api('/transfers')]);
+ $('pg-transfers').innerHTML=`<h2>Transfers</h2><p class="sub">${d.window_open?'<span class="pill">Window open</span>':'<span class="pill red">Window closed</span> · reopens in weeks '+d.windows.map(w=>w.join('–')).join(' and ')} · Budget <b>${money(d.budget)}</b> · Wages £${d.wage_bill}k of £${d.wage_budget}k a week</p>
+ ${t.offers.length?`<div class="c" style="margin:10px 0;border-color:#FF3DCB66"><h3>Offers for your players</h3>${t.offers.map(o=>`<div class="row" style="padding:6px 0">${badge(o.club,28)}<span style="flex:1"><b>${esc(o.club.name)}</b> bid <b>${money(o.fee)}</b> for ${esc(o.player.name)} (value ${money(o.player.value)})</span><button class="b" onclick="offer('${o.player_id}',true)">Accept</button><button class="b ghost" onclick="offer('${o.player_id}',false)">Reject</button></div>`).join('')}</div>`:''}
+ <div class="c" style="margin:10px 0"><h3>Scouting search</h3><div class="row"><select onchange="TF.pos=this.value;rTransfers()"><option value="">Any position</option>${['GK','CB','FB','DM','CM','AM','W','ST'].map(p=>`<option ${TF.pos===p?'selected':''}>${p}</option>`).join('')}</select>
+ <input type="number" placeholder="Max age" value="${TF.max_age}" style="width:96px" onchange="TF.max_age=this.value;rTransfers()"><input type="number" placeholder="Min OVR" value="${TF.min_ovr}" style="width:96px" onchange="TF.min_ovr=this.value;rTransfers()"><input type="number" placeholder="Max value £m" value="${TF.max_value}" style="width:120px" onchange="TF.max_value=this.value;rTransfers()"></div></div>
+ <div class="c scroll"><table><tr><th>Player</th><th>Club</th><th>Pos</th><th>Age</th><th>OVR</th><th>POT</th><th>Value</th><th>Asking</th><th>Talks</th></tr>${d.players.map(p=>`<tr class="click" onclick="card('${p.id}')"><td><b>${esc(p.name)}</b></td><td>${p.club?badge(p.club,20)+' '+esc(p.club.short):'<span class="mut">Free agent</span>'}</td><td><span class="pos">${p.pos}</span></td><td>${p.age}</td><td>${ovr(p.ovr)}</td><td style="color:#FF3DCB">${p.potential}</td><td>${money(p.value)}</td><td>${p.club?money(p.asking_price):'Free'}</td><td class="mut">${p.negotiation?p.negotiation.status:''}</td></tr>`).join('')}</table></div>
+ <div class="c" style="margin-top:12px"><h3>Deals done</h3>${t.log.length?t.log.map(l=>`<div class="mut">S${l.season} W${l.week} · ${l.dir==='in'?'<span style="color:#00F5A0">IN</span>':'<span style="color:#FF7A59">OUT</span>'} ${esc(l.name)} · ${money(l.fee)}</div>`).join(''):'<p class="mut">No deals yet. List a player from the squad screen to invite bids.</p>'}</div>`}
+async function bid(id){const r=await api('/transfers/bid',{method:'POST',body:{player_id:id,fee:+$('bf').value,wage:+$('bw').value}});
+ $('bidRes').innerHTML=`<b style="color:${r.completed?'#00F5A0':r.club==='reject'||r.club==='walked'?'#FF4D6D':'#FFB547'}">${esc(r.message)}</b>`;if(r.counter)$('bf').value=r.counter;if(r.wage_demand)$('bw').value=r.wage_demand;
+ if(r.completed){toast(r.message);setTimeout(()=>{closeM();SQ=null;rTransfers()},900)}}
+async function walkAway(id){await api('/transfers/walk',{method:'POST',body:{player_id:id}});toast('You walked away from the deal');closeM();if(location.hash==='#transfers')rTransfers()}
+async function offer(id,acc){const r=await api('/transfers/offer',{method:'POST',body:{player_id:id,accept:acc}});toast(r.status==='sold'?'Sold for '+money(r.fee):'Offer rejected');SQ=null;rTransfers()}
+
+// ---------- league
+async function rLeague(){const [t,f]=await Promise.all([api('/table'),api('/fixtures')]);
+ const mine=f.fixtures.filter(x=>x.mine);
+ $('pg-league').innerHTML=`<h2>Kickvana League</h2><p class="sub">Season ${f.season} · Week ${Math.min(f.week,22)} · Board target: ${ord(t.target_pos)} or higher</p><div class="split"><div class="c scroll"><table><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th><th>Form</th></tr>
+ ${t.table.map(r=>`<tr class="${r.club_id===t.club_id?'me':''}"><td>${r.pos}${r.pos===t.target_pos?' <span class="mut">◂</span>':''}</td><td>${badge(r,20)} ${esc(r.name)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gd>0?'+':''}${r.gd}</td><td><b>${r.pts}</b></td><td>${r.form.map(x=>`<span class="dot" style="background:${x==='W'?'#00F5A0':x==='D'?'#FFB547':'#FF4D6D'}"></span>`).join('')}</td></tr>`).join('')}</table></div>
+ <div class="c"><h3>Your fixtures</h3>${mine.map(x=>`<div class="row" style="padding:5px 0;border-bottom:1px solid #ffffff08;${x.week===f.week?'background:#00F5A00f':''}"><span class="mut" style="width:30px">W${x.week}</span>${badge(x.home,20)}<span style="flex:1">${esc(x.home.short)} ${x.played?`<b>${x.score[0]}–${x.score[1]}</b>`:'v'} ${esc(x.away.short)}</span>${badge(x.away,20)}</div>`).join('')}</div></div>`}
+
+// ---------- matchday (live 2D)
+let ANIM=null,BALL={x:50,y:50,tx:50,ty:50};
+async function rMatch(){if(!S)S=await api('');if(S.status!=='active'){$('pg-match').innerHTML='<h2>Matchday</h2><p class="mut">Your career has ended. Go to Club to find a new job.</p>';return}
+ try{LIVE=await api('/match',{quiet:1})}catch(e){LIVE=null}
+ if(!LIVE){const n=S.next_fixture;$('pg-match').innerHTML=`<h2>Matchday</h2>${n&&!n.played?`<div class="c" style="text-align:center"><div class="row" style="justify-content:center;gap:18px">${badge(S.club,64)}<b style="font:700 22px 'Space Grotesk'">${n.home?'vs':'@'}</b>${badge(n.opponent,64)}</div><h3 style="margin-top:10px">${esc(S.club.name)} ${n.home?'v':'at'} ${esc(n.opponent.name)}</h3><p class="mut">Week ${n.week}. Your saved tactics will be used. You can change them, make subs and give team talks during the match.</p><button class="b" onclick="mStart()">Go to the dressing room</button></div>`:'<p class="mut">No match this week. Advance from the Club screen.</p>'}`;return}
+ drawMatch()}
+async function mStart(){LIVE=await api('/match/start',{method:'POST'});drawMatch()}
+const TONES=[['calm','Calm','Keep heads, play our game'],['encourage','Encourage','Believe in yourselves'],['demand','Demand more','Not good enough yet'],['praise','Praise','Brilliant, keep it up'],['criticise','Criticise','That was unacceptable']];
+function drawMatch(){const L=LIVE,me=L[L.user_side],opp=L[L.user_side==='home'?'away':'home'];
+ const talkWhen=L.phase==='pre'&&!L.talks.pre?'pre':L.phase==='half'&&!L.talks.half?'half':null;
+ $('pg-match').innerHTML=`<div class="c" style="padding:10px 14px"><div class="row" style="justify-content:center;gap:14px">${badge(L.home.club,40)}<div class="score">${L.score[0]}<span style="color:#8592B0"> – </span>${L.score[1]}</div>${badge(L.away.club,40)}</div>
+ <div style="text-align:center" class="mut">${esc(L.home.club.name)} v ${esc(L.away.club.name)} · <b style="color:#00F5A0">${L.phase==='pre'?'Pre-match':L.phase==='half'?'Half-time':L.phase==='full'?'Full-time':L.minute+"'"}</b> · Poss ${L.stats.possession[0]}–${L.stats.possession[1]}% · Shots ${L.stats.shots[0]}–${L.stats.shots[1]} · xG ${L.stats.xg[0]}–${L.stats.xg[1]}</div></div>
+ <div class="split" style="margin-top:12px"><div><canvas id="cv" width="680" height="440"></canvas>
+ <div class="row" style="margin-top:10px;justify-content:center">${L.phase==='full'?`<button class="b alt" onclick="mFinish()">Full-time · back to the club</button>`:talkWhen?`<span class="mut">Give your ${talkWhen==='pre'?'pre-match':'half-time'} team talk to continue, or</span><button class="b ghost" onclick="skipTalk()">Skip talk</button>`:
+ `<button class="b" onclick="mPlay(${Math.min(L.minute<45?45:90,L.minute+15)})">Play 15 min</button><button class="b ghost" onclick="mPlay(${L.minute<45?45:90})">Play to ${L.minute<45?'half-time':'full-time'}</button>`}</div></div>
+ <div>${talkWhen?`<div class="c" style="border-color:#FF3DCB66"><h3>${talkWhen==='pre'?'Pre-match':'Half-time'} team talk</h3><p class="mut">How you speak to the players changes their morale and how they start${talkWhen==='half'?' the second half':''}. Read the situation.</p>${TONES.map(([k,l,s])=>`<button class="b ghost" style="width:100%;margin:4px 0;text-align:left;text-transform:none;letter-spacing:0" onclick="mTalk('${k}')"><b>${l}</b> <span class="mut">“${s}”</span></button>`).join('')}</div>`:''}
+ ${L.phase!=='full'?`<div class="c sl" style="margin-top:${talkWhen?12:0}px"><h3>Touchline instructions</h3><div class="row">${['4-3-3','4-4-2','4-2-3-1','3-5-2','5-3-2'].map(f=>`<span class="chip ${me.formation===f?'on':''}" onclick="mTac({formation:'${f}'})">${f}</span>`).join('')}</div>${Object.entries(me.sliders).map(([k,v])=>`<label>${k.replace('_',' ').replace(/^./,c=>c.toUpperCase())} <small id="lv_${k}">${v}</small></label><input type="range" min="0" max="100" value="${v}" oninput="$('lv_${k}').textContent=this.value" onchange="mTac({sliders:{${k}:+this.value}})">`).join('')}</div>
+ <div class="c" style="margin-top:12px"><h3>Substitutions <span class="mut">${me.subs_used}/5 used</span></h3>${me.slots.map(s=>`<div class="row" style="padding:3px 0"><span class="pos">${s.pos}</span><span style="flex:1">${esc(s.name)}</span><div class="bar ${s.fitness<60?'w':''}" style="width:60px"><i style="width:${s.fitness}%"></i></div><button class="b ghost" style="padding:5px 9px" ${me.subs_used>=5?'disabled':''} onclick="subPick('${s.player_id}')">Sub</button></div>`).join('')}</div>`:''}
+ <div class="c" style="margin-top:12px;max-height:280px;overflow:auto"><h3>Match feed</h3>${[...L.events].reverse().map(e=>`<div class="ev ${e.type}"><b>${e.minute}'</b> ${e.side===L.user_side?'':'<span class="mut">['+esc(opp.club.short)+']</span> '}${esc(e.text)}</div>`).join('')||'<p class="mut">Kick-off awaits.</p>'}</div></div></div>`;
+ BALL.tx=L.ball[0];BALL.ty=L.ball[1];startAnim()}
+function startAnim(){cancelAnimationFrame(ANIM);const cv=$('cv');if(!cv)return;const ctx=cv.getContext('2d'),W=cv.width,H=cv.height,L=LIVE;let t0=performance.now();
+ const col={home:L.home.club.colours[0],away:L.away.club.colours[0]};
+ function frame(t){const k=(t-t0)/1000;ctx.fillStyle='#0b2419';ctx.fillRect(0,0,W,H);for(let i=0;i<10;i++){ctx.fillStyle=i%2?'#0d2a1f':'#0b2419';ctx.fillRect(i*W/10,0,W/10,H)}
+  ctx.strokeStyle='#ffffff30';ctx.lineWidth=2;ctx.strokeRect(14,14,W-28,H-28);ctx.beginPath();ctx.moveTo(W/2,14);ctx.lineTo(W/2,H-14);ctx.stroke();ctx.beginPath();ctx.arc(W/2,H/2,52,0,7);ctx.stroke();ctx.strokeRect(14,H/2-80,90,160);ctx.strokeRect(W-104,H/2-80,90,160);
+  if(L.phase!=='pre'&&L.phase!=='full'&&L.phase!=='half'){BALL.tx+=Math.sin(k*1.3)*.15;BALL.ty+=Math.cos(k*1.1)*.15}
+  BALL.x+=(BALL.tx-BALL.x)*.04;BALL.y+=(BALL.ty-BALL.y)*.04;
+  // horizontal pitch: home attacks right. slot y (own goal 100 -> opp 0) maps to x
+  const bx=BALL.y/100,by=BALL.x/100;
+  ['home','away'].forEach(sd=>{L[sd].slots.forEach((s,i)=>{let px=sd==='home'?(1-s.y/100)*0.92+0.04:(s.y/100)*0.92+0.04,py=s.x/100*0.9+0.05;
+   px+=( (1-bx)-0.5)*0.12*(sd==='home'?1:1)+Math.sin(k*1.7+i)*0.008;py+=(by-0.5)*0.08+Math.cos(k*1.3+i)*0.008;
+   ctx.beginPath();ctx.arc(px*W,py*H,9,0,7);ctx.fillStyle=col[sd];ctx.shadowColor=col[sd];ctx.shadowBlur=12;ctx.fill();ctx.shadowBlur=0;
+   if(sd===L.user_side){ctx.fillStyle='#ffffffcc';ctx.font='600 10px Inter';ctx.textAlign='center';ctx.fillText(s.name.split(' ').slice(-1)[0],px*W,py*H+22)}})});
+ctx.beginPath();ctx.arc((1-BALL.y/100)*W*0.92+W*0.04,BALL.x/100*H*0.9+H*0.05,5,0,7);ctx.fillStyle='#fff';ctx.shadowColor='#fff';ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
+  ANIM=requestAnimationFrame(frame)}ANIM=requestAnimationFrame(frame)}
+async function mTalk(k){const r=await api('/match/talk',{method:'POST',body:{tone:k}});toast(r.talk.reaction+` (morale ${r.talk.morale_delta>=0?'+':''}${r.talk.morale_delta})`);LIVE=r;drawMatch()}
+function skipTalk(){if(LIVE.phase==='pre')LIVE.talks.pre='skip';if(LIVE.phase==='half')LIVE.talks.half='skip';drawMatch()}
+async function mPlay(to){while(true){const nx=Math.min(to,LIVE.minute+5),before=LIVE.score.join();LIVE=await api('/match/advance',{method:'POST',body:{to_minute:nx}});drawMatch();
+  if(LIVE.score.join()!==before){const g=[...LIVE.events].reverse().find(e=>e.type==='goal');if(g)toast(`${g.minute}' ${g.text}`)}
+  if(['half','full'].includes(LIVE.phase)||LIVE.minute>=to)break;await new Promise(r=>setTimeout(r,450))}}
+async function mTac(b){LIVE=await api('/match/tactics',{method:'POST',body:b});drawMatch();toast('Instruction sent to the touchline')}
+function subPick(out){const me=LIVE[LIVE.user_side];openM(`<h3>Bring on…</h3>${me.bench.map(b=>`<div class="row" style="padding:6px 0;border-bottom:1px solid #ffffff08">${ovr(b.ovr)}<span class="pos">${b.pos}</span><span style="flex:1">${esc(b.name)}</span><span class="mut">fit ${b.fitness}</span><button class="b" style="padding:7px 10px" onclick="doSub('${out}','${b.id}')">On</button></div>`).join('')}<button class="b ghost" style="margin-top:10px;width:100%" onclick="closeM()">Cancel</button>`)}
+async function doSub(o,i){LIVE=await api('/match/sub',{method:'POST',body:{out_id:o,in_id:i}});closeM();drawMatch()}
+async function mFinish(){const r=await api('/match/finish',{method:'POST'});cancelAnimationFrame(ANIM);LIVE=null;S=r;weekToast(r);SQ=null;show('club')}
+
+// ---------- boot
+async function boot(){if(!KEY){$('tabs').style.display='none';show('start');start();return}
+ try{S=await api('',{quiet:1})}catch(e){localStorage.removeItem('kv_career');KEY='';return boot()}
+ $('tabs').style.display='flex';hdr();const h=location.hash.slice(1);show(['club','squad','tactics','transfers','match','league'].includes(h)?h:'club')}
+window.addEventListener('unhandledrejection',e=>e.preventDefault());boot();
+</script></body></html>

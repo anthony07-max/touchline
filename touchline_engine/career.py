@@ -147,7 +147,7 @@ def new_career(club_index: int = 4, seed: Optional[int] = None, manager: str = "
     st["board"]["expectation"] = expectation_text(st["board"]["target_pos"])
     wages = sum(players[p]["wage"] for p in club["squad"])
     st["finances"].update(balance=round(25 + club["reputation"] * 0.5, 1), transfer_budget=round(6 + (club["reputation"] - 55) * 0.9, 1),
-                          wage_budget=int(wages * 1.15))
+                          wage_budget=int(wages * 1.25))
     for c in clubs:
         st["tactics"][c["id"]] = auto_tactics(st, c["id"])
     news(st, f"Welcome to {club['name']}. The board expects: {st['board']['expectation']}.")
