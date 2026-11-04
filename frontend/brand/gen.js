@@ -1,0 +1,26 @@
+/* Kickvana generated assets: original kits, badges and player avatars (SVG, deterministic, no licensed marks). */
+(function(){
+  function h(s){s=String(s);let x=2166136261;for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,16777619)}return x>>>0}
+  function rng(seed){let a=h(seed);return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const SKIN=['#F1C7A5','#E0AC89','#C68863','#A0683F','#7A4B2A','#5A3720'],HAIR=['#1b1209','#3b2412','#6b4423','#a8742f','#d9b26b','#2a2a2a','#8a8a8a'];
+  const PATTERNS=['plain','stripes','hoops','sash','halves','chevron','pinstripe'];
+  function kit(o){o=o||{};const r=rng(o.seed||o.name||'kit'),c1=o.c1||'#00F5A0',c2=o.c2||'#05070D',w=o.size||64,p=o.pattern||PATTERNS[Math.floor(r()*PATTERNS.length)],id='k'+h(c1+c2+p+(o.seed||''));
+    const shirt='M18 8 L28 4 Q32 9 36 4 L46 8 L58 18 L50 27 L46 23 L46 58 L18 58 L18 23 L14 27 L6 18 Z';let pat='';
+    if(p==='stripes')for(let x=22;x<44;x+=8)pat+=`<rect x="${x}" y="0" width="4" height="64" fill="${c2}"/>`;
+    if(p==='pinstripe')for(let x=20;x<46;x+=5)pat+=`<rect x="${x}" y="0" width="1" height="64" fill="${c2}" opacity=".8"/>`;
+    if(p==='hoops')for(let y=14;y<58;y+=10)pat+=`<rect x="0" y="${y}" width="64" height="5" fill="${c2}"/>`;
+    if(p==='sash')pat=`<path d="M14 10 L24 6 L52 56 L42 60 Z" fill="${c2}"/>`;if(p==='halves')pat=`<rect x="32" y="0" width="32" height="64" fill="${c2}"/>`;
+    if(p==='chevron')pat=`<path d="M18 20 L32 32 L46 20 L46 27 L32 39 L18 27 Z" fill="${c2}"/>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${w}" height="${w}" role="img" aria-label="${esc(o.label||'Club kit')}"><defs><clipPath id="${id}"><path d="${shirt}"/></clipPath></defs><path d="${shirt}" fill="${c1}"/><g clip-path="url(#${id})">${pat}</g><path d="${shirt}" fill="none" stroke="#00000055" stroke-width="1.2"/><path d="M28 4 Q32 9 36 4" fill="none" stroke="${c2}" stroke-width="2"/>${o.number!=null?`<text x="32" y="44" text-anchor="middle" font-family="Space Grotesk,Inter,sans-serif" font-weight="700" font-size="16" fill="${o.numColor||c2}" stroke="${c1}" stroke-width=".6" paint-order="stroke">${esc(o.number)}</text>`:''}</svg>`}
+  function badge(o){o=o||{};const r=rng(o.name||'club'),c1=o.c1||'#00F5A0',c2=o.c2||'#05070D',w=o.size||48,shape=o.shape||['shield','round','hex'][Math.floor(r()*3)];
+    const ini=esc(o.short||String(o.name||'KV').split(/\s+/).map(x=>x[0]).join('').slice(0,3).toUpperCase());
+    const out=shape==='round'?`<circle cx="32" cy="32" r="29" fill="${c1}" stroke="${c2}" stroke-width="4"/>`:shape==='hex'?`<path d="M32 3 L58 18 L58 46 L32 61 L6 46 L6 18 Z" fill="${c1}" stroke="${c2}" stroke-width="4"/>`:`<path d="M32 3 L58 11 L56 36 Q52 52 32 61 Q12 52 8 36 L6 11 Z" fill="${c1}" stroke="${c2}" stroke-width="4"/>`;
+    const motif=[`<path d="M14 40 L50 40" stroke="${c2}" stroke-width="3" opacity=".5"/>`,`<circle cx="32" cy="18" r="4" fill="${c2}" opacity=".6"/>`,`<path d="M20 16 L32 10 L44 16" fill="none" stroke="${c2}" stroke-width="3" opacity=".6"/>`,''][Math.floor(r()*4)];
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${w}" height="${w}" role="img" aria-label="${esc((o.name||'Club')+' badge')}">${out}${motif}<text x="32" y="${ini.length>2?38:39}" text-anchor="middle" font-family="Space Grotesk,Inter,sans-serif" font-weight="700" font-size="${ini.length>2?15:19}" fill="${c2}">${ini}</text></svg>`}
+  function avatar(o){o=o||{};const r=rng(o.seed||o.name||'p'),w=o.size||40,skin=SKIN[Math.floor(r()*SKIN.length)],hair=HAIR[Math.floor(r()*HAIR.length)],c1=o.c1||'#2DE2FF',c2=o.c2||'#05070D';
+    const style=Math.floor(r()*5),beard=r()<.3,bg=o.bg||'#0F1830';
+    const hairs=[`<path d="M18 26 Q19 12 32 12 Q45 12 46 26 Q42 18 32 18 Q22 18 18 26Z" fill="${hair}"/>`,`<path d="M17 28 Q16 10 32 10 Q48 10 47 28 L44 22 Q32 14 20 22Z" fill="${hair}"/>`,`<circle cx="32" cy="16" r="11" fill="${hair}"/><circle cx="23" cy="20" r="6" fill="${hair}"/><circle cx="41" cy="20" r="6" fill="${hair}"/>`,`<path d="M20 22 Q32 14 44 22 L44 20 Q32 10 20 20Z" fill="${hair}" opacity=".7"/>`,`<path d="M18 27 Q18 11 32 11 Q46 11 46 27 L46 34 L43 26 Q32 18 21 26 L18 34Z" fill="${hair}"/>`][style];
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${w}" height="${w}" role="img" aria-label="${esc(o.name?('Avatar of '+o.name):'Player avatar')}"><rect width="64" height="64" rx="${o.square?10:32}" fill="${bg}"/><path d="M8 64 Q10 46 32 44 Q54 46 56 64Z" fill="${c1}"/><path d="M26 44 L32 52 L38 44" fill="${c2}"/><rect x="27" y="36" width="10" height="9" fill="${skin}"/><ellipse cx="32" cy="27" rx="13" ry="14" fill="${skin}"/>${hairs}<circle cx="27" cy="28" r="1.6" fill="#1a1a1a"/><circle cx="37" cy="28" r="1.6" fill="#1a1a1a"/><path d="M28 34 Q32 36.5 36 34" fill="none" stroke="#5a2e1e" stroke-width="1.4" stroke-linecap="round"/>${beard?`<path d="M20 30 Q21 42 32 42 Q43 42 44 30 Q40 38 32 38 Q24 38 20 30Z" fill="${hair}" opacity=".85"/>`:''}</svg>`}
+  window.KVGen={kit,badge,avatar,hash:h};
+})();
