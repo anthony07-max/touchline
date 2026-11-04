@@ -1,0 +1,65 @@
+<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Touchline · Fantasy</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070D">
+<link rel="icon" href="/static/brand/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/static/brand/theme.css">
+<style>
+body{padding:0}.in{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 10px) 14px calc(env(safe-area-inset-bottom) + 120px)}
+.hd{display:flex;align-items:center;gap:10px}.sp{flex:1}.back{background:#ffffff0d;border:1px solid #ffffff1a;color:#cfd8f5;border-radius:12px;padding:8px 12px;font:500 13px Inter;text-decoration:none}
+h2{font:700 28px "Space Grotesk";margin:14px 0 2px;background:linear-gradient(90deg,#fff,#c6b4ff,#FF3DCB);-webkit-background-clip:text;color:transparent}.sub{color:#8A95B8;font-size:13px;margin:0 0 12px}
+select{width:100%;padding:12px;border-radius:14px;background:#ffffff0a;color:#fff;border:1px solid #ffffff1c;font:14px Inter}
+.bud{margin:12px 0;padding:14px;border-radius:18px;background:linear-gradient(160deg,#8B5CF61f,#FF3DCB12);border:1px solid #FF3DCB33}
+.bud .bl{display:flex;justify-content:space-between;font-size:13px}.bar{height:8px;border-radius:5px;background:#ffffff12;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#8B5CF6,#FF3DCB);transition:width .4s cubic-bezier(.2,.8,.2,1)}
+.pitch{position:relative;aspect-ratio:4/3;border-radius:18px;background:linear-gradient(#0d2a1f,#081a14);border:1px solid #00F5A033;margin:10px 0;overflow:hidden}
+.pitch:before{content:"";position:absolute;inset:6%;border:1px solid #ffffff1c;border-radius:4px}
+.ln{position:absolute;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.tok{width:70px;text-align:center;font-size:10px;color:#dfe;animation:pop .35s cubic-bezier(.2,.9,.2,1.3)}@keyframes pop{from{transform:scale(.4);opacity:0}}
+.tok i{display:flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0 auto 3px;border-radius:50%;background:#ffffff12;border:1px dashed #ffffff33;font:700 11px Inter;font-style:normal;color:#7c87ab}
+.tok.f i{border:0;background:var(--c);color:#05070D;box-shadow:0 0 16px var(--c)}.tok .cap{position:absolute;margin:-8px 0 0 22px;background:#FFD23F;color:#05070D;border-radius:50%;width:16px;height:16px;font:800 10px/16px Inter}
+.tok b{display:block;font-size:12px;color:#FF3DCB}
+.flt{display:flex;gap:6px;margin:12px 0 6px}.flt span{flex:1;text-align:center;padding:8px;border-radius:12px;border:1px solid #ffffff17;background:#ffffff08;font:600 12px Inter;color:#aeb8d6}.flt .on{border-color:#FF3DCB;color:#fff;background:#FF3DCB18}
+.pl{display:flex;align-items:center;gap:10px;padding:10px;border-radius:14px;margin:6px 0;background:#ffffff06;border:1px solid #ffffff10;transition:.2s}
+.pl img{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#ffffff10}.pl .n{flex:1;font-size:13px}.pl .n small{display:block;color:#7c87ab;font-size:11px}
+.pl button{border:0;border-radius:10px;padding:8px 12px;font:700 12px Inter;background:#00F5A0;color:#05070D}.pl.sel{border-color:#FF3DCB66;background:#FF3DCB10}.pl.sel button{background:#ffffff14;color:#fff}
+.pr{font:700 13px "Space Grotesk";color:#c6b4ff;min-width:44px;text-align:right}
+.dock{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(env(safe-area-inset-bottom) + 12px);background:linear-gradient(transparent,#05070D 35%)}
+.btn{display:block;width:100%;max-width:532px;margin:0 auto;border:0;border-radius:999px;padding:16px;font:700 13px Inter;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#8B5CF6,#FF3DCB);box-shadow:0 10px 36px -10px #FF3DCBaa}
+.btn:disabled{opacity:.45}.err{color:#FFB547;font-size:12px;text-align:center;margin-top:6px}
+.res{padding:14px;border-radius:18px;background:#ffffff08;border:1px solid #ffffff14;margin-top:12px}.res h3{font:700 38px "Space Grotesk";margin:0;color:#00F5A0}
+.note{font-size:11px;color:#6B7699}
+</style></head><body><div class="in">
+<div class="hd"><a class="back" href="/#modes">‹ Modes</a><span class="sp"></span><img src="/static/brand/mark.svg" height="26" alt=""></div>
+<h2>Fantasy Matchday</h2><p class="sub">Draft 8 from both squads, captain one for double points. Scored live from real match events.</p>
+<select id="fx"></select>
+<div class="bud"><div class="bl"><span id="cnt">0/8 picked</span><span id="left">£60.0m left</span></div><div class="bar"><i id="bb" style="width:0"></i></div><div class="note" id="rules" style="margin-top:6px"></div></div>
+<div class="pitch" id="pitch"></div>
+<div id="res"></div>
+<div class="flt" id="flt"><span data-g="ALL" class="on">All</span><span data-g="GK">GK</span><span data-g="DEF">DEF</span><span data-g="MID">MID</span><span data-g="FWD">FWD</span></div>
+<div id="list"></div>
+<p class="note">Prices come from Touchline's estimated ratings. Scoring: appearance 2, goal 4–6 by position, assist 3, clean sheet 1–4, yellow −1, red −3, own goal −2, captain ×2.</p>
+</div><div class="dock"><button class="btn" id="go" disabled>Lock team</button><div class="err" id="err"></div></div>
+<script>
+const $=id=>document.getElementById(id),q=new URLSearchParams(location.search);let POOL=null,PICK=[],CAP=null,G='ALL',FID=+q.get('fixture')||0;
+const C={home:'#00F5A0',away:'#FF7A59'};
+async function init(){const f=await (await fetch('/api/fixtures')).json();const fx=f.fixtures;if(!FID&&fx.length)FID=fx[0].fixture_id;
+ $('fx').innerHTML=fx.map(x=>`<option value="${x.fixture_id}" ${x.fixture_id===FID?'selected':''}>${x.home.name} v ${x.away.name} · ${x.state.label}</option>`).join('');$('fx').onchange=e=>{FID=+e.target.value;load()};load()}
+async function load(){$('list').innerHTML='<p class="note">Loading squads…</p>';POOL=await (await fetch('/api/fantasy/'+FID+'/pool')).json();const s=JSON.parse(localStorage['tl_fan_'+FID]||'{}');PICK=s.picks||[];CAP=s.cap||null;
+ const r=POOL.rules;$('rules').textContent=`GK ${r.GK[0]} · DEF ${r.DEF.join('–')} · MID ${r.MID.join('–')} · FWD ${r.FWD.join('–')} · max ${r.max_per_team} per club`;draw();if(PICK.length===8)score()}
+const by=id=>POOL.pool.find(p=>p.id===id);
+function draw(){const sel=PICK.map(by).filter(Boolean),cost=sel.reduce((a,p)=>a+p.price,0);$('cnt').textContent=`${sel.length}/8 picked`;$('left').textContent=`£${(POOL.budget-cost).toFixed(1)}m left`;$('bb').style.width=Math.min(100,cost/POOL.budget*100)+'%';
+ const rows={GK:[],DEF:[],MID:[],FWD:[]};sel.forEach(p=>rows[p.group].push(p));const need={GK:1,DEF:3,MID:3,FWD:1};const top={FWD:12,MID:36,DEF:60,GK:82};
+ $('pitch').innerHTML=Object.keys(top).map(g=>{const xs=rows[g],n=Math.max(xs.length,g==='GK'?1:Math.min(need[g],3));let h='';for(let i=0;i<n;i++){const p=xs[i];h+=p?`<div class="tok f" style="--c:${C[p.side]}" onclick="cap('${p.id}')">${CAP===p.id?'<span class="cap">C</span>':''}<i>${p.number??''}</i>${p.name.split(' ').slice(-1)[0]}<b id="pt_${p.id}"></b></div>`:`<div class="tok"><i>${g}</i>&nbsp;</div>`}return `<div class="ln" style="top:${top[g]-8}%">${h}</div>`}).join('');
+ const list=POOL.pool.filter(p=>G==='ALL'||p.group===G).sort((a,b)=>(b.likely_starter-a.likely_starter)||b.price-a.price);
+ $('list').innerHTML=list.map(p=>{const on=PICK.includes(p.id);return `<div class="pl ${on?'sel':''}"><img src="${p.photo||''}" alt="" loading="lazy"><div class="n">${p.name}<small><span style="color:${C[p.side]}">●</span> ${p.team} · ${p.group}${p.likely_starter?' · likely starter':''}</small></div><span class="pr">£${p.price}</span><button onclick="tog('${p.id}')">${on?'Remove':'Add'}</button></div>`}).join('');
+ const err=check(sel);$('err').textContent=sel.length===8?(err||''):'';$('go').disabled=!!err||!CAP;$('go').textContent=sel.length<8?`Pick ${8-sel.length} more`:!CAP?'Tap a player to captain':'Lock team & score live'}
+function check(sel){const r=POOL.rules;if(sel.length!==8)return 'need 8';const cost=sel.reduce((a,p)=>a+p.price,0);if(cost>POOL.budget+1e-9)return 'Over budget';for(const g of['GK','DEF','MID','FWD']){const n=sel.filter(p=>p.group===g).length;if(n<r[g][0]||n>r[g][1])return `${g}: need ${r[g].join('–')}`}for(const s of['home','away'])if(sel.filter(p=>p.side===s).length>r.max_per_team)return `Max ${r.max_per_team} per club`;return null}
+function tog(id){PICK=PICK.includes(id)?PICK.filter(x=>x!==id):PICK.length<8?[...PICK,id]:PICK;if(!PICK.includes(CAP))CAP=null;save();draw();try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}
+function cap(id){CAP=id;save();draw()}
+function save(){localStorage['tl_fan_'+FID]=JSON.stringify({picks:PICK,cap:CAP})}
+document.querySelectorAll('#flt span').forEach(s=>s.onclick=()=>{document.querySelectorAll('#flt span').forEach(x=>x.classList.toggle('on',x===s));G=s.dataset.g;draw()});
+async function score(){const r=await fetch('/api/fantasy/score',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fixture_id:FID,picks:PICK,captain:CAP})});const d=await r.json();if(!r.ok){$('err').textContent=d.detail;return}
+ d.players.forEach(p=>{const e=$('pt_'+p.id);if(e)e.textContent=(p.points*(p.captain?2:1))+' pts'});
+ const top=[...d.players].sort((a,b)=>b.points-a.points)[0];
+ $('res').innerHTML=`<div class="res"><span class="note">${d.state.ended?'FINAL':d.state.phase==='live'?'LIVE · updates every minute':'Locked · scoring starts at kick-off'}</span><h3>${d.total} pts</h3><span class="note">Team value £${d.cost}m${top&&top.points>2?` · best: ${top.name} (${top.breakdown.join(', ')})`:''}</span></div>`}
+$('go').onclick=()=>{score();scrollTo({top:0,behavior:'smooth'})};
+setInterval(()=>{if(PICK.length===8&&CAP)score()},60000);
+init();
+</script></body></html>

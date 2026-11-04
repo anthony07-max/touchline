@@ -5,7 +5,7 @@
 <style>
 :root{--void:#05070D;--navy:#0A1020;--volt:#00F5A0;--cyan:#2DE2FF;--opp:#FF7A59;--altg:linear-gradient(135deg,#8B5CF6,#FF3DCB)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--void);color:#E8EEFF;font-family:inherit;overflow:hidden}
+html,body{margin:0;height:100%;background:var(--void);color:#E8EEFF;font-family:Inter,system-ui,sans-serif;overflow:hidden}
 .bg{position:fixed;inset:0;z-index:0;background:radial-gradient(60% 40% at 20% 10%,#00F5A022,transparent 70%),radial-gradient(50% 40% at 90% 30%,#8B5CF633,transparent 70%),radial-gradient(60% 50% at 50% 110%,#2DE2FF22,transparent 70%),var(--void)}
 .bg:after{content:"";position:absolute;inset:0;background-image:linear-gradient(#ffffff07 1px,transparent 1px),linear-gradient(90deg,#ffffff07 1px,transparent 1px);background-size:44px 44px;mask:radial-gradient(circle at 50% 40%,#000,transparent 75%);animation:drift 24s linear infinite}
 @keyframes drift{to{background-position:44px 88px}}
@@ -22,12 +22,12 @@ html,body{margin:0;height:100%;background:var(--void);color:#E8EEFF;font-family:
 .wel b{display:block;font-size:30px;letter-spacing:.06em;color:#fff;margin-top:8px;background:linear-gradient(90deg,#fff,#00F5A0,#2DE2FF);-webkit-background-clip:text;color:transparent}
 @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .enter{margin-top:40px;opacity:0;animation:up .9s 1.8s forwards}
-.btn{appearance:none;border:0;border-radius:999px;padding:16px 40px;font:600 15px/1 inherit;letter-spacing:.2em;text-transform:uppercase;color:#05070D;background:var(--volt);box-shadow:0 10px 40px -8px #00F5A0aa,inset 0 1px 0 #ffffff88;cursor:pointer;transition:transform .12s,box-shadow .12s;text-decoration:none;display:inline-block}
+.btn{appearance:none;border:0;border-radius:999px;padding:16px 40px;font:600 15px/1 Inter;letter-spacing:.2em;text-transform:uppercase;color:#05070D;background:var(--volt);box-shadow:0 10px 40px -8px #00F5A0aa,inset 0 1px 0 #ffffff88;cursor:pointer;transition:transform .12s,box-shadow .12s;text-decoration:none;display:inline-block}
 .btn:active,.press:active{transform:scale(.96);filter:brightness(1.15)}
 .hint{display:block;font-size:11px;color:#6B7699;margin-top:14px;letter-spacing:.2em;animation:pulse 2s infinite}@keyframes pulse{50%{opacity:.35}}
 /* header */
 .hd{display:flex;align-items:center;gap:10px;margin-bottom:18px}.hd img{height:30px}.hd .sp{flex:1}
-.back{background:#ffffff0d;border:1px solid #ffffff1a;color:#cfd8f5;border-radius:12px;padding:8px 12px;font:500 13px inherit}
+.back{background:#ffffff0d;border:1px solid #ffffff1a;color:#cfd8f5;border-radius:12px;padding:8px 12px;font:500 13px Inter}
 h2{font-size:26px;margin:4px 0 4px;letter-spacing:.01em}.sub{color:#8A95B8;font-size:14px;margin:0 0 18px}
 .glass{background:linear-gradient(160deg,#ffffff10,#ffffff04);border:1px solid #ffffff17;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:22px}
 .mode{position:relative;display:block;padding:20px;margin-bottom:14px;color:inherit;text-decoration:none;overflow:hidden;transition:transform .15s,border-color .2s;opacity:0;animation:up .6s forwards}
@@ -49,10 +49,15 @@ h2{font-size:26px;margin:4px 0 4px;letter-spacing:.01em}.sub{color:#8A95B8;font-
 .opt.sel.o{border-color:var(--opp);background:#FF7A5914;box-shadow:0 0 0 1px #FF7A59 inset,0 10px 30px -14px #FF7A59}
 .pitch{position:relative;aspect-ratio:3/4;border-radius:18px;margin-top:4px;background:linear-gradient(#0d2a1f,#081a14);border:1px solid #00F5A033;overflow:hidden}
 .pitch:before{content:"";position:absolute;inset:8%;border:1px solid #ffffff22;border-radius:4px}.pitch:after{content:"";position:absolute;left:8%;right:8%;top:50%;border-top:1px solid #ffffff22}
-.pl{position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:9px;width:64px;color:#dfe;opacity:0;animation:up .4s forwards}.pl i{display:block;width:22px;height:22px;margin:0 auto 3px;border-radius:50%;background:var(--volt);box-shadow:0 0 12px #00F5A099;font:700 9px/22px inherit;color:#05070D;font-style:normal}
+.pl{position:absolute;transform:translate(-50%,-50%);text-align:center;font-size:9px;width:64px;color:#dfe;opacity:0;animation:up .4s forwards}.pl i{display:block;width:22px;height:22px;margin:0 auto 3px;border-radius:50%;background:var(--volt);box-shadow:0 0 12px #00F5A099;font:700 9px/22px Inter;color:#05070D;font-style:normal}
 .ko{position:sticky;bottom:0;margin-top:22px;padding-top:12px;background:linear-gradient(transparent,var(--void) 40%)}.ko .btn{width:100%}
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translate(-50%,40px);opacity:0;z-index:9;padding:12px 18px;border-radius:14px;font-size:13px;transition:.3s}.toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+.rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;margin-bottom:8px;scrollbar-width:none}.rail::-webkit-scrollbar{display:none}
+.fx{flex:0 0 72%;scroll-snap-align:start;padding:14px;border-radius:18px;color:inherit;text-decoration:none;opacity:0;animation:up .5s forwards}.fx .t{display:flex;align-items:center;gap:8px;font-size:13px;margin:4px 0}.fx img{width:22px;height:22px;object-fit:contain}.fx .k{font-size:11px;color:#7c87ab;letter-spacing:.06em}
+.tag.ft{background:#2DE2FF1c;color:#2DE2FF}.tag.up{background:#00F5A01a;color:#00F5A0}.tag.cl{background:#FFD23F1a;color:#FFD23F}
+.skel{height:70px;border-radius:14px;margin-top:12px;background:linear-gradient(90deg,#ffffff06,#ffffff12,#ffffff06);background-size:200% 100%;animation:sk 1.2s infinite}@keyframes sk{to{background-position:-200% 0}}
+.btn.alt{background:linear-gradient(135deg,#8B5CF6,#FF3DCB);color:#fff;box-shadow:0 10px 40px -8px #FF3DCBaa}
 </style></head><body><div class="bg"></div>
 
 <section class="scr on" id="splash"><div><div class="ring" style="left:50%;top:50%;margin:-160px"></div>
@@ -63,23 +68,18 @@ h2{font-size:26px;margin:4px 0 4px;letter-spacing:.01em}.sub{color:#8A95B8;font-
 <section class="scr" id="modes"><div class="in">
 <div class="hd"><img src="/static/brand/mark.svg" alt=""><span class="sp"></span><button class="back press" onclick="go('profile')">⚙︎ Profile</button></div>
 <h2>Choose your game</h2><p class="sub">Every match is a decision. Pick how you play tonight.</p>
-<a class="mode glass hero press" style="animation-delay:.05s" href="#" onclick="go('setup');return false">
- <span class="tag live" id="liveTag"><span class="dot"></span><span id="liveTxt">Tonight · Live</span></span>
- <h3>Live Match</h3><p id="mInfo">UEFA Champions League · Old Trafford</p>
- <div class="teams"><div><img id="hL" src="https://media.api-sports.io/football/teams/33.png" alt="">Man United</div><span class="vs">VS</span><div><img id="aL" src="https://media.api-sports.io/football/teams/497.png" alt="">AS Roma</div></div>
- <div class="cd" id="cd">20:00 UK</div></a>
+<div id="hero"><div class="mode glass hero" style="animation-delay:.05s"><span class="tag">Finding matches…</span><h3>Match Centre</h3><p>Loading the next big fixtures.</p><div class="skel"></div></div></div>
+<div class="lbl" style="margin-top:6px">Matchday</div><div class="rail" id="rail"></div><div class="sub" id="fxnote" style="font-size:12px"></div>
 <a class="mode glass press" style="--g:#00F5A0;animation-delay:.12s" href="/manager"><span class="tag">Career</span><h3>Manager Career</h3><p>Tactics, simulations, daily challenge and the scenario lab.</p></a>
-<a class="mode glass press" style="--g:#FF3DCB;animation-delay:.19s" href="#" onclick="go('setup');return false"><span class="tag" style="background:linear-gradient(135deg,#8B5CF633,#FF3DCB33)">What if…</span><h3>Alternate Timelines</h3><p>Branch tonight's real match at any minute and rewrite what happens next.</p></a>
-<div class="row2"><div class="mode glass soon press" style="--g:#8B5CF6;animation-delay:.26s" onclick="toast('Fantasy opens soon. We\'ll let you know.')"><span class="tag">Coming soon</span><h3>Fantasy</h3><p>Draft, captain, compete.</p></div>
+<a class="mode glass press" style="--g:#FF3DCB;animation-delay:.19s" href="#" id="whatifCard"><span class="tag" style="background:linear-gradient(135deg,#8B5CF633,#FF3DCB33)">What if…</span><h3>Alternate Timelines</h3><p>Take any real match, live or finished, branch it at any minute and rewrite what happens next.</p></a>
+<div class="row2"><a class="mode glass press" style="--g:#8B5CF6;animation-delay:.26s" href="/fantasy"><span class="tag" style="color:#c6b4ff">New</span><h3>Fantasy</h3><p>Draft 8, captain one, score live.</p></a>
 <div class="mode glass press" style="--g:#2DE2FF;animation-delay:.33s" onclick="go('profile')"><span class="tag">You</span><h3>Settings</h3><p>Profile and preferences.</p></div></div>
 </div></section>
 
 <section class="scr" id="setup"><div class="in">
-<div class="hd"><button class="back press" onclick="go('modes')">‹ Modes</button><span class="sp"></span><span class="tag live"><span class="dot"></span>Live</span></div>
-<h2>Pre-match</h2><p class="sub">Man United vs AS Roma · Set your terms before kick-off.</p>
-<div class="lbl">Your side</div><div class="seg" data-k="side">
- <div class="opt glass press sel" data-v="home"><img src="https://media.api-sports.io/football/teams/33.png" width="34" alt=""><br>Man United<small>Home</small></div>
- <div class="opt glass press" data-v="away"><img src="https://media.api-sports.io/football/teams/497.png" width="34" alt=""><br>AS Roma<small>Away</small></div></div>
+<div class="hd"><button class="back press" onclick="go('modes')">‹ Modes</button><span class="sp"></span><span class="tag" id="suTag">…</span></div>
+<h2>Pre-match</h2><p class="sub" id="suSub">Set your terms before kick-off.</p>
+<div class="lbl">Your side</div><div class="seg" data-k="side" id="sideSeg"></div>
 <div class="lbl">Opponent AI personality</div><div class="seg o" data-k="pers">
  <div class="opt glass press" data-v="high-press">High Press<small>4-3-3 · suffocating</small></div>
  <div class="opt glass press" data-v="counter">Counter<small>4-5-1 · deep, lethal</small></div>
@@ -90,9 +90,9 @@ h2{font-size:26px;margin:4px 0 4px;letter-spacing:.01em}.sub{color:#8A95B8;font-
  <div class="opt glass press" data-v="easy">Easy<small>1 reaction</small></div>
  <div class="opt glass press sel" data-v="normal">Normal<small>2 reactions</small></div>
  <div class="opt glass press" data-v="hard">Hard<small>4 reactions</small></div></div>
-<div class="lbl">Match preview · <span id="pvT">Man United</span></div>
+<div class="lbl">Match preview · <span id="pvT"></span> · <span id="pvS"></span></div>
 <div class="pitch glass" id="pitch"></div>
-<div class="ko"><a class="btn" id="koBtn" href="/live/play">Kick off</a></div>
+<div class="ko"><a class="btn" id="koBtn" href="#">Kick off</a><span class="hint" id="koHint" style="animation:none;text-align:center"></span></div>
 </div></section>
 
 <section class="scr" id="profile"><div class="in">
@@ -107,23 +107,45 @@ h2{font-size:26px;margin:4px 0 4px;letter-spacing:.01em}.sub{color:#8A95B8;font-
 
 <script>
 const $=id=>document.getElementById(id),S=JSON.parse(localStorage.tl_prefs||'{}');S.side??='home';S.pers??='flexible';S.diff??='normal';
-let SQ=null,KO=Date.parse('2026-11-03T20:00:00Z');
+const QS=new URLSearchParams(location.search);let FX=[],CUR=null,SQ={};
 function buzz(){try{if(S.motion!=='reduced')navigator.vibrate&&navigator.vibrate(8)}catch(e){}}
-function go(id){buzz();document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));$(id).scrollTop=0;history.replaceState(null,'','#'+id);if(id==='setup')preview()}
+function go(id){buzz();document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));$(id).scrollTop=0;history.replaceState(null,'',location.pathname+location.search+'#'+id);if(id==='setup')setup()}
 function toast(t){buzz();const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)}
 $('enterBtn').onclick=()=>go('modes');$('splash').addEventListener('click',e=>{if(e.target.id!=='enterBtn')go('modes')});
-document.querySelectorAll('.seg').forEach(g=>{const k=g.dataset.k;g.querySelectorAll('.opt').forEach(o=>{if(S[k])o.classList.toggle('sel',o.dataset.v===S[k]);if(g.classList.contains('o'))o.classList.add('o');o.onclick=()=>{buzz();g.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===o));S[k]=o.dataset.v;save();if(k==='side')preview()}})});
+function bindSeg(g){const k=g.dataset.k;g.querySelectorAll('.opt').forEach(o=>{if(S[k])o.classList.toggle('sel',o.dataset.v===S[k]);if(g.classList.contains('o'))o.classList.add('o');o.onclick=()=>{buzz();g.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===o));S[k]=o.dataset.v;save();if(k==='side')preview()}})}
+document.querySelectorAll('.seg').forEach(bindSeg);
 $('mgr').value=S.mgr||'';$('mgr').oninput=e=>{S.mgr=e.target.value;save()};
-function save(){localStorage.tl_prefs=JSON.stringify(S);$('koBtn').href='/live/play?'+new URLSearchParams({side:S.side,pers:S.pers,diff:S.diff})}save();
-function tick(){const d=KO-Date.now(),e=$('cd');if(d>0){const h=Math.floor(d/36e5),m=Math.floor(d%36e5/6e4),s=Math.floor(d%6e4/1e3);e.textContent='Kick-off in '+(h?h+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}else if(!e.dataset.live)e.textContent='In play · tap to join'}
-setInterval(tick,1000);tick();
-fetch('/api/live/match').then(r=>r.json()).then(d=>{const L=d.live||d;if(L.kickoff_utc)KO=Date.parse(L.kickoff_utc);const st=L.status||{};const sc=L.score||{};
- if(st.elapsed!=null||['1H','HT','2H','ET','P','FT','AET','PEN'].includes(st.short)){const e=$('cd');e.dataset.live=1;e.textContent=(sc.home??0)+' – '+(sc.away??0)+'  ·  '+(st.short==='FT'?'Full time':(st.elapsed??'')+"'");$('liveTxt').textContent=st.short==='FT'?'Full time':'Live now'}
- if(L.league)$('mInfo').textContent=L.league+' · '+(L.venue||'')}).catch(()=>{});
+function save(){localStorage.tl_prefs=JSON.stringify(S);ko()}
+const tag=st=>st.phase==='live'||st.phase==='halftime'?`<span class="tag live"><span class="dot"></span>${st.label}</span>`:st.ended?`<span class="tag ft">${st.label}</span>`:st.phase==='postponed'?'<span class="tag">Postponed</span>':`<span class="tag up">${st.label}</span>`;
+const when=x=>new Date(x.kickoff_utc).toLocaleString('en-GB',{timeZone:'Europe/London',weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+' UK';
+function cd(sec){if(sec<=0)return 'Kick-off';const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60),s=sec%60;return (d?d+'d ':'')+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+const T0=Date.now();
+function heroHTML(x){const st=x.state,score=st.phase==='upcoming'||st.phase==='prematch'?'':`${x.score[0]??0} – ${x.score[1]??0}`;
+ return `<a class="mode glass hero press" href="/match/${x.fixture_id}" style="animation-delay:.05s">${tag(st)}${x.classic?' <span class="tag cl">Classic replay</span>':''}<h3>${st.ended?'Full-time recap':st.phase==='live'||st.phase==='halftime'?'Live Match Centre':'Next up'}</h3><p>${x.league} · ${x.venue||''}</p>
+ <div class="teams"><div><img src="${x.home.logo}" alt="">${x.home.name}</div><span class="vs">${score||'VS'}</span><div><img src="${x.away.logo}" alt="">${x.away.name}</div></div>
+ <div class="cd" data-ko="${st.seconds_to_ko}">${st.ended?'Replay · recap · what if':st.phase==='live'?(x.elapsed??'')+"' · tap to join":when(x)}</div></a>`}
+function railHTML(x,i){return `<a class="fx glass press" href="/match/${x.fixture_id}" style="animation-delay:${.05+i*.05}s">${tag(x.state)}<div class="k">${x.league}</div><div class="t"><img src="${x.home.logo}" alt="">${x.home.name}${x.state.ended||x.state.phase==='live'?' <b style="margin-left:auto">'+(x.score[0]??'')+'</b>':''}</div><div class="t"><img src="${x.away.logo}" alt="">${x.away.name}${x.state.ended||x.state.phase==='live'?' <b style="margin-left:auto">'+(x.score[1]??'')+'</b>':''}</div><div class="k">${x.classic?'Classic replay':when(x)}</div></a>`}
+fetch('/api/fixtures').then(r=>r.json()).then(d=>{FX=d.fixtures||[];if(!FX.length){$('hero').innerHTML='<div class="mode glass"><h3>No fixtures right now</h3><p>Check back soon.</p></div>';return}
+ const want=+QS.get('fixture');CUR=FX.find(x=>x.fixture_id===want)||FX.find(x=>!x.state.ended)||FX[0];
+ $('hero').innerHTML=heroHTML(FX[0]);$('rail').innerHTML=FX.slice(1).map(railHTML).join('');$('fxnote').textContent=d.note||'';
+ $('whatifCard').href=(()=>{const f=FX.find(x=>x.state.can_branch);return f?`/live/play?fixture=${f.fixture_id}${f.state.ended?'&mode=whatif':''}`:'/match/'+FX[0].fixture_id})();
+ if(location.hash==='#setup')setup()}).catch(()=>{$('hero').innerHTML='<div class="mode glass"><h3>Offline</h3><p>Reconnect to load fixtures.</p></div>'});
+setInterval(()=>document.querySelectorAll('[data-ko]').forEach(e=>{const s=+e.dataset.ko-Math.round((Date.now()-T0)/1000);if(s>0&&s<86400*3)e.textContent='Kick-off in '+cd(s)}),1000);
+function setup(){if(!CUR)return;const x=CUR;$('suSub').textContent=`${x.home.name} vs ${x.away.name} · ${when(x)}`;$('suTag').outerHTML=tag(x.state).replace('class="tag','id="suTag" class="tag');
+ $('sideSeg').innerHTML=['home','away'].map(sd=>`<div class="opt glass press ${S.side===sd?'sel':''}" data-v="${sd}"><img src="${x[sd].logo}" width="34" alt=""><br>${x[sd].name}<small>${sd==='home'?'Home':'Away'}</small></div>`).join('');bindSeg($('sideSeg'));ko();preview()}
+function ko(){if(!CUR)return;const st=CUR.state,b=$('koBtn'),q=new URLSearchParams({fixture:CUR.fixture_id,side:S.side,pers:S.pers,diff:S.diff});b.classList.remove('alt');
+ if(st.phase==='live'||st.phase==='halftime'){b.textContent='Kick off · take charge live';b.href='/live/play?'+q;$('koHint').textContent='The real match is in play. You manage from the current minute.'}
+ else if(st.ended){b.textContent='What if… rewrite it';b.classList.add('alt');q.set('mode','whatif');b.href='/live/play?'+q;$('koHint').textContent='This match is over, so live play is closed. Branch it from any minute instead.'}
+ else{b.textContent='Lock in · go to match centre';b.href='/match/'+CUR.fixture_id;$('koHint').textContent='Live play opens at kick-off. Your picks are saved.'}}
 const F={GK:[[50,90]],DEF:[[15,72],[38,76],[62,76],[85,72]],MID:[[25,52],[50,56],[75,52]],FWD:[[20,28],[50,22],[80,28]]};
-function preview(){const p=$('pitch');$('pvT').textContent=S.side==='away'?'AS Roma':'Man United';
- const draw=()=>{const sq=(SQ&&SQ[S.side]&&SQ[S.side].squad)||[];const by={GK:[],DEF:[],MID:[],FWD:[]};sq.forEach(x=>{const g=x.group||"MID";(by[g]||by.MID).push(x)});let h='',i=0;
-  for(const g in F)F[g].forEach((xy,j)=>{const pl=by[g][j]||{};const nm=(pl.name||g).split(' ').slice(-1)[0];h+=`<div class="pl" style="left:${xy[0]}%;top:${xy[1]}%;animation-delay:${i++*40}ms"><i>${pl.number||''}</i>${nm}</div>`});p.innerHTML=h};
- draw();if(!SQ)fetch('/api/live/squads').then(r=>r.json()).then(d=>{SQ=d;draw()}).catch(()=>{})}
+function gridPos(p,rows){const[r,c]=p.grid.split(':').map(Number),n=rows[r]||1,R=Math.max(...Object.keys(rows).map(Number));return[(c-.5)/n*100,92-(r-1)/(R-1||1)*70]}
+function preview(){if(!CUR)return;const p=$('pitch'),fid=CUR.fixture_id;$('pvT').textContent=CUR[S.side].name;
+ const draw=()=>{const d=SQ[fid];if(!d){p.innerHTML='<div class="skel" style="margin:40% 10%"></div>';return}const t=d[S.side];$('pvS').textContent=t.xi_source==='official'?'Official XI':'Likely XI';
+  const xi=t.xi||[];let h='';if(xi.length&&xi.every(x=>x.grid)){const rows={};xi.forEach(x=>{const r=+x.grid.split(':')[0];rows[r]=(rows[r]||0)+1});xi.forEach((pl,i)=>{const[x,y]=gridPos(pl,rows);h+=`<div class="pl" style="left:${100-x}%;top:${y}%;animation-delay:${i*40}ms"><i>${pl.number??''}</i>${pl.name.split(' ').slice(-1)[0]}</div>`})}
+  else{const by={GK:[],DEF:[],MID:[],FWD:[]};xi.forEach(x=>(by[x.group]||by.MID).push(x));let i=0;const L={GK:1,DEF:4,MID:by.MID.length>3?5:3,FWD:by.MID.length>3?1:3};
+   for(const g in L){const n=Math.min(L[g],by[g].length)||0;by[g].slice(0,n).forEach((pl,j)=>{const x=(j+.5)/n*100,y={GK:90,DEF:74,MID:52,FWD:26}[g]+(g==='MID'&&n===5&&(j===0||j===4)?-6:0);h+=`<div class="pl" style="left:${x}%;top:${y}%;animation-delay:${i++*40}ms"><i>${pl.number??''}</i>${pl.name.split(' ').slice(-1)[0]}</div>`})}}
+  p.innerHTML=h||'<p class="sub" style="padding:20px">Squad unavailable right now.</p>'};
+ draw();if(!SQ[fid])fetch('/api/live/squads?fixture_id='+fid).then(r=>r.json()).then(d=>{SQ[fid]=d;draw()}).catch(()=>{p.innerHTML='<p class="sub" style="padding:20px">Squad unavailable right now.</p>'})}
 const h=location.hash.slice(1);if(['modes','setup','profile'].includes(h))go(h);
-</script></body></html>
+</script>
+</body></html>

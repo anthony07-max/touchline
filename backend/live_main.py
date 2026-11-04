@@ -9,3 +9,5 @@ app.include_router(router)
 @app.on_event("startup")
 async def _start_live_poller():
     asyncio.create_task(poller())
+from .live.centre import router as centre_router
+app.include_router(centre_router)

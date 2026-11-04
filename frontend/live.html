@@ -9,14 +9,14 @@
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:800px){.grid{grid-template-columns:1fr}.wrap{padding:12px}}
 button,select{margin:3px}.ev{padding:5px 0;border-bottom:1px solid var(--line)}.new{color:var(--volt);animation:fade .6s both}
 td{padding:4px}#res .card,#res>div{border-radius:12px}
-#ctl{margin-top:10px}#ctl button[onclick="sim()"]{background:var(--alt);color:#fff;box-shadow:0 8px 28px -10px #FF3DCB99}</style></head><body>
-<div class="top"><a href="/live"><img src="/static/brand/logo.svg" alt="Touchline"></a><span class="live-dot"></span><h1>Live</h1><span class="tag">real data: API-Football</span></div><div class="wrap">
-<div class="card world-real"><div id="hdr" class="muted"></div><div class="score" id="score">–</div><div id="clock" style="text-align:center"></div><div id="meta" class="muted" style="text-align:center"></div></div>
+#ctl{margin-top:10px}#ctl button[onclick="sim()"]{background:var(--alt);color:#fff;box-shadow:0 8px 28px -10px #FF3DCB99}#gate:empty{display:none}</style></head><body>
+<div class="top"><a href="/#modes"><img src="/static/brand/logo.svg" alt="Touchline"></a><span class="live-dot"></span><h1>Live</h1><span class="tag">real data: API-Football</span></div><div class="wrap">
+<div id="gate" class="card" style="border-color:#FFB54755;color:#FFD9A0"></div><div class="card world-real"><div id="hdr" class="muted"></div><div class="score" id="score">–</div><div id="clock" style="text-align:center"></div><div id="meta" class="muted" style="text-align:center"></div></div>
 <div class="grid"><div class="card"><b>Events</b><div id="events"></div></div><div class="card"><b>Team stats</b><div id="stats"></div></div></div>
 <div class="card"><b>Line-ups</b><div id="lineups" class="grid"></div></div>
 <div class="card world-alt"><h2>World C · Branch alternate timeline from now</h2> <span class="tag alt">hypothetical</span><br>
 Manage: <select id="side"><option value="home">Home</option><option value="away">Away</option></select>
-<button onclick="branch()">Branch from now</button><div id="branch" class="muted"></div>
+<span id="bmin" style="display:none">at <input id="bminv" type="number" min="0" max="89" value="60" style="width:64px">'</span> <button onclick="branch()">Branch from now</button><div id="branch" class="muted"></div>
 <div id="ctl" style="display:none">
 <div id="tacs"></div>
 Sub: <select id="subOut"></select> ⇢ <select id="subIn"></select> <button onclick="addSub()">Add sub</button> <span id="subs"></span><br>
@@ -37,10 +37,16 @@ $('events').innerHTML=l.events.length?l.events.map(e=>`<div class="ev ${e.new?'n
 const st=l.statistics;if(!st.available)$('stats').innerHTML=`<span class="muted">${st.note}</span>`;else{const h=st.by_team[l.home.id],a=st.by_team[l.away.id];
 $('stats').innerHTML='<table>'+Object.keys(h).map(k=>`<tr><td>${h[k]??'n/a'}</td><td style="text-align:center" class="muted">${k}</td><td style="text-align:right">${a[k]??'n/a'}</td></tr>`).join('')+'</table>'+(st.xg_available?'':'<span class="muted">xG not provided for this fixture</span>')}
 const lu=l.lineups;if(!lu.available){$('lineups').innerHTML=`<div class="muted">${lu.note}. Branching will use a <b>probable XI</b> built from the squad (labelled).</div>`}else{$('lineups').innerHTML=[l.home,l.away].map(t=>{const x=lu.by_team[t.id];return x?`<div><b>${t.name}</b> ${x.formation||''} <span class="muted">${x.coach||''}</span><br>${x.startXI.map(p=>p.number+' '+p.name).join('<br>')}<br><span class="muted">Subs: ${x.substitutes.map(p=>p.name).join(', ')}</span></div>`:''}).join('')}}
-async function load(){try{render(await (await fetch('/api/live/match')).json())}catch(e){}}
-function ws(){const w=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/ws/live');w.onmessage=m=>render(JSON.parse(m.data));w.onclose=()=>setTimeout(ws,5000)}
-load();ws();setInterval(load,60000);
-async function branch(){SUBS=[];$('subs').textContent='';const r=await fetch('/api/live/branch',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({side:$('side').value})});B=await r.json();if(!r.ok){$('branch').textContent=B.detail;return}
+const QP=new URLSearchParams(location.search),FID=+QP.get('fixture')||1635695;let PH=null;
+async function load(){try{const s=await (await fetch('/api/centre/'+FID)).json();PH=s.state;render({...s,next_poll:s.next_refresh,quota:{remaining:s.quota_remaining},error:s.feed_warning});gate()}catch(e){}}
+function gate(){const g=document.getElementById('gate'),st=PH;if(!st)return;document.querySelector('.top h1').textContent=st.ended?'What if':'Live';document.querySelector('.live-dot').style.display=st.phase==='live'?'':'none';
+ const mi=document.getElementById('bmin');
+ if(st.ended){g.innerHTML=`<b>Full time.</b> This match is over, so it can't be played live. Pick a real minute to branch from and rewrite the ending. <a href="/match/${FID}">See the recap</a>`;mi.style.display='';document.querySelector('[onclick="branch()"]').textContent='Branch from minute'}
+ else if(st.phase==='upcoming'||st.phase==='prematch'||st.phase==='postponed'){g.innerHTML=`<b>${st.label}.</b> Live play opens at kick-off. <a href="/match/${FID}">Go to the match centre</a>`;document.querySelector('[onclick="branch()"]').disabled=true}
+ else{g.innerHTML='';mi.style.display='none'}}
+function ws(){const es=new EventSource('/api/centre/'+FID+'/stream');es.addEventListener('snapshot',m=>{const s=JSON.parse(m.data);PH=s.state;render({...s,next_poll:s.next_refresh,quota:{remaining:s.quota_remaining},error:s.feed_warning});gate()});es.onerror=()=>{es.close();setTimeout(ws,8000)}}
+load();if(window.EventSource)ws();else setInterval(load,60000);
+async function branch(){SUBS=[];$('subs').textContent='';const r=await fetch('/api/live/branch',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({side:$('side').value,fixture_id:FID,minute:PH&&PH.ended?+$('bminv').value:null})});B=await r.json();if(!r.ok){$('branch').textContent=B.detail;return}
 const me=B.side==='home'?B.home:B.away;$('branch').innerHTML=`Branched at ${B.minute}' (${B.score.join('–')}). You manage <b>${me.name}</b>. ${me.starters.length} on pitch · source: ${B.seed_info[B.side].source}<br>${B.label}`;
 $('tacs').innerHTML=Object.entries(OPTS).map(([k,v])=>`${k}: <select id="t_${k}">${v.map(o=>`<option ${me.tactics[k]===o?'selected':''}>${o}</option>`).join('')}</select>`).join(' ');
 $('subOut').innerHTML=me.starters.map(p=>`<option value="${p.id}">${p.name} (${p.group}, energy ${p.energy})</option>`).join('');$('subIn').innerHTML=me.bench.map(p=>`<option value="${p.id}">${p.name} (${p.group})</option>`).join('');$('ctl').style.display='block'}
@@ -48,5 +54,5 @@ function addSub(){SUBS.push({minute:B.minute,out_id:$('subOut').value,in_id:$('s
 const pc=x=>(x*100).toFixed(0)+'%';
 async function sim(){const t={};for(const k in OPTS)t[k]=$('t_'+k).value;$('res').textContent='Simulating…';
 const r=await fetch('/api/live/simulate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({branch_id:B.branch_id,tactics:t,subs:SUBS,opponent_personality:$('pers').value,difficulty:$('diff').value})});const d=await r.json();if(!r.ok){$('res').textContent=d.detail;return}
-$('res').innerHTML=`<p><b>Win ${pc(d.after.user_win)} · Draw ${pc(d.after.draw)} · Loss ${pc(d.after.user_loss)}</b> <span class="muted">(unchanged tactics: ${pc(d.before.user_win)}/${pc(d.before.draw)}/${pc(d.before.user_loss)})</span><br>Rest-of-match xG you ${d.xg.user_mean.toFixed(2)} vs opp ${d.xg.opp_mean.toFixed(2)}</p><ul>${d.explanation.map(x=>'<li>'+x+'</li>').join('')}</ul><span class="muted">${d.label}</span>`}
+$('res').innerHTML=`<p><b>Win ${pc(d.after.user_win)} · Draw ${pc(d.after.draw)} · Loss ${pc(d.after.user_loss)}</b> <span class="muted">(unchanged tactics: ${pc(d.before.user_win)}/${pc(d.before.draw)}/${pc(d.before.user_loss)})</span><br>Rest-of-match xG you ${d.xg.user_mean.toFixed(2)} vs opp ${d.xg.opp_mean.toFixed(2)}</p><ul>${d.explanation.map(x=>'<li>'+x+'</li>').join('')}</ul><span class="muted">${d.label}</span>`;try{localStorage['tl_alt_'+FID]=JSON.stringify({win:d.after.user_win,draw:d.after.draw,minute:B.minute,side_name:(B.side==='home'?B.home:B.away).name})}catch(e){}}
 </script><script>(function(){const q=new URLSearchParams(location.search);for(const k of ['side','pers','diff']){const v=q.get(k),el=document.getElementById(k);if(v&&el&&[...el.options].some(o=>(o.value||o.text)===v))el.value=v}})();</script></body></html>

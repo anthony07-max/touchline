@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from touchline_engine.models import MatchState, Tactics, Substitution, FORMATIONS
 from touchline_engine.simulate import compare, SimConfig
-from . import api_football as af, adapter, squads
+from . import api_football as af, adapter, squads, matchstate
 
 FIXTURE_ID = int(os.environ.get("LIVE_FIXTURE_ID", "1635695"))
 router = APIRouter()
@@ -16,6 +16,12 @@ LIVE_CODES = {"1H", "HT", "2H", "ET", "BT", "P", "LIVE", "INT", "SUSP"}
 DONE = {"FT", "AET", "PEN", "PST", "CANC", "ABD", "AWD", "WO"}
 BRANCHES = {}
 FORMATION_MAP = {"3-4-2-1": "3-4-3", "3-4-1-2": "3-5-2", "4-1-4-1": "4-5-1", "4-4-1-1": "4-4-2", "4-3-1-2": "4-4-2", "4-1-2-1-2": "4-4-2", "3-1-4-2": "3-5-2", "5-4-1": "5-3-2", "4-3-2-1": "4-3-3", "4-2-2-2": "4-4-2", "3-5-1-1": "3-5-2", "4-2-4": "4-3-3"}
+
+
+def fetch_fixture(fid: int, max_age: float = 60, force=False):
+    d = af.get(f"fixtures?id={fid}", max_age=max_age, force=force)
+    if not d.get("response"): raise af.APIError("fixture not found")
+    return adapter.parse_fixture(d["response"][0])
 
 
 def refresh(force=False):
@@ -28,6 +34,13 @@ def refresh(force=False):
 
 
 def interval(live) -> float:
+    if live:
+        ph = matchstate.phase(live["status"]["short"], live["kickoff_utc"])
+        return matchstate.poll_seconds(ph["phase"], ph["seconds_to_ko"], af.quota["remaining"])
+    return 600
+
+
+def _old_interval(live) -> float:
     """Quota-aware poll interval (seconds)."""
     s = live["status"]["short"] if live else "NS"
     if s in DONE: return 3600 * 6
@@ -59,7 +72,8 @@ def get_squad(team_id):
 
 def _snapshot():
     live = STATE["live"]
-    return {"live": live, "fetched_at": STATE["fetched_at"], "next_poll": STATE["next_poll"], "error": STATE["error"],
+    ph = matchstate.phase(live["status"]["short"], live["kickoff_utc"]) if live else None
+    return {"live": live, "phase": ph, "fetched_at": STATE["fetched_at"], "next_poll": STATE["next_poll"], "error": STATE["error"],
             "quota": {k: v for k, v in af.quota.items()}, "source": "API-Football (api-sports.io), free plan"}
 
 
@@ -104,21 +118,32 @@ def _merge(lu_players, sq):
 
 
 @router.get("/api/live/squads")
-def live_squads():
-    live = live_match()["live"]
+def live_squads(fixture_id: Optional[int] = None):
+    fid = fixture_id or FIXTURE_ID
+    live = live_match()["live"] if fid == FIXTURE_ID else fetch_fixture(fid, max_age=3600)
     res = {}
     for side in ("home", "away"):
         tid = live[side]["id"]
-        sq = get_squad(tid)
-        xi = squads.probable_xi(sq) if sq else []
-        res[side] = {"team": live[side]["name"], "squad": sq, "probable_xi": [p["id"] for p in xi],
-                     "label": "Real squad. Attributes are GAME ESTIMATES derived from 2024 season stats where available (free plan cannot access 2025/26 stats), not official ratings."}
+        try: sq = get_squad(tid)
+        except af.APIError: sq = []
+        lu = live["lineups"]["by_team"].get(str(tid))
+        if lu:
+            xi = _merge(lu["startXI"], sq)
+            for p, l in zip(xi, lu["startXI"]): p["number"] = l.get("number"); p["grid"] = l.get("grid")
+            src, form = "official", lu.get("formation")
+        else:
+            xi = squads.probable_xi(sq) if sq else []; src, form = "probable", "4-2-3-1"
+        res[side] = {"team": live[side]["name"], "team_id": tid, "squad": sq, "xi": xi, "xi_source": src, "formation": form,
+                     "probable_xi": [p["id"] for p in xi],
+                     "label": ("Official starting XI" if src == "official" else "Likely XI (official line-ups ~60 min before kick-off)") +
+                              ". Attributes are GAME ESTIMATES from 2024 season stats, not official ratings."}
     return res
 
 
-def seed_state(at_minute=None):
-    live = live_match()["live"]
+def seed_state(at_minute=None, fid=None):
+    live = live_match()["live"] if not fid or fid == FIXTURE_ID else fetch_fixture(fid, max_age=600)
     minute = live["status"]["elapsed"] or 0
+    if at_minute is not None and not live["events"] and minute == 0: minute = at_minute
     if at_minute is not None and at_minute < minute:  # replay branch from an earlier real minute
         minute = at_minute
         live = {**live, "events": [e for e in live["events"] if (e["minute"] or 0) <= at_minute]}
@@ -157,6 +182,7 @@ def seed_state(at_minute=None):
 class LiveBranchIn(BaseModel):
     side: str = Field("home", pattern="^(home|away)$")
     minute: Optional[int] = Field(None, ge=0, le=89)  # optional: branch from an earlier real minute
+    fixture_id: Optional[int] = None
 
 
 class LiveSimIn(BaseModel):
@@ -177,10 +203,16 @@ def _tj(team):
 
 @router.post("/api/live/branch")
 def live_branch(b: LiveBranchIn):
-    st, live, info = seed_state(b.minute)
-    bid = f"live-{FIXTURE_ID}-{int(time.time())}"
+    fid = b.fixture_id or FIXTURE_ID
+    lv = live_match()["live"] if fid == FIXTURE_ID else fetch_fixture(fid, max_age=600)
+    ph = matchstate.phase(lv["status"]["short"], lv["kickoff_utc"])
+    if ph["phase"] in ("upcoming", "postponed"): raise HTTPException(409, "match has not started: set up in the pre-match screen")
+    minute = b.minute
+    if ph["ended"] and minute is None: minute = 60  # finished games: what-if from a real minute, never "live"
+    st, live, info = seed_state(minute, fid)
+    bid = f"live-{fid}-{int(time.time()*1000)}"
     BRANCHES[bid] = {"state": st, "side": b.side}
-    return {"branch_id": bid, "side": b.side, "minute": st.minute, "score": [st.home_goals, st.away_goals],
+    return {"branch_id": bid, "side": b.side, "phase": ph, "fixture_id": fid, "minute": st.minute, "score": [st.home_goals, st.away_goals],
             "status": live["status"], "home": _tj(st.home), "away": _tj(st.away), "seed_info": info,
             "label": "HYPOTHETICAL alternate timeline branched from the real match state. Player attributes are estimates; model not fitted/backtested."}
 
