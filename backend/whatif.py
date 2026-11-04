@@ -184,13 +184,16 @@ def week_id(d: Optional[dt.date] = None) -> str:
     y, w, _ = (d or dt.date.today()).isocalendar(); return f"{y}-W{w:02d}"
 
 
+ELITE_LEAGUES = {2, 3, 39, 140, 135, 78, 61}  # UCL, UEL, PL, LaLiga, Serie A, Bundesliga, Ligue 1
+
+
 def _candidates() -> List[Dict]:
     """Finished elite fixtures the server already knows (discovery cache), else the bundled classics."""
     from .live import centre
     out = []
     try:
         for x in centre.discover().get("items") or []:
-            if x["state"]["ended"] and x.get("elite") and None not in x["score"] and x["score"][0] != x["score"][1]:
+            if x["state"]["ended"] and x.get("elite") and x.get("league_id") in ELITE_LEAGUES and None not in x["score"] and x["score"][0] != x["score"][1]:
                 out.append({"fixture_id": x["fixture_id"], "home": x["home"]["name"], "away": x["away"]["name"], "score": x["score"], "classic": bool(x.get("classic"))})
     except Exception: pass
     if not out:
