@@ -5,6 +5,7 @@ restarts and every client sees the same alternate score. Real-match data comes o
 snapshots (centre.snapshot / router.seed_state) - this module never adds calls to the data feed.
 """
 from __future__ import annotations
+import math
 import datetime as dt, hashlib, json, random, secrets, time
 from typing import Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException
@@ -269,9 +270,10 @@ def weekly_enter(e: EntryIn, user=Depends(auth.require_user)):
     p = res["after"]["probabilities"]; q = res["before"]["probabilities"]
     gain = (3 * p["user_win"] + p["draw"]) - (3 * q["user_win"] + q["draw"])
     best = _weekly_best(ch, st, me, seed)
-    # Balanced scoring: 50 = matches the do-nothing baseline, 100 = matches (or beats) the model's best known change,
-    # 0 = as much worse than baseline as the best change is better. Spreads entries over 0-100 whatever the scenario.
-    score = round(max(0.0, min(100.0, 50 + 50 * gain / max(best, 0.05))), 1)
+    # Balanced scoring: 50 = the do-nothing baseline; the model's best known change scores ~83; beating it pushes
+    # towards 100 and making things worse falls towards 0 (tanh keeps the spread smooth instead of clipping at 100).
+    scale = max(best * 1.25, 0.08)
+    score = round(max(0.0, min(100.0, 50 + 50 * math.tanh(gain / scale))), 1)
     prev = db.q("SELECT score FROM weekly_entries WHERE week=? AND user_id=?", (ch["week"], user["id"]), one=True)
     if not prev or score > prev["score"]:
         db.q("INSERT OR REPLACE INTO weekly_entries(week,user_id,score,win,draw,payload_json,created_at) VALUES (?,?,?,?,?,?,?)",
