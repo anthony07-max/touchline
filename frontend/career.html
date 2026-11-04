@@ -81,11 +81,16 @@ function show(p){document.querySelectorAll('.pg').forEach(e=>e.classList.toggle(
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>show(b.dataset.p));
 function openM(h){$('sheet').innerHTML=h;$('modal').classList.add('on')}function closeM(){$('modal').classList.remove('on')}
 
+async function renameClub(id,cur){const n=prompt('Rename club in your save (text only):',cur);if(!n)return;await api('/clubs/'+id,{method:'PATCH',body:{name:n}});toast('Renamed');setTimeout(()=>location.reload(),600)}
 // ---------- start
-async function start(){const d=await (await fetch('/api/career/clubs')).json();
- $('clubs').innerHTML=d.clubs.map(c=>`<div class="c ${c.id===PICKCLUB?'on':''}" data-id="${c.id}">${badge(c,52)}<div style="font:700 14px 'Space Grotesk';margin-top:6px">${esc(c.name)}</div><div class="mut">Rep ${c.reputation} · ${esc(c.expectation)}</div></div>`).join('');
- $('clubs').querySelectorAll('.c').forEach(e=>e.onclick=()=>{PICKCLUB=e.dataset.id;start()});
- $('startBtn').onclick=async()=>{const r=await fetch('/api/career/new',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({club_id:PICKCLUB,manager:$('mgr').value||'You'})});const d=await r.json();KEY=d.key;localStorage.kv_career=KEY;await boot()}}
+let LEAGUE=new URLSearchParams(location.search).get('league')==='l2'?'l2':'kv1';
+async function start(){const d=await (await fetch('/api/career/clubs?league='+LEAGUE)).json();
+ if(!d.clubs.some(c=>c.id===PICKCLUB))PICKCLUB=LEAGUE==='l2'?'c0':'c4';
+ $('clubs').innerHTML=`<div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center" role="tablist" aria-label="Choose a league">${Object.entries(d.leagues).map(([k,v])=>`<button class="btn ${k===LEAGUE?'pri':''}" role="tab" aria-selected="${k===LEAGUE}" data-lg="${k}">${esc(v)}${k==='l2'?' · Lower League Mode':''}</button>`).join('')}${LEAGUE==='l2'?`<span class="mut">24 clubs, 46 weeks, top 3 promoted. All clubs are fictional; rename any club in your save (Table tab) to match your real one. Leyton Marshes is our red-shirted East London club for fans who know the lower-league life.</span>`:''}</div>`+d.clubs.map(c=>`<div class="c ${c.id===PICKCLUB?'on':''}" data-id="${c.id}" tabindex="0" role="button" aria-label="Pick ${esc(c.name)}">${badge(c,52)}<div style="font:700 14px 'Space Grotesk';margin-top:6px">${esc(c.name)}</div><div class="mut">Rep ${c.reputation} · ${esc(c.expectation)}</div></div>`).join('');
+ $('clubs').querySelectorAll('[data-lg]').forEach(e=>e.onclick=()=>{LEAGUE=e.dataset.lg;start()});
+ $('clubs').innerHTML+='';d.clubs.map(c=>`<div class="c ${c.id===PICKCLUB?'on':''}" data-id="${c.id}">${badge(c,52)}<div style="font:700 14px 'Space Grotesk';margin-top:6px">${esc(c.name)}</div><div class="mut">Rep ${c.reputation} · ${esc(c.expectation)}</div></div>`).join('');
+ $('clubs').querySelectorAll('.c').forEach(e=>{e.onclick=()=>{PICKCLUB=e.dataset.id;start()};e.onkeydown=k=>{if(k.key==='Enter'||k.key===' ')e.click()}});
+ $('startBtn').onclick=async()=>{const r=await fetch('/api/career/new',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({club_id:PICKCLUB,league:LEAGUE,manager:$('mgr').value||'You'})});const d=await r.json();KEY=d.key;localStorage.kv_career=KEY;await boot()}}
 
 // ---------- club hub
 async function rClub(){S=await api('');hdr();const b=S.board,f=S.finances,n=S.next_fixture;
@@ -188,7 +193,7 @@ async function offer(id,acc){const r=await api('/transfers/offer',{method:'POST'
 async function rLeague(){const [t,f]=await Promise.all([api('/table'),api('/fixtures')]);
  const mine=f.fixtures.filter(x=>x.mine);
  $('pg-league').innerHTML=`<h2>Kickvana League</h2><p class="sub">Season ${f.season} · Week ${Math.min(f.week,22)} · Board target: ${ord(t.target_pos)} or higher</p><div class="split"><div class="c scroll"><table><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th><th>Form</th></tr>
- ${t.table.map(r=>`<tr class="${r.club_id===t.club_id?'me':''}"><td>${r.pos}${r.pos===t.target_pos?' <span class="mut">◂</span>':''}</td><td>${badge(r,20)} ${esc(r.name)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gd>0?'+':''}${r.gd}</td><td><b>${r.pts}</b></td><td>${r.form.map(x=>`<span class="dot" style="background:${x==='W'?'#00F5A0':x==='D'?'#FFB547':'#FF4D6D'}"></span>`).join('')}</td></tr>`).join('')}</table></div>
+ ${t.table.map(r=>`<tr class="${r.club_id===t.club_id?'me':''}"><td>${r.pos}${r.pos===t.target_pos?' <span class="mut">◂</span>':''}</td><td>${badge(r,20)} ${esc(r.name)} <button class="lnk" aria-label="Rename ${esc(r.name)}" onclick="renameClub('${r.club_id}','${esc(r.name).replace(/'/g,'')}')">✎</button></td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gd>0?'+':''}${r.gd}</td><td><b>${r.pts}</b></td><td>${r.form.map(x=>`<span class="dot" style="background:${x==='W'?'#00F5A0':x==='D'?'#FFB547':'#FF4D6D'}"></span>`).join('')}</td></tr>`).join('')}</table></div>
  <div class="c"><h3>Your fixtures</h3>${mine.map(x=>`<div class="row" style="padding:5px 0;border-bottom:1px solid #ffffff08;${x.week===f.week?'background:#00F5A00f':''}"><span class="mut" style="width:30px">W${x.week}</span>${badge(x.home,20)}<span style="flex:1">${esc(x.home.short)} ${x.played?`<b>${x.score[0]}–${x.score[1]}</b>`:'v'} ${esc(x.away.short)}</span>${badge(x.away,20)}</div>`).join('')}</div></div>`}
 
 // ---------- matchday (live 2D)

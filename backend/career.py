@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS careers (
   status TEXT NOT NULL, state_json TEXT NOT NULL, created_at REAL NOT NULL, updated_at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS career_live (
   career_key TEXT PRIMARY KEY REFERENCES careers(key), state_json TEXT NOT NULL, updated_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS league_packs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, league TEXT NOT NULL, clubs_json TEXT NOT NULL, user_id INTEGER, created_at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS career_transfers (
   id INTEGER PRIMARY KEY AUTOINCREMENT, career_key TEXT NOT NULL, season INTEGER NOT NULL, week INTEGER NOT NULL,
   player_id TEXT NOT NULL, direction TEXT NOT NULL, fee REAL NOT NULL, wage INTEGER NOT NULL, created_at REAL NOT NULL);
@@ -98,17 +100,18 @@ def _summary(st, key=None):
         opp = C.club_of(st, f["away"] if f["home"] == me["id"] else f["home"])
         nxt = {"fixture_id": f["id"], "week": f["week"], "home": f["home"] == me["id"], "opponent": _club_pub(opp), "played": f["played"]}
     wages = sum(st["players"][p]["wage"] for p in me["squad"])
-    return {"club": _club_pub(me), "manager": st["manager"], "season": st["season"], "week": st["week"], "weeks": C.WEEKS_PER_SEASON,
+    return {"club": _club_pub(me), "manager": st["manager"], "season": st["season"], "week": st["week"], "weeks": st.get("weeks", C.WEEKS_PER_SEASON), "league": st.get("league", "kv1"), "league_name": st.get("league_name", "Kickvana League"),
             "status": st["status"], "position": pos, "board": st["board"], "finances": {**{k: st["finances"][k] for k in ("balance", "transfer_budget", "wage_budget")}, "wage_bill": wages,
             "recent_income": st["finances"]["income"][-6:], "recent_expenses": st["finances"]["expenses"][-6:]},
-            "window_open": C.window_open(st), "windows": C.WINDOWS, "next_fixture": nxt, "news": st["news"][:12],
-            "academy": {"intake_week": C.ACADEMY_WEEK, "done": st["academy"]["intake_done"], "prospects": [_pub(st["players"][p]) for p in st["academy"]["prospects"]]},
+            "window_open": C.window_open(st), "windows": st.get("windows", C.WINDOWS), "next_fixture": nxt, "news": st["news"][:12],
+            "academy": {"intake_week": st.get("academy_week", C.ACADEMY_WEEK), "done": st["academy"]["intake_done"], "prospects": [_pub(st["players"][p]) for p in st["academy"]["prospects"]]},
             "seasons": st.get("seasons", []), "live_in_progress": bool(key and _live(key))}
 
 
 # ---------------- models
 class NewIn(BaseModel):
     club_id: str = "c4"; manager: str = Field("You", max_length=40); seed: Optional[int] = None
+    league: str = "kv1"; pack_id: Optional[int] = None; pack: Optional[List[Dict]] = None
 
 
 class SlotIn(BaseModel):
@@ -153,16 +156,62 @@ class LiveTacticsIn(BaseModel):
 
 # ---------------- endpoints: career
 @router.get("/clubs")
-def clubs():
-    return {"clubs": [{"id": f"c{i}", "name": n, "short": s, "colours": [a, b], "badge": sh, "reputation": r,
-                       "expectation": C.expectation_text(min(10, i + 1))} for i, (n, s, a, b, sh, r) in enumerate(C.CLUBS)]}
+def clubs(league: str = "kv1"):
+    if league not in C.LEAGUES: raise HTTPException(400, "unknown league")
+    L = C.LEAGUES[league]; fake = {"league": league, "clubs": L["clubs"]}
+    return {"league": league, "league_name": L["name"], "leagues": {k: v["name"] for k, v in C.LEAGUES.items()},
+            "clubs": [{"id": f"c{i}", "name": n, "short": s, "colours": [a, b], "badge": sh, "reputation": r,
+                       "expectation": C.expectation_text(min(len(L["clubs"]) - 2, i + 1), fake)} for i, (n, s, a, b, sh, r) in enumerate(L["clubs"])]}
+
+
+class PackIn(BaseModel):
+    name: str = Field(..., min_length=1, max_length=60); league: str = "l2"; clubs: List[Dict]
+
+
+@router.post("/packs")
+def pack_new(b: PackIn, user=Depends(auth.optional_user)):
+    """Community-editable league packs: club names/short codes/colours only (no crests or logos)."""
+    if b.league not in C.LEAGUES: raise HTTPException(400, "unknown league")
+    clean = C._clean_pack(b.clubs, C.LEAGUES[b.league]["clubs"])
+    pid = db.q("INSERT INTO league_packs(name,league,clubs_json,user_id,created_at) VALUES (?,?,?,?,?)",
+               (b.name, b.league, json.dumps([{"name": c[0], "short": c[1], "colours": [c[2], c[3]]} for c in clean]), user["id"] if user else None, time.time()))
+    return {"id": pid}
+
+
+@router.get("/packs")
+def packs(league: str = "l2"):
+    return {"packs": [{**{k: r[k] for k in ("id", "name", "league", "created_at")}, "clubs": json.loads(r["clubs_json"])}
+                      for r in db.q("SELECT * FROM league_packs WHERE league=? ORDER BY id DESC LIMIT 30", (league,))]}
+
+
+class ClubEditIn(BaseModel):
+    name: Optional[str] = Field(None, max_length=40); short: Optional[str] = Field(None, max_length=4); colours: Optional[List[str]] = None
+
+
+@router.patch("/clubs/{cid}")
+def edit_club(cid: str, b: ClubEditIn, x_career_key: Optional[str] = Header(None)):
+    """Rename/recolour any club in your own save (e.g. to match your real club). Text only - no crests."""
+    st = _load(x_career_key)
+    try: club = C.club_of(st, cid)
+    except StopIteration: raise HTTPException(404, "unknown club")
+    i = st["clubs"].index(club)
+    cur = [(c["name"], c["short"], c["colours"][0], c["colours"][1], c["badge"], c["reputation"]) for c in st["clubs"]]
+    new = C._clean_pack([{"name": b.name or club["name"], "short": b.short or club["short"], "colours": b.colours or club["colours"]}], cur[i:i + 1])[0]
+    club.update(name=new[0], short=new[1], colours=[new[2], new[3]]); _save(x_career_key, st)
+    return _club_pub(club)
 
 
 @router.post("/new")
 def new(b: NewIn, user=Depends(auth.optional_user)):
+    if b.league not in C.LEAGUES: raise HTTPException(400, "unknown league")
     idx = int(b.club_id[1:]) if b.club_id[:1] == "c" and b.club_id[1:].isdigit() else -1
-    if not 0 <= idx < len(C.CLUBS): raise HTTPException(400, "unknown club")
-    st = C.new_career(idx, b.seed, b.manager.strip() or "You")
+    if not 0 <= idx < len(C.LEAGUES[b.league]["clubs"]): raise HTTPException(400, "unknown club")
+    pack = b.pack
+    if b.pack_id:
+        r = db.q("SELECT clubs_json, league FROM league_packs WHERE id=?", (b.pack_id,), one=True)
+        if not r or r["league"] != b.league: raise HTTPException(404, "pack not found")
+        pack = json.loads(r["clubs_json"])
+    st = C.new_career(idx, b.seed, b.manager.strip() or "You", b.league, pack)
     key = secrets.token_urlsafe(24)
     db.q("INSERT INTO careers(key,user_id,club_id,season,week,status,state_json,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?)",
          (key, user["id"] if user else None, st["club_id"], 1, 1, "active", json.dumps(st), time.time(), time.time()))
@@ -249,7 +298,7 @@ def search(pos: Optional[str] = None, max_age: Optional[int] = None, min_ovr: Op
     st = _load(x_career_key)
     res = C.scout(st, pos, max_age, min_ovr, max_value, q)
     return {"players": [{**_pub(p, st), "asking_price": C.asking_price(st, p["id"]), "negotiation": st["transfers"]["negotiations"].get(p["id"])} for p in res],
-            "window_open": C.window_open(st), "windows": C.WINDOWS, "budget": st["finances"]["transfer_budget"], "wage_budget": st["finances"]["wage_budget"],
+            "window_open": C.window_open(st), "windows": st.get("windows", C.WINDOWS), "budget": st["finances"]["transfer_budget"], "wage_budget": st["finances"]["wage_budget"],
             "wage_bill": sum(st["players"][p]["wage"] for p in C.club_of(st, st["club_id"])["squad"])}
 
 
@@ -259,7 +308,7 @@ def transfers(x_career_key: Optional[str] = Header(None)):
     offers = [{**o, "player": _pub(st["players"][o["player_id"]]), "club": _club_pub(C.club_of(st, o["club_id"]))}
               for o in st["transfers"].get("incoming_offers", []) if o["player_id"] in st["players"]]
     return {"log": st["transfers"]["log"][:30], "negotiations": st["transfers"]["negotiations"], "offers": offers,
-            "window_open": C.window_open(st), "windows": C.WINDOWS, "budget": st["finances"]["transfer_budget"]}
+            "window_open": C.window_open(st), "windows": st.get("windows", C.WINDOWS), "budget": st["finances"]["transfer_budget"]}
 
 
 @router.post("/transfers/bid")
@@ -335,7 +384,7 @@ def new_job(x_career_key: Optional[str] = Header(None)):
     st = _load(x_career_key)
     if st["status"] != "sacked": raise HTTPException(409, "you are still employed")
     club = min((c for c in st["clubs"] if c["id"] != st["club_id"]), key=lambda c: c["reputation"])
-    st["club_id"] = club["id"]; st["status"] = "active"; st["board"].update(confidence=55, target_pos=11, expectation=C.expectation_text(11))
+    st["club_id"] = club["id"]; st["status"] = "active"; st["board"].update(confidence=55, target_pos=len(st["clubs"]) - 1, expectation=C.expectation_text(len(st["clubs"]) - 1, st))
     C.news(st, f"Fresh start: you are the new manager of {club['name']}."); _save(x_career_key, st)
     return _summary(st, x_career_key)
 
@@ -497,5 +546,8 @@ def claim(x_career_key: Optional[str] = Header(None), user=Depends(auth.require_
 @router.get("/mine")
 def mine(user=Depends(auth.require_user)):
     rows = db.q("SELECT key,club_id,season,week,status,updated_at FROM careers WHERE user_id=? ORDER BY updated_at DESC", (user["id"],))
-    names = {f"c{i}": c[0] for i, c in enumerate(C.CLUBS)}
-    return {"careers": [{**r, "club": names.get(r["club_id"], r["club_id"])} for r in rows]}
+    out = []
+    for r in rows:
+        st = json.loads(db.q("SELECT state_json FROM careers WHERE key=?", (r["key"],), one=True)["state_json"])
+        out.append({**r, "club": C.club_of(st, r["club_id"])["name"], "league": st.get("league_name", "Kickvana League")})
+    return {"careers": out}

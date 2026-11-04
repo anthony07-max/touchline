@@ -56,6 +56,25 @@ CLUBS = [  # fictional, generated identities
     ("Eastgate Wanderers", "EGW", "#FF7A59", "#1a0b06", "hex", 66), ("Lumen FC", "LUM", "#FFE14D", "#141206", "shield", 64),
     ("Sable Port", "SBP", "#5BE9B9", "#061410", "round", 62), ("Northfold", "NFD", "#7AA2FF", "#060b1a", "hex", 60),
 ]
+# Lower League Mode: a fictional fourth-tier division. Every club is invented; users can rename clubs in their own save
+# or share community packs. "Leyton Marshes" is an original red-shirted East London club for fans who want that story.
+L2_CLUBS = [
+    ("Leyton Marshes", "LYM", "#E4002B", "#FFFFFF", "shield", 58), ("Harbourside Town", "HST", "#2DE2FF", "#06121a", "round", 60),
+    ("Kilnworth Rovers", "KWR", "#FFB547", "#1a1206", "hex", 59), ("Saltmarsh United", "SMU", "#00F5A0", "#05070D", "shield", 58),
+    ("Ferrybridge Albion", "FBA", "#7AA2FF", "#060b1a", "round", 57), ("Coppergate Athletic", "CGA", "#FF7A59", "#1a0b06", "hex", 57),
+    ("Millbrook Rangers", "MBR", "#C6F432", "#0f1406", "shield", 56), ("Ashcombe Borough", "ACB", "#8B5CF6", "#0d0820", "round", 56),
+    ("Wexley Wanderers", "WXW", "#FFE14D", "#141206", "hex", 55), ("Northgate Dynamos", "NGD", "#FF3DCB", "#1a0614", "shield", 55),
+    ("Tollbridge City", "TBC", "#5BE9B9", "#061410", "round", 54), ("Brackenfield", "BRK", "#9AA7C7", "#0a0d14", "hex", 54),
+    ("Riverholme FC", "RVH", "#FF4D6D", "#1a0610", "shield", 53), ("Granary Town", "GRT", "#E9C46A", "#141006", "round", 53),
+    ("Dunmore Athletic", "DMA", "#4CC9F0", "#06101a", "hex", 52), ("Stonebridge Vale", "SBV", "#B5E48C", "#0b1406", "shield", 52),
+    ("Ottery Park", "OTP", "#F72585", "#1a0612", "round", 51), ("Wharfdale Town", "WDT", "#90E0EF", "#061218", "hex", 51),
+    ("Linford Rovers", "LFR", "#F4A261", "#1a1006", "shield", 50), ("Castlemere", "CSM", "#A78BFA", "#0e0a1a", "round", 50),
+    ("Pennywell United", "PWU", "#FB8500", "#1a0d00", "hex", 49), ("Hollins Cross", "HLX", "#06D6A0", "#05140f", "shield", 49),
+    ("Bramhope Athletic", "BHA", "#EF476F", "#1a0610", "round", 48), ("Marlow Heath", "MLH", "#118AB2", "#04101a", "hex", 47),
+]
+LEAGUES = {"kv1": {"name": "Kickvana League", "clubs": CLUBS, "windows": [(1, 4), (11, 13)]},
+           "l2": {"name": "Kickvana League Two", "clubs": L2_CLUBS, "windows": [(1, 6), (23, 27)]}}
+
 SQUAD_SHAPE = ["GK", "GK", "CB", "CB", "CB", "CB", "FB", "FB", "FB", "DM", "DM", "CM", "CM", "CM", "AM", "AM",
                "W", "W", "W", "ST", "ST", "ST"]
 WEEKS_PER_SEASON = 22
@@ -113,12 +132,26 @@ def refresh(p: Dict, season=1):
 
 
 # ---------------------------------------------------------------- career creation
-def new_career(club_index: int = 4, seed: Optional[int] = None, manager: str = "You") -> Dict:
+def _clean_pack(pack, base):
+    out = list(base)
+    for i, c in enumerate((pack or [])[:len(base)]):
+        if not isinstance(c, dict): continue
+        name = str(c.get("name") or base[i][0])[:40].strip() or base[i][0]
+        short = (str(c.get("short") or name[:3]).upper()[:4]).strip() or base[i][1]
+        cols = c.get("colours") or [base[i][2], base[i][3]]
+        ok = lambda x: isinstance(x, str) and len(x) == 7 and x[0] == "#" and all(ch in "0123456789abcdefABCDEF" for ch in x[1:])
+        c1 = cols[0] if ok(cols[0]) else base[i][2]; c2 = cols[1] if len(cols) > 1 and ok(cols[1]) else base[i][3]
+        out[i] = (name, short, c1, c2, base[i][4], base[i][5])
+    return out
+
+
+def new_career(club_index: int = 4, seed: Optional[int] = None, manager: str = "You", league: str = "kv1", pack=None) -> Dict:
     seed = seed if seed is not None else random.randrange(1 << 30)
     rng = random.Random(seed)
     clubs, players = [], {}
     n = 0
-    for i, (name, short, c1, c2, shape, lvl) in enumerate(CLUBS):
+    L = LEAGUES[league]; table_clubs = _clean_pack(pack, L["clubs"])
+    for i, (name, short, c1, c2, shape, lvl) in enumerate(table_clubs):
         cid = f"c{i}"
         squad = []
         for pos in SQUAD_SHAPE:
@@ -133,7 +166,9 @@ def new_career(club_index: int = 4, seed: Optional[int] = None, manager: str = "
         players[pid] = make_player(rng, pid, rng.choice(SQUAD_SHAPE), rng.randint(58, 80), club_id=None)
         players[pid]["contract_until"] = 1; players[pid]["value"] = valuation(players[pid], 1)
     me = clubs[club_index]["id"]
-    st = {"version": 1, "seed": seed, "rng_state": n, "manager": manager, "club_id": me, "season": 1, "week": 1,
+    weeks = 2 * (len(clubs) - 1)
+    st = {"version": 2, "league": league, "league_name": L["name"], "weeks": weeks, "windows": [list(w) for w in L["windows"]],
+          "academy_week": weeks // 2 - 1, "seed": seed, "rng_state": n, "manager": manager, "club_id": me, "season": 1, "week": 1,
           "status": "active", "clubs": clubs, "players": players, "next_pid": n + 1,
           "fixtures": round_robin([c["id"] for c in clubs], rng), "results": [],
           "finances": {"balance": 0, "transfer_budget": 0, "wage_budget": 0, "income": [], "expenses": []},
@@ -143,8 +178,8 @@ def new_career(club_index: int = 4, seed: Optional[int] = None, manager: str = "
     club = club_of(st, me)
     club_sorted = sorted(clubs, key=lambda c: -c["reputation"])
     rank = [c["id"] for c in club_sorted].index(me) + 1
-    st["board"]["target_pos"] = max(1, min(10, rank))
-    st["board"]["expectation"] = expectation_text(st["board"]["target_pos"])
+    st["board"]["target_pos"] = max(1, min(len(clubs) - 2, rank))
+    st["board"]["expectation"] = expectation_text(st["board"]["target_pos"], st)
     wages = sum(players[p]["wage"] for p in club["squad"])
     st["finances"].update(balance=round(25 + club["reputation"] * 0.5, 1), transfer_budget=round(6 + (club["reputation"] - 55) * 0.9, 1),
                           wage_budget=int(wages * 1.25))
@@ -154,7 +189,11 @@ def new_career(club_index: int = 4, seed: Optional[int] = None, manager: str = "
     return st
 
 
-def expectation_text(pos):
+def expectation_text(pos, st=None):
+    if st and st.get("league") == "l2":
+        n = len(st["clubs"])
+        return ("Win the title" if pos == 1 else "Win automatic promotion (top 3)" if pos <= 3 else "Reach the play-offs (top 7)" if pos <= 7
+                else f"Finish {ordinal(pos)} or higher" if pos <= n - 4 else "Avoid relegation")
     return ("Win the league" if pos == 1 else f"Finish in the top {pos}" if pos <= 4 else
             f"Finish {ordinal(pos)} or higher" if pos <= 8 else "Avoid the bottom two")
 
@@ -187,7 +226,7 @@ def news(st, text, kind="info"):
 
 
 def window_open(st) -> bool:
-    return st["status"] == "active" and any(a <= st["week"] <= b for a, b in WINDOWS)
+    return st["status"] == "active" and any(a <= st["week"] <= b for a, b in st.get("windows", WINDOWS))
 
 
 # ---------------------------------------------------------------- availability
@@ -610,15 +649,15 @@ def finish_week(st, rng) -> Dict:
         st["status"] = "sacked"
         news(st, f"The board has lost confidence. {club['name']} have relieved you of your duties.", "bad")
         return summary
-    if week == ACADEMY_WEEK and not st["academy"]["intake_done"]:
+    if week == st.get("academy_week", ACADEMY_WEEK) and not st["academy"]["intake_done"]:
         academy_intake(st, rng)
     ai_transfer_activity(st, rng)
-    if week == 15:
+    if week == int(st.get("weeks", WEEKS_PER_SEASON) * 0.7):
         exp = [st["players"][p]["name"] for p in club["squad"] if st["players"][p]["contract_until"] <= st["season"]]
         if exp: news(st, f"Contracts expiring this summer: {', '.join(exp[:6])}{'…' if len(exp) > 6 else ''}. Renew from the squad screen or they leave for free.", "bad")
     recover(st)
     st["week"] += 1
-    if st["week"] > WEEKS_PER_SEASON:
+    if st["week"] > st.get("weeks", WEEKS_PER_SEASON):
         end_season(st, rng, tb)
     summary["table_pos"] = pos
     return summary
@@ -701,8 +740,11 @@ def end_season(st, rng, tb):
     prize = round((13 - pos) * 1.1, 1)
     fin["balance"] = round(fin["balance"] + prize, 1)
     fin["transfer_budget"] = round(max(2, fin["transfer_budget"] * 0.5 + prize + max(0, fin["balance"]) * 0.2), 1)
-    b["target_pos"] = max(1, min(10, pos - (1 if verdict != "missed" else 0) if pos > 1 else 1))
-    b["expectation"] = expectation_text(b["target_pos"])
+    b["target_pos"] = max(1, min(len(st["clubs"]) - 2, pos - (1 if verdict != "missed" else 0) if pos > 1 else 1))
+    b["expectation"] = expectation_text(b["target_pos"], st)
+    if st.get("league") == "l2":
+        up = [r["name"] for r in tb[:3]]
+        news(st, f"Promoted automatically: {', '.join(up)}. " + ("That includes you. Promotion party!" if pos <= 3 else ""), "good" if pos <= 3 else "info")
     news(st, f"Season {st['season']} begins. New board target: {b['expectation']}. Prize money £{prize}m.")
 
 
