@@ -460,6 +460,17 @@ def contract_renew(b: RenewIn, x_career_key: Optional[str] = Header(None)):
 
 
 # ---------------- real line-ups -> career shape
+@router.get("/real-shapes")
+def real_shapes():
+    """Confirmed real XIs the lineup watcher has cached (no feed calls) - their shapes can be copied into your plan."""
+    from .live import lineups
+    out = []
+    for fid, hit in list(lineups.STORE.items())[-20:]:
+        out.append({"fixture_id": int(fid), "teams": [{"id": l["team"].get("id"), "name": l["team"].get("name"), "formation": l.get("formation"),
+                                                       "maps_to": C.shape_from_lineup(l.get("formation"))} for l in hit.get("lineups", [])]})
+    return {"fixtures": out[::-1]}
+
+
 @router.post("/tactics/from-fixture/{fid}")
 def tactics_from_fixture(fid: int, team_id: Optional[int] = None, x_career_key: Optional[str] = Header(None)):
     """Copy the shape of a real confirmed XI (from the lineup watcher cache - never calls the data feed) into your plan."""

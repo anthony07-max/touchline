@@ -1,7 +1,7 @@
 <!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Kickvana · Match Centre</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070D">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" href="/static/brand/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/static/brand/theme.css">
+<link rel="icon" href="/static/brand/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/static/brand/theme.css"><script src="/static/brand/push.js"></script>
 <style>
 :root{--h:#00F5A0;--a:#FF7A59}
 *{-webkit-tap-highlight-color:transparent}body{padding:0;overflow-x:hidden}
@@ -109,10 +109,10 @@ function render(s){S=s;const L=s.live,st=s.state;
  $('tRecap').style.display=st.ended?'':'none';if(st.ended)renderRecap(s);
  // CTAs from state machine
  const q=`fixture=${FID}`;let c='';
- if(st.playable_live&&st.phase!=='prematch')c=`<a class="btn" href="/live/play?${q}">Take charge live</a>`;
+ if(st.playable_live&&st.phase!=='prematch')c=`<a class="btn" href="/live/manage?${q}">Manage it live vs reality</a><a class="btn ghost" href="/live/play?${q}">Simulate from now</a>`;
  else if(st.phase==='prematch'||st.phase==='upcoming')c=`<a class="btn" href="/?fixture=${FID}#setup">Set up your match</a><a class="btn ghost" href="/fantasy?fixture=${FID}">Pick a fantasy team</a>`;
- if(st.ended)c=`<a class="btn alt" href="/live/play?${q}&mode=whatif">What if… rewrite from any minute</a><a class="btn ghost" href="/fantasy?fixture=${FID}">Fantasy points</a>`;
- $('cta').innerHTML=c;
+ if(st.ended)c=`<a class="btn alt" href="/live/manage?${q}">Replay it as manager vs reality</a><a class="btn ghost" href="/live/play?${q}&mode=whatif">What if… odds from any minute</a><a class="btn ghost" href="/fantasy?fixture=${FID}">Fantasy points</a>`;
+ if(!st.ended)c+=`<button class="btn ghost" id="bell" onclick="bell()">🔔 Alerts for this match</button>`;$('cta').innerHTML=c;
  loadTimeline()}
 function renderRecap(s){const r=s.recap,L=s.live;if(!r)return;const alt=JSON.parse(localStorage['tl_alt_'+FID]||'null');
  $('rc').innerHTML=`<div class="mini"><h4>Full-time recap</h4><h3>${r.headline}</h3>${r.star?`<p>Star man: <b style="color:#00F5A0">${r.star}</b></p>`:''}
@@ -199,4 +199,5 @@ async function poll(){try{const r=await fetch('/api/centre/'+FID);if(r.ok)render
 function sse(){if(!window.EventSource){setInterval(poll,60000);return}const es=new EventSource(`/api/centre/${FID}/stream`);
  es.addEventListener('snapshot',m=>render(JSON.parse(m.data)));es.addEventListener('tick',m=>{const d=JSON.parse(m.data);if(S&&d.state.phase!==S.state.phase)poll()});es.onerror=()=>{es.close();setTimeout(sse,8000)}}
 resize();poll().then(sse);requestAnimationFrame(frame);
+async function bell(){try{await KVPush.enable({fixtures:[FID]});$('bell').textContent='🔔 Alerts on: line-ups, kick-off, full time'}catch(e){alert(e.message)}}
 </script></body></html>
