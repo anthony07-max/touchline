@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse, FileResponse
 from pydantic import BaseModel
-from . import provider as af, adapter, matchstate
+from . import provider as af, adapter, matchstate, lineups
 
 router = APIRouter()
 FRONT = os.path.join(os.path.dirname(__file__), "..", "..", "frontend")
@@ -156,7 +156,7 @@ def snapshot(fid: int) -> dict:
             else:
                 d = af.get(f"fixtures?id={fid}", max_age=max_age)
                 if not d.get("response"): raise af.APIError("fixture not found")
-                live = adapter.parse_fixture(d["response"][0])
+                live = adapter.parse_fixture(lineups.inject(d["response"][0]))
         except Exception as e:
             if m: return {**m["snap"], "error": str(e)[:160]}
             raise HTTPException(503, f"data unavailable: {e}")
@@ -167,7 +167,8 @@ def snapshot(fid: int) -> dict:
                 "quota_remaining": af.quota["remaining"],
                 "feed_warning": (paused_text(feed_err) + " Showing last cached data." if feed_err else None),
                 "source": live.get("source") or af.active(),
-                "recap": recap(live, ph) if ph["ended"] else None}
+                "recap": recap(live, ph) if ph["ended"] else None,
+                "lineup_watch": lineups.status(fid, live["kickoff_utc"], live["lineups"]["available"])}
         _mem[fid] = {"snap": snap, "at": time.time(), "next": time.time() + wait}
         return snap
 
@@ -270,6 +271,13 @@ def classics():
 def fixtures():
     d = discover()
     return {"fixtures": d["items"], "note": d["note"], "coverage_note": d.get("coverage"), "provider": d.get("provider"), "home_club": HOME_CLUB, "generated": time.time()}
+
+
+@router.get("/api/fixtures/{fid}")
+def fixture_detail(fid: int):
+    """One fixture: snapshot incl. confirmed XIs (lineups.by_team) and the T-60 lineup watcher's status."""
+    s = snapshot(fid)
+    return {**s, "lineups": s["live"]["lineups"], "lineup_watch": lineups.status(fid, s["live"]["kickoff_utc"], s["live"]["lineups"]["available"])}
 
 
 @router.get("/api/centre/{fid}")

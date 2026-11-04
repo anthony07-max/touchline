@@ -23,7 +23,8 @@ def fetch_fixture(fid: int, max_age: float = 60, force=False):
     if fid in CLASSIC_RAW: return adapter.parse_fixture(CLASSIC_RAW[fid])
     d = af.get(f"fixtures?id={fid}", max_age=max_age, force=force)
     if not d.get("response"): raise af.APIError("fixture not found")
-    return adapter.parse_fixture(d["response"][0])
+    from . import lineups
+    return adapter.parse_fixture(lineups.inject(d["response"][0]))
 
 
 def refresh(force=False):

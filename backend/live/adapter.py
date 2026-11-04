@@ -40,7 +40,7 @@ def parse_fixture(fx: dict, seen_event_ids: Optional[set] = None) -> Dict:
             "startXI": [{"id": str(p["player"]["id"]), "name": p["player"]["name"], "number": p["player"].get("number"), "pos": p["player"].get("pos"), "grid": p["player"].get("grid")} for p in lu.get("startXI") or []],
             "substitutes": [{"id": str(p["player"]["id"]), "name": p["player"]["name"], "number": p["player"].get("number"), "pos": p["player"].get("pos")} for p in lu.get("substitutes") or []]}
     out["lineups"] = {"available": bool(lus), "by_team": {str(k): v for k, v in lus.items()},
-                      "note": None if lus else ("not in the free data feed; the XI shown is modelled from the squad" if fx.get("source") == "football-data.org" else "unavailable: official line-ups usually published ~60 min before kick-off")}
+                      "note": None if lus else ("Line-ups expected ~1h before kick-off; until then the XI shown is modelled from the squad" if fx.get("source") == "football-data.org" else "unavailable: official line-ups usually published ~60 min before kick-off")}
     # statistics
     stats = {}
     for s in fx.get("statistics") or []:

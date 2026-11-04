@@ -39,9 +39,9 @@ def _cached(p):
     with open(p) as f: return json.load(f)
 
 
-def raw(ep: str, max_age: float = 3600, force=False, opener=None) -> dict:
+def raw(ep: str, max_age: float = 3600, force=False, opener=None, headers=None) -> dict:
     """GET a v4 path (e.g. 'matches/123'). Disk cache first; rate-limited; on any upstream error serve stale cache."""
-    p = _path(ep)
+    p = _path(ep + ("|" + json.dumps(headers, sort_keys=True) if headers else ""))
     if not force and os.path.exists(p) and time.time() - os.path.getmtime(p) < max_age: return _cached(p)
     k = key()
     if not k:
@@ -52,7 +52,7 @@ def raw(ep: str, max_age: float = 3600, force=False, opener=None) -> dict:
         gap = time.time() - _last[0]
         if gap < MIN_GAP: time.sleep(MIN_GAP - gap)
         _last[0] = time.time()
-        req = urllib.request.Request(BASE + ep, headers={"X-Auth-Token": k, "Accept": "application/json"})
+        req = urllib.request.Request(BASE + ep, headers={"X-Auth-Token": k, "Accept": "application/json", **(headers or {})})
         try:
             with (opener or urllib.request.urlopen)(req, timeout=20) as r:
                 data = json.load(r); h = r.headers
