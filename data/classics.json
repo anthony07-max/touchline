@@ -1,0 +1,1061 @@
+{
+ "classics": [
+  {
+   "title": "2025 Champions League final",
+   "source": "curated from the public record (score + scorers); upgraded to full feed data when the server can fetch it",
+   "fixture": {
+    "fixture": {
+     "id": 9100001,
+     "referee": null,
+     "timezone": "UTC",
+     "date": "2025-05-31T19:00:00+00:00",
+     "venue": {
+      "id": null,
+      "name": "Allianz Arena",
+      "city": "Munich"
+     },
+     "status": {
+      "long": "Match Finished",
+      "short": "FT",
+      "elapsed": 90,
+      "extra": null
+     }
+    },
+    "league": {
+     "id": 2,
+     "name": "UEFA Champions League",
+     "country": "World",
+     "logo": "https://media.api-sports.io/football/leagues/2.png",
+     "season": 2024,
+     "round": "Final"
+    },
+    "teams": {
+     "home": {
+      "id": 85,
+      "name": "Paris Saint Germain",
+      "logo": "https://media.api-sports.io/football/teams/85.png",
+      "winner": true
+     },
+     "away": {
+      "id": 505,
+      "name": "Inter",
+      "logo": "https://media.api-sports.io/football/teams/505.png",
+      "winner": false
+     }
+    },
+    "goals": {
+     "home": 5,
+     "away": 0
+    },
+    "score": {
+     "halftime": {
+      "home": 2,
+      "away": 0
+     },
+     "fulltime": {
+      "home": 5,
+      "away": 0
+     }
+    },
+    "events": [
+     {
+      "time": {
+       "elapsed": 12,
+       "extra": null
+      },
+      "team": {
+       "id": 85,
+       "name": "Paris Saint Germain",
+       "logo": "https://media.api-sports.io/football/teams/85.png"
+      },
+      "player": {
+       "id": null,
+       "name": "A. Hakimi"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 20,
+       "extra": null
+      },
+      "team": {
+       "id": 85,
+       "name": "Paris Saint Germain",
+       "logo": "https://media.api-sports.io/football/teams/85.png"
+      },
+      "player": {
+       "id": null,
+       "name": "D. Doué"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 63,
+       "extra": null
+      },
+      "team": {
+       "id": 85,
+       "name": "Paris Saint Germain",
+       "logo": "https://media.api-sports.io/football/teams/85.png"
+      },
+      "player": {
+       "id": null,
+       "name": "D. Doué"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 73,
+       "extra": null
+      },
+      "team": {
+       "id": 85,
+       "name": "Paris Saint Germain",
+       "logo": "https://media.api-sports.io/football/teams/85.png"
+      },
+      "player": {
+       "id": null,
+       "name": "K. Kvaratskhelia"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 86,
+       "extra": null
+      },
+      "team": {
+       "id": 85,
+       "name": "Paris Saint Germain",
+       "logo": "https://media.api-sports.io/football/teams/85.png"
+      },
+      "player": {
+       "id": null,
+       "name": "S. Mayulu"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     }
+    ],
+    "lineups": [],
+    "statistics": []
+   }
+  },
+  {
+   "title": "2025 UCL semi-final, 2nd leg",
+   "source": "curated from the public record (score + scorers); upgraded to full feed data when the server can fetch it",
+   "fixture": {
+    "fixture": {
+     "id": 9100002,
+     "referee": null,
+     "timezone": "UTC",
+     "date": "2025-05-06T19:00:00+00:00",
+     "venue": {
+      "id": null,
+      "name": "Stadio Giuseppe Meazza",
+      "city": "Milano"
+     },
+     "status": {
+      "long": "Match Finished After Extra Time",
+      "short": "AET",
+      "elapsed": 120,
+      "extra": null
+     }
+    },
+    "league": {
+     "id": 2,
+     "name": "UEFA Champions League",
+     "country": "World",
+     "logo": "https://media.api-sports.io/football/leagues/2.png",
+     "season": 2024,
+     "round": "Semi-finals"
+    },
+    "teams": {
+     "home": {
+      "id": 505,
+      "name": "Inter",
+      "logo": "https://media.api-sports.io/football/teams/505.png",
+      "winner": true
+     },
+     "away": {
+      "id": 529,
+      "name": "Barcelona",
+      "logo": "https://media.api-sports.io/football/teams/529.png",
+      "winner": false
+     }
+    },
+    "goals": {
+     "home": 4,
+     "away": 3
+    },
+    "score": {
+     "halftime": {
+      "home": 2,
+      "away": 0
+     },
+     "fulltime": {
+      "home": 4,
+      "away": 3
+     }
+    },
+    "events": [
+     {
+      "time": {
+       "elapsed": 21,
+       "extra": null
+      },
+      "team": {
+       "id": 505,
+       "name": "Inter",
+       "logo": "https://media.api-sports.io/football/teams/505.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Lautaro Martínez"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 45,
+       "extra": 1
+      },
+      "team": {
+       "id": 505,
+       "name": "Inter",
+       "logo": "https://media.api-sports.io/football/teams/505.png"
+      },
+      "player": {
+       "id": null,
+       "name": "H. Çalhanoğlu"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Penalty",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 54,
+       "extra": null
+      },
+      "team": {
+       "id": 529,
+       "name": "Barcelona",
+       "logo": "https://media.api-sports.io/football/teams/529.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Eric García"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 60,
+       "extra": null
+      },
+      "team": {
+       "id": 529,
+       "name": "Barcelona",
+       "logo": "https://media.api-sports.io/football/teams/529.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Dani Olmo"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 87,
+       "extra": null
+      },
+      "team": {
+       "id": 529,
+       "name": "Barcelona",
+       "logo": "https://media.api-sports.io/football/teams/529.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Raphinha"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 90,
+       "extra": 3
+      },
+      "team": {
+       "id": 505,
+       "name": "Inter",
+       "logo": "https://media.api-sports.io/football/teams/505.png"
+      },
+      "player": {
+       "id": null,
+       "name": "F. Acerbi"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 99,
+       "extra": null
+      },
+      "team": {
+       "id": 505,
+       "name": "Inter",
+       "logo": "https://media.api-sports.io/football/teams/505.png"
+      },
+      "player": {
+       "id": null,
+       "name": "D. Frattesi"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     }
+    ],
+    "lineups": [],
+    "statistics": []
+   }
+  },
+  {
+   "title": "2025 UCL quarter-final, 1st leg",
+   "source": "curated from the public record (score + scorers); upgraded to full feed data when the server can fetch it",
+   "fixture": {
+    "fixture": {
+     "id": 9100003,
+     "referee": null,
+     "timezone": "UTC",
+     "date": "2025-04-08T19:00:00+00:00",
+     "venue": {
+      "id": null,
+      "name": "Emirates Stadium",
+      "city": "London"
+     },
+     "status": {
+      "long": "Match Finished",
+      "short": "FT",
+      "elapsed": 90,
+      "extra": null
+     }
+    },
+    "league": {
+     "id": 2,
+     "name": "UEFA Champions League",
+     "country": "World",
+     "logo": "https://media.api-sports.io/football/leagues/2.png",
+     "season": 2024,
+     "round": "Quarter-finals"
+    },
+    "teams": {
+     "home": {
+      "id": 42,
+      "name": "Arsenal",
+      "logo": "https://media.api-sports.io/football/teams/42.png",
+      "winner": true
+     },
+     "away": {
+      "id": 541,
+      "name": "Real Madrid",
+      "logo": "https://media.api-sports.io/football/teams/541.png",
+      "winner": false
+     }
+    },
+    "goals": {
+     "home": 3,
+     "away": 0
+    },
+    "score": {
+     "halftime": {
+      "home": 0,
+      "away": 0
+     },
+     "fulltime": {
+      "home": 3,
+      "away": 0
+     }
+    },
+    "events": [
+     {
+      "time": {
+       "elapsed": 58,
+       "extra": null
+      },
+      "team": {
+       "id": 42,
+       "name": "Arsenal",
+       "logo": "https://media.api-sports.io/football/teams/42.png"
+      },
+      "player": {
+       "id": null,
+       "name": "D. Rice"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 70,
+       "extra": null
+      },
+      "team": {
+       "id": 42,
+       "name": "Arsenal",
+       "logo": "https://media.api-sports.io/football/teams/42.png"
+      },
+      "player": {
+       "id": null,
+       "name": "D. Rice"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 75,
+       "extra": null
+      },
+      "team": {
+       "id": 42,
+       "name": "Arsenal",
+       "logo": "https://media.api-sports.io/football/teams/42.png"
+      },
+      "player": {
+       "id": null,
+       "name": "M. Merino"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     }
+    ],
+    "lineups": [],
+    "statistics": []
+   }
+  },
+  {
+   "title": "2024 UCL quarter-final, 1st leg",
+   "source": "curated from the public record (score + scorers); upgraded to full feed data when the server can fetch it",
+   "fixture": {
+    "fixture": {
+     "id": 9100004,
+     "referee": null,
+     "timezone": "UTC",
+     "date": "2024-04-09T19:00:00+00:00",
+     "venue": {
+      "id": null,
+      "name": "Estadio Santiago Bernabéu",
+      "city": "Madrid"
+     },
+     "status": {
+      "long": "Match Finished",
+      "short": "FT",
+      "elapsed": 90,
+      "extra": null
+     }
+    },
+    "league": {
+     "id": 2,
+     "name": "UEFA Champions League",
+     "country": "World",
+     "logo": "https://media.api-sports.io/football/leagues/2.png",
+     "season": 2023,
+     "round": "Quarter-finals"
+    },
+    "teams": {
+     "home": {
+      "id": 541,
+      "name": "Real Madrid",
+      "logo": "https://media.api-sports.io/football/teams/541.png",
+      "winner": null
+     },
+     "away": {
+      "id": 50,
+      "name": "Manchester City",
+      "logo": "https://media.api-sports.io/football/teams/50.png",
+      "winner": null
+     }
+    },
+    "goals": {
+     "home": 3,
+     "away": 3
+    },
+    "score": {
+     "halftime": {
+      "home": 2,
+      "away": 2
+     },
+     "fulltime": {
+      "home": 3,
+      "away": 3
+     }
+    },
+    "events": [
+     {
+      "time": {
+       "elapsed": 2,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Bernardo Silva"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 12,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Rúben Dias"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Own Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 14,
+       "extra": null
+      },
+      "team": {
+       "id": 541,
+       "name": "Real Madrid",
+       "logo": "https://media.api-sports.io/football/teams/541.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Rodrygo"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 66,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "P. Foden"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 71,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "J. Gvardiol"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 79,
+       "extra": null
+      },
+      "team": {
+       "id": 541,
+       "name": "Real Madrid",
+       "logo": "https://media.api-sports.io/football/teams/541.png"
+      },
+      "player": {
+       "id": null,
+       "name": "F. Valverde"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     }
+    ],
+    "lineups": [],
+    "statistics": []
+   }
+  },
+  {
+   "title": "2024 Champions League final",
+   "source": "curated from the public record (score + scorers); upgraded to full feed data when the server can fetch it",
+   "fixture": {
+    "fixture": {
+     "id": 9100005,
+     "referee": null,
+     "timezone": "UTC",
+     "date": "2024-06-01T19:00:00+00:00",
+     "venue": {
+      "id": null,
+      "name": "Wembley Stadium",
+      "city": "London"
+     },
+     "status": {
+      "long": "Match Finished",
+      "short": "FT",
+      "elapsed": 90,
+      "extra": null
+     }
+    },
+    "league": {
+     "id": 2,
+     "name": "UEFA Champions League",
+     "country": "World",
+     "logo": "https://media.api-sports.io/football/leagues/2.png",
+     "season": 2023,
+     "round": "Final"
+    },
+    "teams": {
+     "home": {
+      "id": 165,
+      "name": "Borussia Dortmund",
+      "logo": "https://media.api-sports.io/football/teams/165.png",
+      "winner": false
+     },
+     "away": {
+      "id": 541,
+      "name": "Real Madrid",
+      "logo": "https://media.api-sports.io/football/teams/541.png",
+      "winner": true
+     }
+    },
+    "goals": {
+     "home": 0,
+     "away": 2
+    },
+    "score": {
+     "halftime": {
+      "home": 0,
+      "away": 0
+     },
+     "fulltime": {
+      "home": 0,
+      "away": 2
+     }
+    },
+    "events": [
+     {
+      "time": {
+       "elapsed": 74,
+       "extra": null
+      },
+      "team": {
+       "id": 541,
+       "name": "Real Madrid",
+       "logo": "https://media.api-sports.io/football/teams/541.png"
+      },
+      "player": {
+       "id": null,
+       "name": "D. Carvajal"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 83,
+       "extra": null
+      },
+      "team": {
+       "id": 541,
+       "name": "Real Madrid",
+       "logo": "https://media.api-sports.io/football/teams/541.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Vinícius Júnior"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     }
+    ],
+    "lineups": [],
+    "statistics": []
+   }
+  },
+  {
+   "title": "2023 Champions League final",
+   "source": "curated from the public record (score + scorers); upgraded to full feed data when the server can fetch it",
+   "fixture": {
+    "fixture": {
+     "id": 9100006,
+     "referee": null,
+     "timezone": "UTC",
+     "date": "2023-06-10T19:00:00+00:00",
+     "venue": {
+      "id": null,
+      "name": "Atatürk Olimpiyat Stadı",
+      "city": "Istanbul"
+     },
+     "status": {
+      "long": "Match Finished",
+      "short": "FT",
+      "elapsed": 90,
+      "extra": null
+     }
+    },
+    "league": {
+     "id": 2,
+     "name": "UEFA Champions League",
+     "country": "World",
+     "logo": "https://media.api-sports.io/football/leagues/2.png",
+     "season": 2022,
+     "round": "Final"
+    },
+    "teams": {
+     "home": {
+      "id": 50,
+      "name": "Manchester City",
+      "logo": "https://media.api-sports.io/football/teams/50.png",
+      "winner": true
+     },
+     "away": {
+      "id": 505,
+      "name": "Inter",
+      "logo": "https://media.api-sports.io/football/teams/505.png",
+      "winner": false
+     }
+    },
+    "goals": {
+     "home": 1,
+     "away": 0
+    },
+    "score": {
+     "halftime": {
+      "home": 0,
+      "away": 0
+     },
+     "fulltime": {
+      "home": 1,
+      "away": 0
+     }
+    },
+    "events": [
+     {
+      "time": {
+       "elapsed": 68,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Rodri"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     }
+    ],
+    "lineups": [],
+    "statistics": []
+   }
+  },
+  {
+   "title": "2023 UCL semi-final, 2nd leg",
+   "source": "curated from the public record (score + scorers); upgraded to full feed data when the server can fetch it",
+   "fixture": {
+    "fixture": {
+     "id": 9100007,
+     "referee": null,
+     "timezone": "UTC",
+     "date": "2023-05-17T19:00:00+00:00",
+     "venue": {
+      "id": null,
+      "name": "Etihad Stadium",
+      "city": "Manchester"
+     },
+     "status": {
+      "long": "Match Finished",
+      "short": "FT",
+      "elapsed": 90,
+      "extra": null
+     }
+    },
+    "league": {
+     "id": 2,
+     "name": "UEFA Champions League",
+     "country": "World",
+     "logo": "https://media.api-sports.io/football/leagues/2.png",
+     "season": 2022,
+     "round": "Semi-finals"
+    },
+    "teams": {
+     "home": {
+      "id": 50,
+      "name": "Manchester City",
+      "logo": "https://media.api-sports.io/football/teams/50.png",
+      "winner": true
+     },
+     "away": {
+      "id": 541,
+      "name": "Real Madrid",
+      "logo": "https://media.api-sports.io/football/teams/541.png",
+      "winner": false
+     }
+    },
+    "goals": {
+     "home": 4,
+     "away": 0
+    },
+    "score": {
+     "halftime": {
+      "home": 2,
+      "away": 0
+     },
+     "fulltime": {
+      "home": 4,
+      "away": 0
+     }
+    },
+    "events": [
+     {
+      "time": {
+       "elapsed": 23,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Bernardo Silva"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 37,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "Bernardo Silva"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 76,
+       "extra": null
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "M. Akanji"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     },
+     {
+      "time": {
+       "elapsed": 90,
+       "extra": 1
+      },
+      "team": {
+       "id": 50,
+       "name": "Manchester City",
+       "logo": "https://media.api-sports.io/football/teams/50.png"
+      },
+      "player": {
+       "id": null,
+       "name": "J. Álvarez"
+      },
+      "assist": {
+       "id": null,
+       "name": null
+      },
+      "type": "Goal",
+      "detail": "Normal Goal",
+      "comments": null
+     }
+    ],
+    "lineups": [],
+    "statistics": []
+   }
+  }
+ ]
+}

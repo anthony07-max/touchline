@@ -31,3 +31,18 @@ def test_demo_uses_elite_squads():
     assert "Real Madrid" in st.home.name and "Manchester City" in st.away.name
     assert any("Mbappé" in p.name for p in st.home.starters) and any("Haaland" in p.name for p in st.away.starters)
     assert "game-estimated" in DEMO_NOTICE
+
+
+def test_frozen_classics_load_and_parse():
+    from fastapi.testclient import TestClient
+    from backend.live_main import app
+    assert len(centre.CLASSIC_RAW) >= 7
+    c = TestClient(app)
+    d = c.get("/api/classics").json()
+    titles = [x["title"] for x in d["classics"]]
+    assert titles[0] == "2025 Champions League final"
+    fid = d["classics"][0]["fixture"]["fixture"]["id"]
+    s = centre.snapshot(fid)
+    assert s["state"]["ended"] and s["recap"]["score"] == [5, 0] and "Paris" in s["recap"]["headline"]
+    rm = [x for x in d["classics"] if x["title"] == "2024 UCL quarter-final, 1st leg"][0]["fixture"]
+    assert (rm["goals"]["home"], rm["goals"]["away"]) == (3, 3)

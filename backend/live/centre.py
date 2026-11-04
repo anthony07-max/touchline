@@ -23,7 +23,6 @@ ELITE = ["Real Madrid", "Manchester City", "Barcelona", "Bayern", "Paris Saint G
 CLASSIC_SPECS = [
     (2024, "Final", "Paris Saint Germain", "Inter", "2025 Champions League final"),
     (2024, "Semi-finals", "Inter", "Barcelona", "2025 UCL semi-final, 2nd leg"),
-    (2024, "Semi-finals", "Barcelona", "Inter", "2025 UCL semi-final, 1st leg"),
     (2024, "Quarter-finals", "Arsenal", "Real Madrid", "2025 UCL quarter-final, 1st leg"),
     (2023, "Quarter-finals", "Real Madrid", "Manchester City", "2024 UCL quarter-final, 1st leg"),
     (2023, "Final", "Borussia Dortmund", "Real Madrid", "2024 Champions League final"),

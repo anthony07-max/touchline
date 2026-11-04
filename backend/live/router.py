@@ -19,6 +19,8 @@ FORMATION_MAP = {"3-4-2-1": "3-4-3", "3-4-1-2": "3-5-2", "4-1-4-1": "4-5-1", "4-
 
 
 def fetch_fixture(fid: int, max_age: float = 60, force=False):
+    from .centre import CLASSIC_RAW
+    if fid in CLASSIC_RAW: return adapter.parse_fixture(CLASSIC_RAW[fid])
     d = af.get(f"fixtures?id={fid}", max_age=max_age, force=force)
     if not d.get("response"): raise af.APIError("fixture not found")
     return adapter.parse_fixture(d["response"][0])
