@@ -76,7 +76,7 @@ def team(tid: int):
     return {"team": {**fd._team(t), "venue": t.get("venue"), "founded": t.get("founded"), "colors": t.get("clubColors"),
                      "coach": (t.get("coach") or {}).get("name"), "competitions": [c.get("code") for c in t.get("runningCompetitions") or [] if c.get("code") in CODES]},
             "squad": sq[0]["players"] if sq else [],
-            "squad_note": "Squad list is real; player ratings in Touchline are modelled from position and age (the free feed has no player stats).",
+            "squad_note": "Squad list is real; player ratings in Kickvana are modelled from position and age (the free feed has no player stats).",
             "matches": [centre._summ(fd.to_fixture(m)) for m in ms.get("matches") or []]}
 
 

@@ -1,4 +1,4 @@
-# PROJECT TOUCHLINE — Phase 1 MVP
+# KICKVANA — Phase 1 MVP
 
 Alternate-timeline football simulation: branch a (demo) match at any minute, change tactics/subs,
 and see Monte Carlo win/draw/loss + xG with an opponent AI that reacts. **All teams, players and

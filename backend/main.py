@@ -16,7 +16,7 @@ from touchline_engine.copilot import advise
 from touchline_engine import game
 from . import db, auth, billing
 
-app = FastAPI(title="Project Touchline API")
+app = FastAPI(title="Kickvana API")
 
 # CORS for the Expo app (web build / dev). Auth is bearer-token only, so credentials are not allowed.
 from fastapi.middleware.cors import CORSMiddleware

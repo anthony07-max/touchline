@@ -209,7 +209,7 @@ async def revenuecat_webhook(request: Request, authorization: Optional[str] = He
     try:
         uid = int(ev.get("app_user_id"))
     except (TypeError, ValueError):
-        return {"status": "ignored", "reason": "app_user_id not a Touchline user id"}
+        return {"status": "ignored", "reason": "app_user_id not a Kickvana user id"}
     if PRO_ENTITLEMENT not in (ev.get("entitlement_ids") or [PRO_ENTITLEMENT]):
         return {"status": "ignored"}
     exp = ev.get("expiration_at_ms"); exp = exp / 1000 if exp else None

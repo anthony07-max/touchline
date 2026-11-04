@@ -81,10 +81,10 @@ def test_stripe_stub_and_webhook(monkeypatch):
 def test_club_challenge_league_leaderboard():
     h1, _ = reg("mgr1@example.com"); h2, _ = reg("mgr2@example.com")
     xi = ["nb1", "nb2", "nb3", "nb4", "nb5", "nb6", "nb7", "nb14", "nb9", "nb16", "nb11"]
-    assert c.post("/api/club", json={"name": "Touchline FC", "starters": xi[:10]}, headers=h1).status_code == 422
-    assert c.post("/api/club", json={"name": "Touchline FC", "starters": xi}, headers=h1).status_code == 200
+    assert c.post("/api/club", json={"name": "Kickvana FC", "starters": xi[:10]}, headers=h1).status_code == 422
+    assert c.post("/api/club", json={"name": "Kickvana FC", "starters": xi}, headers=h1).status_code == 200
     m = c.get("/api/match/demo?minute=10", headers=h1).json()
-    assert "Touchline FC" in m["home"]["name"] and any(p["id"] == "nb16" for p in m["home"]["starters"])
+    assert "Kickvana FC" in m["home"]["name"] and any(p["id"] == "nb16" for p in m["home"]["starters"])
     ch = c.get("/api/challenge/today").json()
     assert ch["brief"]
     s1 = c.post("/api/challenge/submit", json={"tactics": {"pressing": "high"}}, headers=h1)
