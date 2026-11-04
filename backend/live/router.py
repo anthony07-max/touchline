@@ -69,7 +69,11 @@ async def poller():
 
 def get_squad(team_id):
     if team_id not in STATE["squads"]:
-        STATE["squads"][team_id] = squads.squad(team_id)
+        fails = STATE.setdefault("squad_fail", {})
+        if time.time() - fails.get(team_id, 0) < 600: return []
+        try: STATE["squads"][team_id] = squads.squad(team_id)
+        except Exception:  # feed unavailable: fall back to line-up/modelled data, retry in 10 min
+            fails[team_id] = time.time(); return []
     return STATE["squads"][team_id]
 
 
@@ -143,6 +147,27 @@ def live_squads(fixture_id: Optional[int] = None):
     return res
 
 
+def _modelled_xi(live, tid, have):
+    shape = ["GK", "DEF", "DEF", "DEF", "DEF", "MID", "MID", "MID", "FWD", "FWD", "FWD"]
+    bench_shape = ["GK", "DEF", "DEF", "MID", "MID", "FWD", "FWD"]
+    names = []
+    for e in live["events"]:
+        if e.get("team_id") == tid:
+            for k in ("player", "assist"):
+                if e.get(k) and e[k] not in names: names.append(e[k])
+    team = next(live[s]["name"] for s in ("home", "away") if live[s]["id"] == tid)
+    xi = list(have); used = {p["name"] for p in xi}
+    def mk(i, g, nm):
+        return {"id": f"m{tid}_{i}", "name": nm, "group": g, "attributes_estimated": True, **squads.estimate(g, None, None)}
+    i = 0
+    for g in shape[len(xi):]:
+        nm = next((n for n in names if n not in used), None)
+        if g == "GK" or not nm: nm = f"{team} {g}{i + 1}"
+        used.add(nm); xi.append(mk(i, "FWD" if nm in names and g != "GK" and i >= 8 else g, nm)); i += 1
+    bench = [mk(100 + j, g, f"{team} sub {g}{j + 1}") for j, g in enumerate(bench_shape)]
+    return xi, bench
+
+
 def seed_state(at_minute=None, fid=None):
     live = live_match()["live"] if not fid or fid == FIXTURE_ID else fetch_fixture(fid, max_age=600)
     minute = live["status"]["elapsed"] or 0
@@ -169,6 +194,9 @@ def seed_state(at_minute=None, fid=None):
         else:
             xi = squads.probable_xi(sq); ids = {p["id"] for p in xi}
             bench = [p for p in sq if p["id"] not in ids][:12]; form = "4-2-3-1"; src = "PROBABLE XI (official line-ups not yet published)"
+        if len(xi) < 11:  # no line-up and no squad data (feed down / synthetic classic): model a generic XI
+            xi, bench = _modelled_xi(live, tid, xi)
+            src = "MODELLED XI (no line-up or squad data available; names from match events where known)"
         form = FORMATION_MAP.get(form, form)
         if form not in FORMATIONS: form = "4-2-3-1"
         # used subs: drop players who already came off from bench
