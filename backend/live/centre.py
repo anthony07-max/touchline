@@ -189,7 +189,7 @@ def discover(days: int = 3) -> dict:
     for fid in classics_order():
         try: c = _summ(CLASSIC_RAW[fid]); c["classic"] = True; c["classic_title"] = CLASSIC_META[fid]; classics.append(c)
         except Exception: pass
-    done += classics
+    done = classics + done
     DISCOVERY.update(at=time.time(), items=up + done, note=note if (note or af.quota.get("last_error")) else None)
     if af.quota.get("last_error") and not note: DISCOVERY["note"] = "Live feed paused (provider account issue); showing saved matches."
     return DISCOVERY
