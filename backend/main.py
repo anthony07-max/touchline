@@ -370,6 +370,16 @@ from .mobile import router as mobile_router
 app.include_router(mobile_router)
 from .career import router as career_router
 app.include_router(career_router)
+from .progress import router as progress_router
+app.include_router(progress_router)
+from .whatif import router as whatif_router
+app.include_router(whatif_router)
+from .share import router as share_router
+app.include_router(share_router)
+from .social import router as social_router
+app.include_router(social_router)
+from .webpush import router as webpush_router
+app.include_router(webpush_router)
 
 
 @app.get("/")
@@ -380,6 +390,21 @@ def index():
 @app.get("/career")
 def career_page():
     return FileResponse(os.path.join(FRONT, "career.html"))
+
+
+@app.get("/social")
+def social_page():
+    return FileResponse(os.path.join(FRONT, "social.html"))
+
+
+@app.get("/live/manage")
+def manage_page():
+    return FileResponse(os.path.join(FRONT, "manage.html"))
+
+
+@app.get("/sw.js")
+def service_worker():
+    return FileResponse(os.path.join(FRONT, "sw.js"), media_type="application/javascript", headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache"})
 
 
 @app.get("/manager")

@@ -117,6 +117,11 @@ def check(fx_summary: dict, fetch=None) -> str:
                 from . import centre; centre._mem.pop(fid, None)  # next snapshot picks the XI up immediately
             except Exception: pass
             c["result"] = "found"
+            try:
+                from .. import webpush
+                webpush.notify_fixture(fid, "lineups", f"Line-ups confirmed: {fx_summary['home']['name']} v {fx_summary['away']['name']}",
+                                       "The confirmed XIs now feed every simulation and what-if.", bool(fx_summary.get("elite")))
+            except Exception: pass
         else: c["result"] = "empty"
     except Exception as e:
         c["result"] = f"error: {str(e)[:80]}"

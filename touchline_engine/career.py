@@ -190,9 +190,22 @@ def window_open(st) -> bool:
     return st["status"] == "active" and any(a <= st["week"] <= b for a, b in WINDOWS)
 
 
+# ---------------------------------------------------------------- availability
+def available(p: Dict) -> bool:
+    return not p.get("injury_weeks") and not p.get("ban_weeks")
+
+
+def unavailable_reason(p: Dict) -> Optional[str]:
+    if p.get("injury_weeks"): return f"injured ({p.get('injury', 'knock')}, {p['injury_weeks']} wk)"
+    if p.get("ban_weeks"): return f"suspended ({p['ban_weeks']} match)"
+    return None
+
+
 # ---------------------------------------------------------------- tactics
 def best_xi(st, cid, formation="4-3-3", exclude=()) -> List[Optional[str]]:
-    squad = [st["players"][p] for p in club_of(st, cid)["squad"] if p not in exclude]
+    squad = [st["players"][p] for p in club_of(st, cid)["squad"] if p not in exclude and available(st["players"][p])]
+    if len(squad) < 11:  # emergency: field unavailable players rather than fewer than 11
+        squad = [st["players"][p] for p in club_of(st, cid)["squad"] if p not in exclude]
     used, xi = set(), []
     for pos, _, _ in FORMATIONS[formation]:
         cands = sorted([p for p in squad if p["id"] not in used],
@@ -251,6 +264,10 @@ def validate_tactics(st, cid, t: Dict) -> Dict:
     ids = [s.get("player_id") for s in slots]
     if any(i not in squad for i in ids): raise ValueError("every slot needs a player from your squad")
     if len(set(ids)) != 11: raise ValueError("a player can only fill one slot")
+    for i in ids:
+        why = unavailable_reason(st["players"][i])
+        if why and sum(available(st["players"][x]) for x in squad) >= 11:
+            raise ValueError(f"{st['players'][i]['name']} is {why}")
     clean = []
     gk = 0
     for s in slots:
@@ -292,6 +309,8 @@ def team_profile(st, cid, tactics, live=None) -> Dict:
     att = avg(units["FWD"] + units["MID"][:1]) + 1.6 * (n["FWD"] - 2) + role_mods["att"]
     mid = avg(units["MID"]) + 1.8 * (n["MID"] - 4) + role_mods["mid"]
     dfn = avg(units["DEF"]) + 1.8 * (n["DEF"] - 4) + role_mods["def"]
+    short = max(0, 11 - len(tactics["slots"])) * 4.5  # red cards: playing a man down
+    att -= short; mid -= short; dfn -= short
     return {"att": att, "mid": mid, "def": dfn, "gk": avg(units["GK"], 30), "pace_def": avg(pace_def, 60),
             "pace_fwd": avg(pace_fwd, 60), "sl": tactics["sliders"], "talk": (live or {}).get("talk", 0.0)}
 
@@ -329,13 +348,13 @@ def new_live(st, fixture: Dict) -> Dict:
     lv = {"fixture_id": fixture["id"], "home": fixture["home"], "away": fixture["away"], "minute": 0, "score": [0, 0],
           "events": [], "stats": {"shots": [0, 0], "xg": [0.0, 0.0], "poss": [0, 0]}, "subs": {"home": 0, "away": 0},
           "phase": "pre", "talks": {}, "tactics": {}, "fitness": {}, "talk": {"home": 0.0, "away": 0.0}, "ball": [50, 50],
-          "subbed_off": []}
+          "subbed_off": [], "sent_off": [], "cards": {}}
     for side in ("home", "away"):
         cid = fixture[side]
         t = copy.deepcopy(st["tactics"].get(cid) or auto_tactics(st, cid))
         # replace unavailable players (sold/missing)
         squad = set(club_of(st, cid)["squad"])
-        if any(s["player_id"] not in squad for s in t["slots"]): t = auto_tactics(st, cid, t["formation"] if t["formation"] in FORMATIONS else None)
+        if any(s["player_id"] not in squad or not available(P[s["player_id"]]) for s in t["slots"]): t = auto_tactics(st, cid, t["formation"] if t["formation"] in FORMATIONS else None)
         lv["tactics"][side] = t
         for p in club_of(st, cid)["squad"]: lv["fitness"][p] = P[p]["fitness"]
     return lv
@@ -376,8 +395,8 @@ def ai_adjust(st, lv, side):
 def auto_sub(st, lv, side):
     t = lv["tactics"][side]; P = st["players"]
     on = {s["player_id"] for s in t["slots"]}
-    bench = [p for p in club_of(st, lv[side])["squad"] if p not in on and p not in lv["subbed_off"]]
-    if not bench: return
+    bench = [p for p in club_of(st, lv[side])["squad"] if p not in on and p not in lv["subbed_off"] and p not in lv.get("sent_off", []) and available(P[p])]
+    if not bench or not t["slots"]: return
     tired = min(t["slots"], key=lambda s: lv["fitness"].get(s["player_id"], 100) + (500 if s["pos"] == "GK" else 0))
     if lv["fitness"].get(tired["player_id"], 100) > 72: return
     rep = max(bench, key=lambda b: slot_rating(P[b], tired["pos"]) * (lv["fitness"].get(b, 100) / 100))
@@ -387,6 +406,8 @@ def auto_sub(st, lv, side):
 def do_sub(st, lv, side, out_id, in_id):
     if lv["subs"][side] >= 5: raise ValueError("all five substitutions used")
     t = lv["tactics"][side]
+    if in_id in lv.get("sent_off", []): raise ValueError("that player has been sent off")
+    if not available(st["players"].get(in_id, {})) and in_id in st["players"]: raise ValueError(f"{st['players'][in_id]['name']} is {unavailable_reason(st['players'][in_id])}")
     slot = next((s for s in t["slots"] if s["player_id"] == out_id), None)
     if not slot: raise ValueError("that player is not on the pitch")
     if in_id not in club_of(st, lv[side])["squad"] or any(s["player_id"] == in_id for s in t["slots"]) or in_id in lv["subbed_off"]:
@@ -431,6 +452,21 @@ def step(st, lv, rng, to_minute: int):
             for s in lv["tactics"][side]["slots"]:
                 pid = s["player_id"]
                 lv["fitness"][pid] = round(max(20, lv["fitness"].get(pid, 100) - fatigue_rate(sl, P[pid]["attrs"]["stamina"]) * (0.5 if s["pos"] == "GK" else 1)), 2)
+        for side in ("home", "away"):
+            sl = lv["tactics"][side]["sliders"]
+            if rng.random() < 0.035 * (1 + 0.6 * (sl["pressing"] - 50) / 50):
+                slots = [s for s in lv["tactics"][side]["slots"] if s["pos"] != "GK"]
+                if slots:
+                    s = rng.choice(slots); pid = s["player_id"]
+                    n = lv.setdefault("cards", {}).get(pid, 0) + 1; lv["cards"][pid] = n
+                    straight = rng.random() < 0.06
+                    if n >= 2 or straight:
+                        lv["tactics"][side]["slots"] = [x for x in lv["tactics"][side]["slots"] if x["player_id"] != pid]
+                        lv.setdefault("sent_off", []).append(pid)
+                        lv["events"].append({"minute": lv["minute"], "type": "red", "side": side, "player": pid,
+                                             "text": f"RED CARD! {P[pid]['name']} is sent off" + (" (second yellow)" if n >= 2 and not straight else "")})
+                    else:
+                        lv["events"].append({"minute": lv["minute"], "type": "yellow", "side": side, "player": pid, "text": f"Yellow card: {P[pid]['name']}"})
         lv["talk"]["home"] *= 0.985; lv["talk"]["away"] *= 0.985
         if lv["minute"] == 45 and to_minute > 45 and lv["phase"] == "first":
             break
@@ -503,7 +539,8 @@ def apply_result(st, fixture, lv, rng):
     for i, side in enumerate(("home", "away")):
         cid = fixture[side]; gf, ga = lv["score"][i], lv["score"][1 - i]
         res = 1 if gf > ga else 0 if gf == ga else -1
-        played = {s["player_id"] for s in lv["tactics"][side]["slots"]} | {e["out"] for e in lv["events"] if e.get("type") == "sub" and e["side"] == side}
+        played = {s["player_id"] for s in lv["tactics"][side]["slots"]} | {e["out"] for e in lv["events"] if e.get("type") == "sub" and e["side"] == side} \
+            | {pid for pid in lv.get("sent_off", []) if pid in club_of(st, cid)["squad"]}
         for pid in club_of(st, cid)["squad"]:
             p = P[pid]
             if pid in played:
@@ -511,12 +548,29 @@ def apply_result(st, fixture, lv, rng):
                 goals = sum(1 for e in lv["events"] if e["type"] == "goal" and e.get("player") == pid)
                 p["form"] = round(max(1, min(10, p["form"] * 0.7 + 0.3 * (6 + 1.5 * res + 1.2 * goals + rng.uniform(-1, 1)))), 1)
                 p["morale"] = int(max(5, min(100, p["morale"] + 4 * res + 3 * goals)))
+                fit = lv["fitness"].get(pid, 100)
+                if rng.random() < 0.012 + max(0, 70 - fit) * 0.0012:
+                    kind, lo, hi = rng.choice([("hamstring strain", 2, 5), ("ankle knock", 1, 2), ("calf tear", 3, 6), ("knee ligament", 6, 12), ("dead leg", 1, 1)])
+                    p["injury"] = kind; p["injury_weeks"] = rng.randint(lo, hi)
+                    if cid == st["club_id"]: news(st, f"Injury: {p['name']} has a {kind} and will miss {p['injury_weeks']} week(s).", "bad")
+                if pid in lv.get("sent_off", []):
+                    p["ban_weeks"] = 1 + (1 if rng.random() < 0.3 else 0)
+                    if cid == st["club_id"]: news(st, f"{p['name']} is suspended for {p['ban_weeks']} match(es) after his red card.", "bad")
+                elif lv.get("cards", {}).get(pid):
+                    p["yellows"] = p.get("yellows", 0) + 1
+                    if p["yellows"] >= 5:
+                        p["yellows"] = 0; p["ban_weeks"] = 1
+                        if cid == st["club_id"]: news(st, f"{p['name']} picks up his 5th yellow and is banned for one match.", "bad")
             else:
                 p["morale"] = int(max(5, min(100, p["morale"] - (1 if p["ovr"] > 70 else 0))))
 
 
 def recover(st):
     for p in st["players"].values():
+        if p.get("injury_weeks"):
+            p["injury_weeks"] -= 1
+            if not p["injury_weeks"]: p.pop("injury", None)
+        if p.get("ban_weeks"): p["ban_weeks"] -= 1
         p["fitness"] = int(min(100, p["fitness"] + 22 + p["attrs"]["stamina"] / 10))
 
 
@@ -559,6 +613,9 @@ def finish_week(st, rng) -> Dict:
     if week == ACADEMY_WEEK and not st["academy"]["intake_done"]:
         academy_intake(st, rng)
     ai_transfer_activity(st, rng)
+    if week == 15:
+        exp = [st["players"][p]["name"] for p in club["squad"] if st["players"][p]["contract_until"] <= st["season"]]
+        if exp: news(st, f"Contracts expiring this summer: {', '.join(exp[:6])}{'…' if len(exp) > 6 else ''}. Renew from the squad screen or they leave for free.", "bad")
     recover(st)
     st["week"] += 1
     if st["week"] > WEEKS_PER_SEASON:
@@ -745,3 +802,38 @@ def sell(st, pid, accept: bool, rng) -> Dict:
     if t and any(s["player_id"] == pid for s in t["slots"]): st["tactics"][me["id"]] = auto_tactics(st, me["id"], t["formation"] if t["formation"] in FORMATIONS else None)
     news(st, f"Sold: {p['name']} to {buyer['name']} for £{off['fee']}m.", "transfer")
     return {"status": "sold", "fee": off["fee"]}
+
+
+# ---------------------------------------------------------------- contracts
+def renewal_demand(st, pid, years: int) -> int:
+    p = st["players"][pid]
+    base = wage_demand(p)
+    mood = 1.15 if p["morale"] < 45 else 1.0 if p["morale"] < 75 else 0.92
+    age = 1.1 if (p["age"] >= 30 and years >= 3) else 1.0  # veterans want security paid for
+    return int(round(max(base, p["wage"]) * mood * age * (1 + 0.03 * (years - 1))))
+
+
+def renew(st, pid, years: int, wage: int) -> Dict:
+    p = st["players"].get(pid)
+    if not p or p["club_id"] != st["club_id"]: raise ValueError("not your player")
+    if not 1 <= years <= 5: raise ValueError("contracts run 1 to 5 years")
+    if p["morale"] < 25: return {"status": "refused", "message": f"{p['name']} is unhappy and refuses to talk about a new deal."}
+    demand = renewal_demand(st, pid, years)
+    wages = sum(st["players"][x]["wage"] for x in club_of(st, st["club_id"])["squad"]) - p["wage"]
+    if wages + wage > st["finances"]["wage_budget"]: raise ValueError("that wage would break your wage budget")
+    if wage < demand:
+        return {"status": "counter", "wage_demand": demand, "message": f"{p['name']}'s agent wants £{demand}k a week over {years} years."}
+    p["wage"] = wage; p["contract_until"] = st["season"] + years; p["morale"] = min(100, p["morale"] + 6)
+    news(st, f"{p['name']} signs a new {years}-year deal on £{wage}k a week.", "good")
+    return {"status": "signed", "contract_until": p["contract_until"], "wage": wage,
+            "message": f"Signed! {p['name']} commits until season {p['contract_until']}."}
+
+
+def shape_from_lineup(formation: str) -> Optional[str]:
+    """Map a real confirmed-XI formation string (e.g. 4-1-4-1) to the nearest career preset."""
+    if not formation: return None
+    m = {"4-1-4-1": "4-3-3", "4-3-3": "4-3-3", "4-4-2": "4-4-2", "4-4-1-1": "4-4-2", "4-2-3-1": "4-2-3-1", "4-3-2-1": "4-3-3",
+         "3-5-2": "3-5-2", "3-4-2-1": "3-5-2", "3-4-3": "3-5-2", "3-4-1-2": "3-5-2", "5-3-2": "5-3-2", "5-4-1": "5-3-2", "4-2-2-2": "4-4-2"}
+    if formation in m: return m[formation]
+    d = formation.split("-")
+    return "5-3-2" if d[0] == "5" else "3-5-2" if d[0] == "3" else "4-3-3"

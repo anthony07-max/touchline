@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from touchline_engine import career as C
-from . import db, auth
+from . import db, auth, progress
 
 router = APIRouter(prefix="/api/career", tags=["career"])
 
@@ -30,6 +30,15 @@ if SCHEMA not in db.SCHEMA:
 
 
 # ---------------- persistence
+def _owner(key):
+    r = db.q("SELECT user_id FROM careers WHERE key=?", (key,), one=True); return r["user_id"] if r else None
+
+
+def _rec(key, kind, n=1):
+    try: return progress.record(_owner(key), kind, n)
+    except Exception: return {}
+
+
 def _load(key: Optional[str]):
     if not key: raise HTTPException(401, "missing X-Career-Key")
     r = db.q("SELECT state_json FROM careers WHERE key=?", (key,), one=True)
@@ -71,6 +80,7 @@ def _err(fn, *a):
 def _pub(p: Dict, st=None) -> Dict:
     out = {k: p[k] for k in ("id", "name", "pos", "age", "attrs", "ovr", "potential", "form", "fitness", "morale",
                              "wage", "value", "contract_until", "listed", "youth", "club_id")}
+    out["unavailable"] = C.unavailable_reason(p); out["yellows"] = p.get("yellows", 0)
     if st and p["club_id"]:
         c = C.club_of(st, p["club_id"]); out["club"] = {"id": c["id"], "name": c["name"], "short": c["short"], "colours": c["colours"], "badge": c["badge"]}
     return out
@@ -204,7 +214,7 @@ def put_tactics(t: TacticsIn, x_career_key: Optional[str] = Header(None)):
     st = _load(x_career_key)
     clean = _err(C.validate_tactics, st, st["club_id"], t.model_dump())
     st["tactics"][st["club_id"]] = clean; _save(x_career_key, st)
-    return {"tactics": clean}
+    return {"tactics": clean, "progress": _rec(x_career_key, "tactics")}
 
 
 @router.post("/tactics/auto")
@@ -257,6 +267,7 @@ def bid(b: BidIn, x_career_key: Optional[str] = Header(None)):
     st = _load(x_career_key); _active(st)
     r = _err(C.bid, st, b.player_id, b.fee, b.wage, _rng(st)); _save(x_career_key, st)
     if r.get("completed"):
+        r["progress"] = _rec(x_career_key, "signing")
         db.q("INSERT INTO career_transfers(career_key,season,week,player_id,direction,fee,wage,created_at) VALUES (?,?,?,?,?,?,?,?)",
              (x_career_key, st["season"], st["week"], b.player_id, "in", b.fee, b.wage, time.time()))
     return {**r, "budget": st["finances"]["transfer_budget"]}
@@ -293,13 +304,17 @@ def fixtures(x_career_key: Optional[str] = Header(None)):
 @router.post("/academy")
 def academy(b: YouthIn, x_career_key: Optional[str] = Header(None)):
     st = _load(x_career_key); p = _err(C.promote_youth, st, b.player_id, b.keep); _save(x_career_key, st)
+    if p: _rec(x_career_key, "academy")
     return {"player": _pub(p) if p else None}
 
 
-def _finish(key, st, lv=None):
-    f = C.user_fixture(st); rng = _rng(st)
+def _finish(key, st, lv=None, live=False):
+    f = C.user_fixture(st); rng = _rng(st); season = st["season"]
     if lv: C.apply_result(st, f, lv, rng)
     s = C.finish_week(st, rng); _save(key, st); _save_live(key, None)
+    if live: _rec(key, "career_match")
+    if s.get("result") and s["result"][0] > s["result"][1]: _rec(key, "career_win")
+    if st["season"] > season and st.get("seasons") and st["seasons"][-1]["pos"] == 1: _rec(key, "title")
     return {"week_summary": s, **_summary(st, key)}
 
 
@@ -423,4 +438,53 @@ def match_tactics(b: LiveTacticsIn, x_career_key: Optional[str] = Header(None)):
 def match_finish(x_career_key: Optional[str] = Header(None)):
     st, lv = _need(x_career_key)
     if lv["phase"] != "full": raise HTTPException(409, "the match is not over yet")
-    return {"final": _live_pub(st, lv), **_finish(x_career_key, st, lv)}
+    return {"final": _live_pub(st, lv), **_finish(x_career_key, st, lv, live=True)}
+
+
+# ---------------- contracts
+class RenewIn(BaseModel):
+    player_id: str; years: int = Field(..., ge=1, le=5); wage: int = Field(..., ge=0, le=1000)
+
+
+@router.get("/contract/{pid}")
+def contract_quote(pid: str, x_career_key: Optional[str] = Header(None)):
+    st = _load(x_career_key); p = st["players"].get(pid)
+    if not p or p["club_id"] != st["club_id"]: raise HTTPException(404, "not your player")
+    return {"player_id": pid, "current_wage": p["wage"], "contract_until": p["contract_until"], "season": st["season"],
+            "demands": {y: C.renewal_demand(st, pid, y) for y in range(1, 6)}}
+
+
+@router.post("/contract/renew")
+def contract_renew(b: RenewIn, x_career_key: Optional[str] = Header(None)):
+    st = _load(x_career_key); _active(st); r = _err(C.renew, st, b.player_id, b.years, b.wage); _save(x_career_key, st); return r
+
+
+# ---------------- real line-ups -> career shape
+@router.post("/tactics/from-fixture/{fid}")
+def tactics_from_fixture(fid: int, team_id: Optional[int] = None, x_career_key: Optional[str] = Header(None)):
+    """Copy the shape of a real confirmed XI (from the lineup watcher cache - never calls the data feed) into your plan."""
+    from .live import lineups
+    hit = lineups.get(fid)
+    if not hit: raise HTTPException(404, "no confirmed line-up cached for that fixture yet")
+    lus = hit["lineups"]; lu = next((l for l in lus if not team_id or l["team"]["id"] == team_id), lus[0])
+    form = C.shape_from_lineup(lu.get("formation"))
+    st = _load(x_career_key); old = st["tactics"][st["club_id"]]
+    t = C.auto_tactics(st, st["club_id"], form); t["sliders"] = old["sliders"]; st["tactics"][st["club_id"]] = t; _save(x_career_key, st)
+    return {"tactics": t, "copied_from": {"team": lu["team"].get("name"), "formation": lu.get("formation"), "mapped_to": form}}
+
+
+# ---------------- account linkage
+@router.post("/claim")
+def claim(x_career_key: Optional[str] = Header(None), user=Depends(auth.require_user)):
+    """Attach this browser's career to the logged-in account (migrates the anonymous key)."""
+    st = _load(x_career_key); cur = _owner(x_career_key)
+    if cur and cur != user["id"]: raise HTTPException(409, "this career belongs to another account")
+    db.q("UPDATE careers SET user_id=? WHERE key=?", (user["id"], x_career_key))
+    return {"linked": True, "club": st["club_id"]}
+
+
+@router.get("/mine")
+def mine(user=Depends(auth.require_user)):
+    rows = db.q("SELECT key,club_id,season,week,status,updated_at FROM careers WHERE user_id=? ORDER BY updated_at DESC", (user["id"],))
+    names = {f"c{i}": c[0] for i, c in enumerate(C.CLUBS)}
+    return {"careers": [{**r, "club": names.get(r["club_id"], r["club_id"])} for r in rows]}
