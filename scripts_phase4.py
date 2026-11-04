@@ -34,7 +34,7 @@ async def main():
         # weekly with balanced score
         await pg.goto(BASE + '/social'); await pg.wait_for_timeout(2500); await pg.click('.tabs button:has-text("Weekly")'); await pg.wait_for_selector('text=Submit plan', timeout=120000)
         await pg.select_option('#pg-weekly select >> nth=1', index=2)
-        await pg.click('#pg-weekly button:has-text("Submit plan")'); await pg.wait_for_function("document.body.textContent.includes('Scored vs the baseline')", timeout=120000)
+        await pg.click('#pg-weekly button:has-text("Submit plan")'); await pg.wait_for_selector('#wres .big', timeout=120000); await pg.evaluate("document.getElementById('wres').scrollIntoView()")
         await shot(pg, '18_weekly_balanced_score')
         await pg.click('.tabs button:has-text("Duels")'); await pg.wait_for_timeout(1500); nb = await pg.query_selector('#pg-duels button.b')
         if nb: await nb.click(); await pg.wait_for_timeout(3000)
