@@ -241,6 +241,20 @@ def board(week, limit=20):
     return [{"rank": i + 1, "manager": r["email"].split("@")[0][:18], "score": r["score"], "win": r["win"], "user_id": r["user_id"]} for i, r in enumerate(rows)]
 
 
+def _weekly_best(ch, st, me, seed):
+    meta = ch.get("meta") or {}
+    if "best_gain" in meta: return meta["best_gain"]
+    try:
+        from touchline_engine.copilot import advise
+        adv = advise(st, me.tactics, SimConfig(runs=600, seed=seed, user_side=ch["side"]), user_side=ch["side"], eval_runs=600)
+        best = max(0.0, float(adv["recommendation"]["expected_points_gain"]))
+    except Exception:
+        best = 0.25
+    meta["best_gain"] = best
+    db.q("UPDATE weekly_challenges SET meta_json=? WHERE week=?", (json.dumps(meta), ch["week"]))
+    return best
+
+
 @router.post("/api/weekly/enter")
 def weekly_enter(e: EntryIn, user=Depends(auth.require_user)):
     ch = current_challenge(); st, _, _ = _seed(ch["minute"], ch["fixture_id"])
@@ -252,7 +266,12 @@ def weekly_enter(e: EntryIn, user=Depends(auth.require_user)):
         res = compare(st, tac, SimConfig(runs=2000, seed=seed, user_side=ch["side"], user_subs=subs))
     except (ValueError, KeyError, StopIteration, TypeError) as ex:
         raise HTTPException(422, str(ex))
-    p = res["after"]["probabilities"]; score = round(100 * (3 * p["user_win"] + p["draw"]) / 3, 1)
+    p = res["after"]["probabilities"]; q = res["before"]["probabilities"]
+    gain = (3 * p["user_win"] + p["draw"]) - (3 * q["user_win"] + q["draw"])
+    best = _weekly_best(ch, st, me, seed)
+    # Balanced scoring: 50 = matches the do-nothing baseline, 100 = matches (or beats) the model's best known change,
+    # 0 = as much worse than baseline as the best change is better. Spreads entries over 0-100 whatever the scenario.
+    score = round(max(0.0, min(100.0, 50 + 50 * gain / max(best, 0.05))), 1)
     prev = db.q("SELECT score FROM weekly_entries WHERE week=? AND user_id=?", (ch["week"], user["id"]), one=True)
     if not prev or score > prev["score"]:
         db.q("INSERT OR REPLACE INTO weekly_entries(week,user_id,score,win,draw,payload_json,created_at) VALUES (?,?,?,?,?,?,?)",
@@ -260,4 +279,5 @@ def weekly_enter(e: EntryIn, user=Depends(auth.require_user)):
     prog = progress.record(user["id"], "challenge")
     rank = next((r["rank"] for r in board(ch["week"], 1000) if r["user_id"] == user["id"]), None)
     return {"score": score, "best": max(score, prev["score"] if prev else 0), "win": p["user_win"], "draw": p["draw"], "rank": rank,
-            "before": res["before"]["probabilities"], "explanation": res["explanation"], "progress": prog}
+            "before": res["before"]["probabilities"], "gain": round(gain, 3), "best_gain": round(best, 3),
+            "scoring": "50 = baseline, 100 = model's best known change", "explanation": res["explanation"], "progress": prog}

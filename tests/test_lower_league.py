@@ -20,11 +20,12 @@ def test_l2_api_season(client=None):
     from fastapi.testclient import TestClient
     from backend.main import app
     c = TestClient(app)
-    r = c.post("/api/career/new", json={"club_id": "c0", "league": "l2", "manager": "O"}).json()
+    r = c.post("/api/career/new", json={"club_id": "c0", "league": "l2", "manager": "O", "seed": 11}).json()
     k = {"X-Career-Key": r["key"]}
     assert c.patch("/api/career/clubs/c0", json={"name": "Marsh Men"}, headers=k).json()["name"] == "Marsh Men"
-    for _ in range(60):
+    for _ in range(120):
         s = c.post("/api/career/advance", headers=k).json()
+        if "detail" in s: c.post("/api/career/new-job", headers=k); continue
         if c.get("/api/career/squad", headers=k).json()["season"] > 1: break
     assert c.get("/api/career/squad", headers=k).json()["season"] == 2, s
     assert c.post("/api/career/packs", json={"name": "Real names", "clubs": [{"name": "X"}]}).status_code == 200
