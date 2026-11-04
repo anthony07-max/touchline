@@ -1,6 +1,6 @@
 /* Kickvana service worker: push notifications + offline support. */
-const V='kv-v4',SHELL=['/offline','/static/brand/theme.css','/static/brand/a11y.js','/static/brand/gen.js','/static/brand/mark.svg','/static/brand/logo.svg','/static/brand/favicon.svg'];
-const API_OK=/^\/api\/(career\/(summary|squad|table|fixtures|tactics|academy|clubs)|progress|weekly$|social\/(duels|leaderboard)|centre\/[^/]+(\/timeline)?$|live\/match|account$|me$)/;
+const V='kv-v5',SHELL=['/offline','/static/brand/theme.css','/static/brand/a11y.js','/static/brand/gen.js','/static/brand/mark.svg','/static/brand/logo.svg','/static/brand/favicon.svg'];
+const API_OK=/^\/api\/(career$|career\/(summary|squad|table|fixtures|tactics|academy|clubs)|progress|weekly$|social\/(duels|leaderboard)|centre\/[^/]+(\/timeline)?$|live\/match|account$|me$)/;
 self.addEventListener('install',e=>e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V&&k!=='kv-data').map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 function stamp(r){const h=new Headers(r.headers);h.set('X-KV-Offline','1');return r.blob().then(b=>new Response(b,{status:r.status,headers:h}))}

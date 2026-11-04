@@ -156,7 +156,7 @@ function ballAt(t){const p=curPoss(t);if(!p)return{x:50,y:50,side:null,p:null};
  const nx=T.possessions[T.possessions.indexOf(p)+1];if(nx){const f=ease(Math.min(1,(t-p.t1)/Math.max(.5,nx.t0-p.t1))),a=[bx,by],b=teamPos(nx.side,bx,by,true,t)[nx.passes[0][0]];return{x:a[0]+(b[0]-a[0])*f*.2,y:a[1]+(b[1]-a[1])*f*.2,side:null,p:null}}
  return{x:bx,y:by,side:null,p:null}}
 const cv=$('cv'),cx=cv.getContext('2d');let W=0,Hh=0,dpr=1;
-function resize(){dpr=Math.min(2,devicePixelRatio||1);W=cv.clientWidth||$('stage').clientWidth;Hh=Math.round(W*0.64);cv.width=W*dpr;cv.height=Hh*dpr;cv.style.height=Hh+'px';[$('mom'),$('xgc')].forEach(c=>{c.width=c.clientWidth*dpr;c.height=+c.getAttribute('height')*dpr;c.style.height=c.getAttribute('height')+'px'})}
+function resize(){dpr=Math.min(2,devicePixelRatio||1);W=cv.clientWidth||$('stage').clientWidth;Hh=Math.round(W*0.64);cv.width=W*dpr;cv.height=Hh*dpr;cv.style.height=Hh+'px';[$('mom'),$('xgc')].forEach(c=>{const bh=+(c.dataset.h||(c.dataset.h=c.getAttribute('height')));c.width=c.clientWidth*dpr;c.height=bh*dpr;c.style.height=bh+'px'})}
 addEventListener('resize',resize);
 function P(x,y){const z=camZ;return[(W/2)+((x-camX)*W/100)*z,(Hh/2)+((y-camY)*Hh/100)*z]}
 function pitch(){const g=cx.createLinearGradient(0,0,0,Hh);g.addColorStop(0,'#0b2219');g.addColorStop(1,'#07170f');cx.fillStyle=g;cx.fillRect(0,0,W,Hh);

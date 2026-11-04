@@ -86,9 +86,9 @@ async function renameClub(id,cur){const n=prompt('Rename club in your save (text
 // ---------- start
 let LEAGUE=new URLSearchParams(location.search).get('league')==='l2'?'l2':'kv1';
 async function start(){const d=await (await fetch('/api/career/clubs?league='+LEAGUE)).json();
- if(!d.clubs.some(c=>c.id===PICKCLUB))PICKCLUB=LEAGUE==='l2'?'c0':'c4';
+ if(!d.clubs.some(c=>c.id===PICKCLUB)||(LEAGUE==='l2'&&!start.l2)){PICKCLUB=LEAGUE==='l2'?'c0':'c4';start.l2=LEAGUE==='l2'}
  $('clubs').innerHTML=`<div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center" role="tablist" aria-label="Choose a league">${Object.entries(d.leagues).map(([k,v])=>`<button class="btn ${k===LEAGUE?'pri':''}" role="tab" aria-selected="${k===LEAGUE}" data-lg="${k}">${esc(v)}${k==='l2'?' · Lower League Mode':''}</button>`).join('')}${LEAGUE==='l2'?`<span class="mut">24 clubs, 46 weeks, top 3 promoted. All clubs are fictional; rename any club in your save (Table tab) to match your real one. Leyton Marshes is our red-shirted East London club for fans who know the lower-league life.</span>`:''}</div>`+d.clubs.map(c=>`<div class="c ${c.id===PICKCLUB?'on':''}" data-id="${c.id}" tabindex="0" role="button" aria-label="Pick ${esc(c.name)}">${badge(c,52)}<div style="font:700 14px 'Space Grotesk';margin-top:6px">${esc(c.name)}</div><div class="mut">Rep ${c.reputation} · ${esc(c.expectation)}</div></div>`).join('');
- $('clubs').querySelectorAll('[data-lg]').forEach(e=>e.onclick=()=>{LEAGUE=e.dataset.lg;start()});
+ $('clubs').querySelectorAll('[data-lg]').forEach(e=>e.onclick=()=>{LEAGUE=e.dataset.lg;PICKCLUB=LEAGUE==='l2'?'c0':'c4';start()});
  $('clubs').innerHTML+='';d.clubs.map(c=>`<div class="c ${c.id===PICKCLUB?'on':''}" data-id="${c.id}">${badge(c,52)}<div style="font:700 14px 'Space Grotesk';margin-top:6px">${esc(c.name)}</div><div class="mut">Rep ${c.reputation} · ${esc(c.expectation)}</div></div>`).join('');
  $('clubs').querySelectorAll('.c').forEach(e=>{e.onclick=()=>{PICKCLUB=e.dataset.id;start()};e.onkeydown=k=>{if(k.key==='Enter'||k.key===' ')e.click()}});
  $('startBtn').onclick=async()=>{const r=await fetch('/api/career/new',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({club_id:PICKCLUB,league:LEAGUE,manager:$('mgr').value||'You'})});const d=await r.json();KEY=d.key;localStorage.kv_career=KEY;await boot()}}
@@ -243,7 +243,7 @@ async function mFinish(){const r=await api('/match/finish',{method:'POST'});canc
 
 // ---------- boot
 async function boot(){if(!KEY){$('tabs').style.display='none';show('start');start();return}
- try{S=await api('',{quiet:1})}catch(e){localStorage.removeItem('kv_career');KEY='';return boot()}
+ try{S=await api('',{quiet:1})}catch(e){if(!navigator.onLine||/offline/i.test(e.message)){toast('You are offline and this save is not cached yet');return}localStorage.removeItem('kv_career');KEY='';return boot()}
  $('tabs').style.display='flex';hdr();if(localStorage.tl_token)fetch('/api/career/claim',{method:'POST',headers:{Authorization:'Bearer '+localStorage.tl_token,'X-Career-Key':KEY}}).catch(()=>{});const h=location.hash.slice(1);show(['club','squad','tactics','transfers','match','league'].includes(h)?h:'club')}
 window.addEventListener('unhandledrejection',e=>e.preventDefault());boot();
 </script></body></html>
