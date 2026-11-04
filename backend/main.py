@@ -14,9 +14,11 @@ from touchline_engine.ratings import assign_slots
 from touchline_engine.providers import PROVIDERS, ProviderUnavailable
 from touchline_engine.copilot import advise
 from touchline_engine import game
-from . import db, auth, billing
+from . import db, auth, billing, account
 
 app = FastAPI(title="Kickvana API")
+from fastapi.middleware.gzip import GZipMiddleware
+app.add_middleware(GZipMiddleware, minimum_size=800, compresslevel=6)
 
 # CORS for the Expo app (web build / dev). Auth is bearer-token only, so credentials are not allowed.
 from fastapi.middleware.cors import CORSMiddleware
@@ -65,6 +67,7 @@ class SaveIn(BaseModel):
 
 class Creds(BaseModel):
     email: str = Field(..., max_length=200); password: str = Field(..., min_length=8, max_length=200)
+    age_ok: Optional[bool] = None  # registration form sends true after the 13+ checkbox; false is refused
 
 
 class ClubIn(BaseModel):
@@ -191,10 +194,12 @@ EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 @app.post("/api/auth/register")
 def register(c: Creds):
     if not EMAIL.match(c.email): raise HTTPException(422, "invalid email")
+    if c.age_ok is False: raise HTTPException(403, "Kickvana is for players aged 13 and over")
     if db.q("SELECT id FROM users WHERE email=?", (c.email.lower(),), one=True):
         raise HTTPException(409, "email already registered")
     uid = db.q("INSERT INTO users(email,pw_hash,plan,created_at) VALUES (?,?,?,?)",
                (c.email.lower(), auth.hash_password(c.password), "free", time.time()))
+    account.on_register(uid, c.email.lower(), c.age_ok)
     return {"token": auth.issue_token(uid), "user": {"id": uid, "email": c.email.lower(), "plan": "free"}}
 
 
@@ -379,6 +384,8 @@ app.include_router(share_router)
 from .social import router as social_router
 app.include_router(social_router)
 from .webpush import router as webpush_router
+from .account import router as account_router
+app.include_router(account_router)
 app.include_router(webpush_router)
 
 
@@ -412,4 +419,21 @@ def manager():
     return FileResponse(os.path.join(FRONT, "index.html"))
 
 
-app.mount("/static", StaticFiles(directory=FRONT), name="static")
+PAGES = {"/privacy": "privacy.html", "/terms": "terms.html", "/support": "support.html", "/account": "account.html",
+         "/account/verify": "account.html", "/account/reset": "account.html", "/tutorial": "tutorial.html", "/offline": "offline.html"}
+for _path, _file in PAGES.items():
+    app.add_api_route(_path, (lambda f: (lambda: FileResponse(os.path.join(FRONT, f), headers={"Cache-Control": "public, max-age=300"})))(_file),
+                      methods=["GET"], include_in_schema=False)
+
+
+class CachedStatic(StaticFiles):
+    """Long cache for fonts/images, short revalidating cache for html/js/css (no build hashing in this app)."""
+    async def get_response(self, path, scope):
+        r = await super().get_response(path, scope)
+        if r.status_code == 200:
+            long = path.rsplit(".", 1)[-1].lower() in ("ttf", "woff", "woff2", "png", "jpg", "jpeg", "webp", "svg", "ico")
+            r.headers["Cache-Control"] = "public, max-age=604800, stale-while-revalidate=86400" if long else "public, max-age=300, stale-while-revalidate=3600"
+        return r
+
+
+app.mount("/static", CachedStatic(directory=FRONT), name="static")

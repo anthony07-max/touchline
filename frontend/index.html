@@ -115,7 +115,7 @@ ul{padding-left:18px;margin:6px 0}li{margin:4px 0}.ev{font-size:12px;padding:3px
 <section class="tab" id="tab-autopsy"><div class="card" style="margin:20px 24px"><h2>Post-match autopsy</h2><div id="aut"></div></div></section>
 
 <section class="tab" id="tab-account"><div class="grid2"><div class="card"><h2>Account</h2>
- <label>Email <input id="em" value=""></label><label>Password <input id="pw" type="password"></label>
+ <label>Email <input id="em" value=""></label><label>Password <input id="pw" type="password"></label><label style="display:flex;gap:6px"><input id="age" type="checkbox"> 13+ (new accounts)</label>
  <div class="row"><button onclick="authDo('login')">Log in</button><button class="sec" onclick="authDo('register')">Register</button><button class="sec" onclick="logout()">Log out</button></div>
  <div id="me" style="margin-top:10px"></div></div>
 <div class="card"><h2>Plans</h2><div id="plans"></div><button style="margin-top:8px" onclick="upgrade()">Upgrade to Pro</button><div id="bill" class="mut"></div></div></div></section>
@@ -231,7 +231,7 @@ async function loadAut(){const a=await j('/api/autopsy');$('aut').innerHTML=`<di
  <h2>Key moments</h2>${a.key_moments.map(e=>`<div class="ev ${e.type=='goal'?'goal':''}">${e.minute}' ${e.team=='home'?'NOR':'RIV'} ${e.type} - ${e.detail}</div>`).join('')}
  <h2 style="margin-top:10px">Model win probability at checkpoints</h2>${a.model_checkpoints.length?`<table><tr><th>Minute</th><th>Home win</th><th>Draw</th><th>Away win</th></tr>${a.model_checkpoints.map(c=>`<tr><td>${c.minute}'</td><td>${pct(c.home_win)}</td><td>${pct(c.draw)}</td><td>${pct(c.away_win)}</td></tr>`).join('')}</table>`:`<div class="badge">${a.upsell}</div>`}`}
 // ---- account
-async function authDo(kind){try{const r=await post('/api/auth/'+kind,{email:$('em').value,password:$('pw').value});TOKEN=r.token;localStorage.tl_token=TOKEN;META=await j('/api/meta');renderAcct();loadMe();load()}catch(e){$('me').innerHTML=`<span style="color:var(--bad)">${e.message}</span>`}}
+async function authDo(kind){try{if(kind==='register'&&!$('age').checked)throw new Error('Confirm you are 13 or older');const r=await post('/api/auth/'+kind,{email:$('em').value,password:$('pw').value,...(kind==='register'?{age_ok:true}:{})});TOKEN=r.token;localStorage.tl_token=TOKEN;META=await j('/api/meta');renderAcct();loadMe();load()}catch(e){$('me').innerHTML=`<span style="color:var(--bad)">${e.message}</span>`}}
 async function logout(){await post('/api/auth/logout');TOKEN='';localStorage.removeItem('tl_token');META=await j('/api/meta');renderAcct();loadMe()}
 async function loadMe(){$('plans').innerHTML=`<table><tr><th></th><th>Free</th><th>Pro (&pound;${META.plans.pro.price_gbp}/mo)</th></tr>${Object.keys(META.plans.free).filter(k=>k!='price_gbp').map(k=>`<tr><td>${k.replaceAll('_',' ')}</td><td>${META.plans.free[k]}</td><td>${META.plans.pro[k]}</td></tr>`).join('')}</table>`;
  if(!TOKEN){$('me').innerHTML='<div class="mut">Not logged in.</div>';return}try{const m=await j('/api/me');$('me').innerHTML=`<div>${m.email} - <b>${m.plan.toUpperCase()}</b></div><div class="mut">Copilot used today: ${m.copilot_used_today}/${m.entitlements.copilot_per_day}</div>${m.club?`<div class="mut">Club: ${m.club.name}</div>`:''}`}catch{TOKEN='';localStorage.removeItem('tl_token')}}

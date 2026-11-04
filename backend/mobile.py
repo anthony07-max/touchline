@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 import httpx
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
-from . import db, auth, billing
+from . import db, auth, billing, account
 
 router = APIRouter()
 LIVE_UPSTREAM = os.getenv("TOUCHLINE_LIVE_UPSTREAM", "http://127.0.0.1:8766")
@@ -248,7 +248,8 @@ def export(user=Depends(auth.require_user)):
             "prefs": get_prefs(uid), "scenarios": db.list_scenarios(uid),
             "challenge_entries": db.q("SELECT day,tactics_json,score FROM challenge_entries WHERE user_id=?", (uid,)),
             "leagues": db.q("SELECT league_id FROM league_members WHERE user_id=?", (uid,)),
-            "entitlements": db.q("SELECT source,product,active,expires_at FROM entitlements WHERE user_id=?", (uid,))}
+            "entitlements": db.q("SELECT source,product,active,expires_at FROM entitlements WHERE user_id=?", (uid,)),
+            **account.export_extra(uid), "exported_at": time.time()}
 
 
 @router.delete("/api/me")
@@ -259,6 +260,7 @@ def delete_me(user=Depends(auth.require_user)):
         db.q("DELETE FROM leagues WHERE owner_id=?", (uid,))
     for t in ("league_members", "challenge_entries", "scenarios", "timelines", "push_tokens", "user_prefs", "entitlements", "sessions", "push_outbox"):
         db.q(f"DELETE FROM {t} WHERE user_id=?", (uid,))
+    account.delete_extra(uid)
     db.q("DELETE FROM users WHERE id=?", (uid,))
     return {"deleted": True}
 
