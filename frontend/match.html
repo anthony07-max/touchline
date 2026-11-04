@@ -61,9 +61,13 @@ canvas{display:block;width:100%}
 <div class="stage" id="stage"><canvas id="cv"></canvas><div class="hud" id="hud">0'</div><div class="dir" id="dir"></div><div class="flash" id="flash"></div></div>
 <div class="ctl"><button id="play">❚❚</button><div class="scrub"><div id="marks"></div><input type="range" id="scr" min="0" max="5400" value="0" step="1"></div>
 <select id="spd"><option value="12">12×</option><option value="30" selected>30×</option><option value="90">90×</option></select></div>
-<div class="chips" id="ov"><span class="chip on" data-o="trails">Ball trail</span><span class="chip" data-o="network">Passing network</span><span class="chip" data-o="heat">Heat map</span><span class="chip" data-o="shots">Shot map</span><span class="chip" data-o="cam">Camera follow</span></div>
+<div class="chips" id="ov"><span class="chip on" data-o="trails">Ball trail</span><span class="chip on" data-o="names">Names</span><span class="chip" data-o="network">Passing network</span><span class="chip" data-o="heat">Heat map</span><span class="chip" data-o="shots">Shot map</span><span class="chip" data-o="cam">Camera follow</span></div>
 <div class="mini"><h4>Momentum · pressure</h4><canvas id="mom" height="70"></canvas></div>
 <div class="mini"><h4>xG timeline <span id="xgv" style="float:right;color:#cfd8f5;letter-spacing:0"></span></h4><canvas id="xgc" height="80"></canvas></div>
+<div class="mini" id="anl"><h4>Match analysis <span style="float:right;letter-spacing:0" role="tablist" aria-label="Team"><button class="chip on" id="anH" role="tab" aria-selected="true">Home</button> <button class="chip" id="anA" role="tab" aria-selected="false">Away</button></span></h4>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><figure style="margin:0"><canvas id="anHeat" height="150" data-label="Heat map of where the selected team had the ball"></canvas><figcaption class="note">Heat map: where they had the ball</figcaption></figure>
+<figure style="margin:0"><canvas id="anPass" height="150" data-label="Pass map showing average positions and most common passing links"></canvas><figcaption class="note" id="anPassCap">Pass map: average positions, thicker = more passes</figcaption></figure></div>
+<p class="note" id="anTxt" aria-live="polite"></p></div>
 <p class="note" id="lbl"></p>
 </section>
 
@@ -74,11 +78,11 @@ canvas{display:block;width:100%}
 </div>
 <script>
 const $=id=>document.getElementById(id),FID=+location.pathname.split('/').pop();
-let S=null,T=null,simT=0,playing=true,last=0,camX=50,camY=50,camZ=1,bx=50,by=50,trail=[],firedIdx=0,OV={trails:1};
+let S=null,T=null,simT=0,playing=true,last=0,camX=50,camY=50,camZ=1,bx=50,by=50,trail=[],firedIdx=0,OV={trails:1,names:1},PLS={home:[],away:[]},AN={side:'home',at:-1};
 const H='#00F5A0',A='#FF7A59';
 const ICON={Goal:'⚽',Card:'🟨',subst:'🔁',Var:'📺'};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id===b.dataset.p));if(b.dataset.p==='pitch')resize()});
-document.querySelectorAll('#ov .chip').forEach(c=>c.onclick=()=>{c.classList.toggle('on');OV[c.dataset.o]=c.classList.contains('on')});
+document.querySelectorAll('#ov .chip').forEach(c=>{c.tabIndex=0;c.setAttribute('role','switch');c.setAttribute('aria-checked',c.classList.contains('on'));c.onclick=()=>{c.classList.toggle('on');OV[c.dataset.o]=c.classList.contains('on');c.setAttribute('aria-checked',OV[c.dataset.o])};c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();c.click()}}});
 $('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'❚❚':'▶'};
 $('scr').oninput=e=>{simT=+e.target.value;firedIdx=T?T.events.filter(x=>x.t<simT).length:0;trail=[]};
 const mm=t=>{const m=Math.floor(t/60);return m>90?`90+${m-90}'`:m+"'"};
@@ -166,18 +170,22 @@ function overlays(t){if(!PRE)return;
   const mx=Math.max(1,...Object.values(cnt));cx.strokeStyle=sd==='home'?H:A;for(const k in cnt){const[i,j]=k.split('-').map(Number),[a,b]=P(...tp[i]),[c,d]=P(...tp[j]);cx.globalAlpha=.15+.6*cnt[k]/mx;cx.lineWidth=1+5*cnt[k]/mx;cx.beginPath();cx.moveTo(a,b);cx.lineTo(c,d);cx.stroke()}cx.globalAlpha=1;
   tp.forEach((q,i)=>{const[x,y]=P(...q);cx.fillStyle='#05070D';cx.strokeStyle=sd==='home'?H:A;cx.lineWidth=2;cx.beginPath();cx.arc(x,y,7,0,7);cx.fill();cx.stroke()})}}
  if(OV.shots){for(const s of PRE.shots){if(s.t>t)break;let x=s.x,y=s.y;if(s.side==='away'){x=100-x;y=100-y}const[a,b]=P(x,y),c=s.side==='home'?H:A;cx.beginPath();cx.arc(a,b,3+s.xg*22,0,7);cx.strokeStyle=c;cx.lineWidth=1.5;cx.globalAlpha=.9;cx.stroke();if(s.goal){cx.fillStyle=c;cx.fill()}cx.globalAlpha=1}}}
-function players(t,ball){const poss=ball.side;for(const sd of['home','away']){const tp=teamPos(sd,bx,by,poss===sd,t),c=sd==='home'?H:A;const lead=poss===sd&&ball.p?teamPos(sd,bx,by,true,t):null;
- tp.forEach((q,i)=>{const[x,y]=P(...q),r=Math.max(4.5,W/70)*camZ;cx.shadowColor=c;cx.shadowBlur=ball.holder===i&&poss===sd?18:6;cx.fillStyle=i===0?'#fff':c;cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();cx.shadowBlur=0;
-  cx.fillStyle='#05070D';cx.font=`700 ${Math.round(r*1.05)}px Inter`;cx.textAlign='center';cx.textBaseline='middle';const nm=T.teams[sd].numbers?T.teams[sd].numbers[i]:'';if(nm)cx.fillText(nm,x,y+.5);
-  if(ball.holder===i&&poss===sd&&T.teams[sd].players[i]){cx.fillStyle='#ffffffdd';cx.font='600 10px Inter';cx.fillText(T.teams[sd].players[i].split(' ').slice(-1)[0],x,y-r-8)}})}}
-function frame(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
+let PDT=0.016;
+function players(t,ball){const poss=ball.side,rm=window.KV_REDUCED_MOTION;for(const sd of['home','away']){const tp=teamPos(sd,bx,by,poss===sd,t),c=sd==='home'?H:A,cur=PLS[sd];
+ const k=Math.min(1,PDT*(rm?20:5.5));tp.forEach((q,i)=>{if(!cur[i]||Math.abs(cur[i][0]-q[0])>40)cur[i]=[q[0],q[1]];else{cur[i][0]+=(q[0]-cur[i][0])*k;cur[i][1]+=(q[1]-cur[i][1])*k}});
+ cur.length=tp.length;
+ cur.forEach((q,i)=>{const[x,y]=P(...q),r=Math.max(5.5,W/62)*camZ,hold=ball.holder===i&&poss===sd;cx.shadowColor=c;cx.shadowBlur=rm?0:hold?18:6;cx.fillStyle=i===0?'#fff':c;cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();cx.shadowBlur=0;
+  if(hold){cx.strokeStyle='#fff';cx.lineWidth=2;cx.beginPath();cx.arc(x,y,r+3,0,7);cx.stroke()}
+  cx.fillStyle='#05070D';cx.font=`800 ${Math.round(r*1.0)}px Inter`;cx.textAlign='center';cx.textBaseline='middle';const nm=T.teams[sd].numbers?T.teams[sd].numbers[i]:(i+1);cx.fillText(nm,x,y+.5);
+  const name=T.teams[sd].players[i];if(name&&(OV.names||hold)){const sn=name.split(' ').slice(-1)[0];cx.font=`${hold?700:500} ${hold?11:9}px Inter`;const w=cx.measureText(sn).width+6;cx.fillStyle=hold?'#000000cc':'#00000088';cx.fillRect(x-w/2,y+r+2,w,hold?14:12);cx.fillStyle=hold?'#fff':'#dfe6f7';cx.fillText(sn,x,y+r+(hold?9:8))}})}}
+function frame(ts){const dt=Math.min(.05,(ts-last)/1000||0);last=ts;PDT=dt;
  if(T&&!T.idle&&playing){const end=T.end_minute*60;const live=S&&(S.state.phase==='live');simT=Math.min(end,simT+dt*+$('spd').value*(live&&simT>end-60?.1:1));$('scr').value=simT;if(simT>=end&&!live){playing=false;$('play').textContent='▶'}}
  const t=T&&T.idle?ts/1000:simT;const b=T&&!T.idle?ballAt(simT):{x:50+Math.sin(ts/900)*3,y:50+Math.cos(ts/1200)*2,side:null};bx+=(b.x-bx)*Math.min(1,dt*14);by+=(b.y-by)*Math.min(1,dt*14);
  const tz=OV.cam?1.45:1,tx=OV.cam?Math.max(35,Math.min(65,bx)):50,ty=OV.cam?Math.max(35,Math.min(65,by)):50;camZ+=(tz-camZ)*dt*3;camX+=(tx-camX)*dt*3;camY+=(ty-camY)*dt*3;
  if(W){cx.setTransform(dpr,0,0,dpr,0,0);pitch();overlays(simT);
-  if(OV.trails){trail.push([bx,by]);if(trail.length>26)trail.shift();cx.lineCap='round';for(let i=1;i<trail.length;i++){const[a,c]=P(...trail[i-1]),[d,e]=P(...trail[i]);cx.strokeStyle=`rgba(45,226,255,${i/trail.length*.6})`;cx.lineWidth=i/trail.length*3;cx.beginPath();cx.moveTo(a,c);cx.lineTo(d,e);cx.stroke()}}
+  if(OV.trails){trail.push([bx,by,b.side]);if(trail.length>40)trail.shift();cx.lineCap='round';for(let i=1;i<trail.length;i++){const[a,c]=P(trail[i-1][0],trail[i-1][1]),[d,e]=P(trail[i][0],trail[i][1]);const col=trail[i][2]==='home'?'0,245,160':trail[i][2]==='away'?'255,122,89':'255,255,255';cx.strokeStyle=`rgba(${col},${i/trail.length*.7})`;cx.lineWidth=i/trail.length*4;cx.beginPath();cx.moveTo(a,c);cx.lineTo(d,e);cx.stroke()}}
   if(T)players(t,b);const[x,y]=P(bx,by);cx.shadowColor='#fff';cx.shadowBlur=14;cx.fillStyle='#fff';cx.beginPath();cx.arc(x,y,Math.max(3,W/120)*camZ,0,7);cx.fill();cx.shadowBlur=0;
-  charts()}
+  charts();if((Math.abs(simT-AN.at)>2&&ts-(AN.ts||0)>800)||AN.dirty){AN.ts=ts;analysis()}}
  if(T&&!T.idle){$('hud').textContent=mm(simT)+'  '+scoreAt(simT);$('dir').innerHTML=`<span style="color:${H}">${short(S.live.home.name)} →</span> · <span style="color:${A}">← ${short(S.live.away.name)}</span>`;
   while(firedIdx<T.events.length&&T.events[firedIdx].t<=simT){fire(T.events[firedIdx]);firedIdx++}}else if(T){$('hud').textContent='Warm-up';$('dir').textContent=''}
  requestAnimationFrame(frame)}
@@ -193,6 +201,21 @@ function charts(){if(!PRE||!T||T.idle)return;const m=$('mom'),c=m.getContext('2d
   for(const p of pts){const X=p[0]/endT*W2,Y=H2-2-p[1]/top*(H2-8);d.lineTo(X,py);d.lineTo(X,Y);px=X;py=Y}d.lineTo(simT/endT*W2,py);d.stroke();vals[sd]=pts.length?pts[pts.length-1][1]:0}
  PRE.shots.forEach(s=>{if(s.t<=simT&&s.goal){d.fillStyle='#fff';d.beginPath();d.arc(s.t/endT*W2,6*dpr,3*dpr,0,7);d.fill()}});
  $('xgv').innerHTML=`<span style="color:${H}">${vals.home.toFixed(2)}</span> – <span style="color:${A}">${vals.away.toFixed(2)}</span> <span class="note">modelled</span>`}
+function analysis(){if(!PRE||!T||T.idle)return;AN.at=simT;AN.dirty=0;const sd=AN.side,col=sd==='home'?H:A;
+ const hc=$('anHeat'),pc=$('anPass');[hc,pc].forEach(c=>{const w=c.clientWidth||300;c.width=w*dpr;c.height=Math.round(w*.64)*dpr;c.style.height=Math.round(w*.64)+'px'});
+ const draw=(c)=>{const g=c.getContext('2d'),w=c.width,h=c.height;g.fillStyle='#0b2219';g.fillRect(0,0,w,h);g.strokeStyle='#ffffff30';g.lineWidth=dpr;g.strokeRect(2,2,w-4,h-4);g.beginPath();g.moveTo(w/2,2);g.lineTo(w/2,h-2);g.stroke();g.beginPath();g.arc(w/2,h/2,h*.14,0,7);g.stroke();g.strokeRect(2,h*.21,w*.16,h*.58);g.strokeRect(w*.84-2,h*.21,w*.16,h*.58);return g};
+ const GX=16,GY=10,grid=new Array(GX*GY).fill(0),avg=Array.from({length:11},()=>[0,0,0]),links={};let passes=0,shots=0,xg=0;
+ for(const p of T.possessions){if(p.t0>simT)break;if(p.side!==sd)continue;const tp=teamPos(sd,50,50,true,p.t0);
+  p.passes.forEach(([i,j],n)=>{const a=tp[i]||tp[0];let x=a[0],y=a[1];const gx=Math.min(GX-1,Math.max(0,Math.floor(x/100*GX))),gy=Math.min(GY-1,Math.max(0,Math.floor(y/100*GY)));grid[gy*GX+gx]+=1;avg[i][0]+=x;avg[i][1]+=y;avg[i][2]++;const k=i+'>'+j;links[k]=(links[k]||0)+1;passes++});
+  if(p.shot){shots++;xg+=p.shot.xg}}
+ let g=draw(hc);const mx=Math.max(1,...grid),cw=hc.width/GX,ch=hc.height/GY;grid.forEach((v,k)=>{if(!v)return;const x=k%GX,y=Math.floor(k/GX),a=v/mx;g.fillStyle=`rgba(${sd==='home'?'0,245,160':'255,122,89'},${(a*.85).toFixed(2)})`;g.fillRect(x*cw+1,y*ch+1,cw-2,ch-2)});
+ g=draw(pc);const pos=avg.map((a,i)=>a[2]?[a[0]/a[2]/100*pc.width,a[1]/a[2]/100*pc.height]:null),lm=Math.max(1,...Object.values(links));
+ for(const k in links){const[i,j]=k.split('>').map(Number);if(!pos[i]||!pos[j]||links[k]<lm*.15)continue;const[a,b]=pos[i],[c,d]=pos[j];g.strokeStyle=col;g.globalAlpha=.25+.6*links[k]/lm;g.lineWidth=(1+5*links[k]/lm)*dpr;g.beginPath();g.moveTo(a,b);g.lineTo(c,d);g.stroke()}g.globalAlpha=1;
+ const names=T.teams[sd].players||[];pos.forEach((q,i)=>{if(!q)return;const r=(5+Math.min(6,avg[i][2]/Math.max(1,passes)*40))*dpr;g.fillStyle='#05070D';g.strokeStyle=col;g.lineWidth=2*dpr;g.beginPath();g.arc(q[0],q[1],r,0,7);g.fill();g.stroke();g.fillStyle='#fff';g.font=`700 ${8*dpr}px Inter`;g.textAlign='center';g.textBaseline='middle';g.fillText(T.teams[sd].numbers?T.teams[sd].numbers[i]:i+1,q[0],q[1])});
+ const top=Object.entries(links).sort((a,b)=>b[1]-a[1])[0];const nm=i=>(names[i]||('#'+(i+1))).split(' ').slice(-1)[0];
+ $('anTxt').textContent=`${sd==='home'?S.live.home.name:S.live.away.name} up to ${Math.floor(simT/60)}': ${passes} passes, ${shots} shots, ${xg.toFixed(2)} xG (modelled).`+(top?` Most common link: ${nm(+top[0].split('>')[0])} → ${nm(+top[0].split('>')[1])} (${top[1]}).`:'')}
+['anH','anA'].forEach(id=>$(id).onclick=()=>{AN.side=id==='anH'?'home':'away';AN.dirty=1;$('anH').classList.toggle('on',AN.side==='home');$('anA').classList.toggle('on',AN.side==='away');$('anH').setAttribute('aria-selected',AN.side==='home');$('anA').setAttribute('aria-selected',AN.side==='away');analysis()});
+if(window.KV_REDUCED_MOTION){OV.cam=false}
 setInterval(()=>{if(S&&!$('cd').hidden)$('cd').textContent=fmtCd(Math.max(0,Math.round((koAt-Date.now())/1000)))},1000);
 // ---------- realtime: SSE with polling fallback ----------
 async function poll(){try{const r=await fetch('/api/centre/'+FID);if(r.ok)render(await r.json())}catch(e){}}
