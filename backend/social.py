@@ -62,11 +62,11 @@ def simulate_duel(seed: int, a: Dict, b: Dict, a_name="A", b_name="B") -> Dict:
     rng = random.Random(seed * 31 + 7)
     lv = C.quick_match(st, fx, rng)
     w = d = 0
-    for _ in range(200):
+    for _ in range(100):
         x = C.quick_match(st, fx, rng); w += x["score"][0] > x["score"][1]; d += x["score"][0] == x["score"][1]
     return {"score": lv["score"], "xg": lv["stats"]["xg"], "shots": lv["stats"]["shots"],
             "events": [{"minute": e["minute"], "side": "a" if e["side"] == "home" else "b", "text": e["text"]} for e in lv["events"] if e["type"] in ("goal", "red")],
-            "projection": {"a_win": w / 200, "draw": d / 200, "b_win": 1 - (w + d) / 200}}
+            "projection": {"a_win": w / 100, "draw": d / 100, "b_win": round(1 - (w + d) / 100, 2)}}
 
 
 @router.post("/duels")
