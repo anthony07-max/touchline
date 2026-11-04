@@ -368,11 +368,18 @@ def provider_fixtures(name: str, date: str = "today"):
 
 from .mobile import router as mobile_router
 app.include_router(mobile_router)
+from .career import router as career_router
+app.include_router(career_router)
 
 
 @app.get("/")
 def index():
     return FileResponse(os.path.join(FRONT, "welcome.html"))
+
+
+@app.get("/career")
+def career_page():
+    return FileResponse(os.path.join(FRONT, "career.html"))
 
 
 @app.get("/manager")
