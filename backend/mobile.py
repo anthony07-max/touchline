@@ -301,7 +301,7 @@ def dashboard(user=Depends(auth.optional_user)):
     from . import main as m
     ch = game.daily_challenge(dt.date.today().isoformat())
     out = {"challenge": {k: v for k, v in ch.items() if not k.startswith("_")},
-           "leaderboard_top": m.leaderboard()[:5], "demo_match": {"home": "Northbridge Athletic (demo)", "away": "Riverside Rovers (demo)"}}
+           "leaderboard_top": m.leaderboard()[:5], "demo_match": {"home": "Real Madrid (demo)", "away": "Manchester City (demo)"}}
     if user:
         out["prefs"] = get_prefs(user["id"])
         out["saved_scenarios"] = len(db.list_scenarios(user["id"]))

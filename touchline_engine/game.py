@@ -20,7 +20,7 @@ def daily_challenge(date: str) -> Dict:
     st.home_goals += delta[0]; st.away_goals += delta[1]
     return {"date": date, "minute": minute, "score": [st.home_goals, st.away_goals], "opponent_personality": pers,
             "difficulty": diff, "seed": h % 100000,
-            "brief": f"{minute}' - Northbridge {st.home_goals}-{st.away_goals} Riverside ({pers} AI, {diff}). Make the decision that maximises expected points.",
+            "brief": f"{minute}' - Real Madrid {st.home_goals}-{st.away_goals} Man City ({pers} AI, {diff}). Make the decision that maximises expected points.",
             "_state": st}
 
 
@@ -61,13 +61,13 @@ def autopsy(alternate: Optional[Dict] = None) -> Dict:
         checkpoints.append({"minute": m, "home_win": r["probabilities"]["user_win"], "draw": r["probabilities"]["draw"],
                             "away_win": r["probabilities"]["user_loss"]})
     findings = [
-        f"Recorded xG (demo feed shots): Northbridge {xg['home']:.2f} vs Riverside {xg['away']:.2f}; goals {goals['home']}-{goals['away']}.",
-        "Riverside scored twice from counterattacks/fast breaks - their deep block + counter plan worked (demo events at 23' and 79').",
-        f"The model gave Northbridge {checkpoints[2]['home_win']*100:.0f}% to win from 55' at 1-1; the result was a defeat.",
+        f"Recorded xG (demo feed shots): Real Madrid {xg['home']:.2f} vs Man City {xg['away']:.2f}; goals {goals['home']}-{goals['away']}.",
+        "Man City scored twice from counterattacks/fast breaks - their deep block + counter plan worked (demo events at 23' and 79').",
+        f"The model gave Real Madrid {checkpoints[2]['home_win']*100:.0f}% to win from 55' at 1-1; the result was a defeat.",
     ]
     if xg["away"] > goals["away"] * 0 and goals["away"] > xg["away"]:
-        findings.append(f"Riverside overperformed their xG by {goals['away'] - xg['away']:.2f} goals - finishing variance, not necessarily dominance.")
-    out = {"label": "POST-MATCH AUTOPSY - demo match (fictional data); model views are hypothetical",
+        findings.append(f"Man City overperformed their xG by {goals['away'] - xg['away']:.2f} goals - finishing variance, not necessarily dominance.")
+    out = {"label": "POST-MATCH AUTOPSY - demo match (game-estimated data); model views are hypothetical",
            "final_score": [goals["home"], goals["away"]], "xg": xg, "xg_timeline": cum,
            "key_moments": [e for e in ev if e["type"] in ("goal", "sub")], "model_checkpoints": checkpoints,
            "findings": findings}

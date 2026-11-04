@@ -2,7 +2,7 @@
 2D reconstruction timeline, full-time recap, and a fantasy MVP. Quota-aware: every upstream call
 goes through api_football's disk cache with phase-aware max_age, so N viewers cost 0 extra calls."""
 from __future__ import annotations
-import asyncio, datetime as dt, json, math, os, random, threading, time
+import asyncio, datetime as dt, json, math, os, random, threading, time, urllib.parse
 from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse, FileResponse
@@ -17,6 +17,71 @@ LEAGUES = {39: "Premier League", 2: "Champions League", 3: "Europa League", 848:
            45: "FA Cup", 48: "League Cup", 41: "League One", 40: "Championship", 140: "La Liga", 135: "Serie A", 78: "Bundesliga"}
 BIG = {39, 2, 3}
 HOME_CLUB = os.environ.get("HOME_CLUB", "Leyton Orient")
+ELITE = ["Real Madrid", "Manchester City", "Barcelona", "Bayern", "Paris Saint Germain", "Liverpool", "Arsenal", "Inter"]
+# Famous recent finished elite-club matches: (season, CL round, home, away, title). Resolved server-side once, then
+# frozen into data/classics.json in the repo so they cost zero API calls afterwards.
+CLASSIC_SPECS = [
+    (2024, "Final", "Paris Saint Germain", "Inter", "2025 Champions League final"),
+    (2024, "Semi-finals", "Inter", "Barcelona", "2025 UCL semi-final, 2nd leg"),
+    (2024, "Semi-finals", "Barcelona", "Inter", "2025 UCL semi-final, 1st leg"),
+    (2024, "Quarter-finals", "Arsenal", "Real Madrid", "2025 UCL quarter-final, 1st leg"),
+    (2023, "Quarter-finals", "Real Madrid", "Manchester City", "2024 UCL quarter-final, 1st leg"),
+    (2023, "Final", "Borussia Dortmund", "Real Madrid", "2024 Champions League final"),
+    (2022, "Final", "Manchester City", "Inter", "2023 Champions League final"),
+    (2022, "Semi-finals", "Manchester City", "Real Madrid", "2023 UCL semi-final, 2nd leg"),
+]
+CLASSICS_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "data", "classics.json")
+CLASSIC_RAW: Dict[int, dict] = {}   # fid -> raw API-Football fixture object (with events/lineups/stats)
+CLASSIC_META: Dict[int, str] = {}
+
+
+def is_elite(name: str) -> bool:
+    n = (name or "").lower()
+    return any(e.lower() in n for e in ELITE)
+
+
+def _load_classics():
+    try:
+        with open(CLASSICS_FILE) as f: d = json.load(f)
+        for it in d.get("classics", []):
+            fid = it["fixture"]["fixture"]["id"]; CLASSIC_RAW[fid] = it["fixture"]; CLASSIC_META[fid] = it["title"]
+    except (OSError, ValueError, KeyError): pass
+
+
+_load_classics()
+_resolving = threading.Lock()
+
+
+def resolve_classics() -> dict:
+    """Server-side, gentle: one call per distinct (season, round) + one fixtures?ids= call; cached ~forever."""
+    if not _resolving.acquire(blocking=False): return {"busy": True}
+    try:
+        want = [c for c in CLASSIC_SPECS if not any(CLASSIC_META.get(f) == c[4] for f in CLASSIC_META)]
+        found = {}
+        for season, rnd in dict.fromkeys((c[0], c[1]) for c in want):
+            try: d = af.get(f"fixtures?league=2&season={season}&round={urllib.parse.quote(rnd)}", max_age=86400 * 3650)
+            except Exception: continue
+            for fx in d.get("response") or []:
+                h, a = fx["teams"]["home"]["name"], fx["teams"]["away"]["name"]
+                for c in want:
+                    if c[0] == season and c[1] == rnd and c[2].lower() in h.lower() and c[3].lower() in a.lower():
+                        found[fx["fixture"]["id"]] = c[4]
+        if found:
+            ids = "-".join(str(i) for i in list(found)[:20])
+            try:
+                d = af.get(f"fixtures?ids={ids}", max_age=86400 * 3650)
+                for fx in d.get("response") or []:
+                    fid = fx["fixture"]["id"]; CLASSIC_RAW[fid] = fx; CLASSIC_META[fid] = found.get(fid, "Classic")
+            except Exception: pass
+        DISCOVERY["at"] = 0
+        return {"resolved": len(CLASSIC_RAW)}
+    finally: _resolving.release()
+
+
+def classics_payload() -> dict:
+    order = {c[4]: i for i, c in enumerate(CLASSIC_SPECS)}
+    fids = sorted(CLASSIC_RAW, key=lambda f: order.get(CLASSIC_META.get(f), 99))
+    return {"classics": [{"title": CLASSIC_META[f], "fixture": CLASSIC_RAW[f]} for f in fids]}
 _mem: Dict[int, dict] = {}
 _lock = threading.Lock()
 DISCOVERY = {"at": 0, "items": [], "note": None}
@@ -33,9 +98,11 @@ def snapshot(fid: int) -> dict:
         max_age = 30 if not m else max(30, m["next"] - m["at"])
         err = None
         try:
-            d = af.get(f"fixtures?id={fid}", max_age=max_age)
-            if not d.get("response"): raise af.APIError("fixture not found")
-            live = adapter.parse_fixture(d["response"][0])
+            if fid in CLASSIC_RAW: live = adapter.parse_fixture(CLASSIC_RAW[fid])
+            else:
+                d = af.get(f"fixtures?id={fid}", max_age=max_age)
+                if not d.get("response"): raise af.APIError("fixture not found")
+                live = adapter.parse_fixture(d["response"][0])
         except Exception as e:
             if m: return {**m["snap"], "error": str(e)[:160]}
             raise HTTPException(503, f"data unavailable: {e}")
@@ -81,13 +148,15 @@ def _summ(fx: dict) -> dict:
             "venue": (f.get("venue") or {}).get("name"), "status": f["status"]["short"], "elapsed": f["status"].get("elapsed"),
             "home": {"id": t["home"]["id"], "name": t["home"]["name"], "logo": t["home"]["logo"]},
             "away": {"id": t["away"]["id"], "name": t["away"]["name"], "logo": t["away"]["logo"]},
-            "score": [g["home"], g["away"]], "state": ph}
+            "score": [g["home"], g["away"]], "state": ph,
+            "elite": is_elite(t["home"]["name"]) or is_elite(t["away"]["name"])}
 
 
 def _rank(x):
     hc = HOME_CLUB.lower() in (x["home"]["name"] + x["away"]["name"]).lower()
     p = {"live": 0, "halftime": 0, "prematch": 1, "upcoming": 2, "fulltime": 3, "stale_finished": 3, "postponed": 4}[x["state"]["phase"]]
-    return (p, 0 if hc else 1, 0 if x["league_id"] in BIG else 1, x["kickoff_utc"])
+    el = 0 if (is_elite(x["home"]["name"]) and is_elite(x["away"]["name"])) else 1 if x.get("elite") else 2
+    return (p, 0 if hc else 1, el, 0 if x["league_id"] in BIG else 1, x["kickoff_utc"])
 
 
 def discover(days: int = 3) -> dict:
@@ -105,6 +174,8 @@ def discover(days: int = 3) -> dict:
                     s = _summ(fx); items[s["fixture_id"]] = s
         except Exception as e:
             note = "Fixture feed unavailable right now; showing saved matches."
+    if len(CLASSIC_RAW) < len(CLASSIC_SPECS) and not blocked and not _resolving.locked():
+        threading.Thread(target=resolve_classics, daemon=True).start()
     for fid in FEATURED + CLASSIC:
         if fid in items: continue
         try:
@@ -114,10 +185,26 @@ def discover(days: int = 3) -> dict:
         except Exception: pass
     out = sorted(items.values(), key=_rank)
     # keep it tight: live + next 12 + recent finished 4
-    up = [x for x in out if not x["state"]["ended"]][:12]; done = [x for x in out if x["state"]["ended"]][:4]
+    up = [x for x in out if not x["state"]["ended"]][:12]; done = [x for x in out if x["state"]["ended"] and x["fixture_id"] not in CLASSIC_RAW][:4]
+    classics = []
+    for fid in classics_order():
+        try: c = _summ(CLASSIC_RAW[fid]); c["classic"] = True; c["classic_title"] = CLASSIC_META[fid]; classics.append(c)
+        except Exception: pass
+    done += classics
     DISCOVERY.update(at=time.time(), items=up + done, note=note if (note or af.quota.get("last_error")) else None)
     if af.quota.get("last_error") and not note: DISCOVERY["note"] = "Live feed paused (provider account issue); showing saved matches."
     return DISCOVERY
+
+
+def classics_order():
+    order = {c[4]: i for i, c in enumerate(CLASSIC_SPECS)}
+    return sorted(CLASSIC_RAW, key=lambda f: order.get(CLASSIC_META.get(f), 99))
+
+
+@router.get("/api/classics")
+def classics():
+    """Frozen classic replays (raw fixture data). Also used to bake data/classics.json into the repo."""
+    return {**classics_payload(), "pending": [c[4] for c in CLASSIC_SPECS if c[4] not in CLASSIC_META.values()]}
 
 
 @router.get("/api/fixtures")

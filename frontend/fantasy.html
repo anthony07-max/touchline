@@ -39,7 +39,7 @@ select{width:100%;padding:12px;border-radius:14px;background:#ffffff0a;color:#ff
 <script>
 const $=id=>document.getElementById(id),q=new URLSearchParams(location.search);let POOL=null,PICK=[],CAP=null,G='ALL',FID=+q.get('fixture')||0;
 const C={home:'#00F5A0',away:'#FF7A59'};
-async function init(){const f=await (await fetch('/api/fixtures')).json();const fx=f.fixtures;if(!FID&&fx.length)FID=fx[0].fixture_id;
+async function init(){const f=await (await fetch('/api/fixtures')).json();const fx=f.fixtures;if(!FID&&fx.length)FID=(fx.find(x=>x.elite&&!x.state.ended)||fx.find(x=>x.elite)||fx[0]).fixture_id;
  $('fx').innerHTML=fx.map(x=>`<option value="${x.fixture_id}" ${x.fixture_id===FID?'selected':''}>${x.home.name} v ${x.away.name} · ${x.state.label}</option>`).join('');$('fx').onchange=e=>{FID=+e.target.value;load()};load()}
 async function load(){$('list').innerHTML='<p class="note">Loading squads…</p>';POOL=await (await fetch('/api/fantasy/'+FID+'/pool')).json();const s=JSON.parse(localStorage['tl_fan_'+FID]||'{}');PICK=s.picks||[];CAP=s.cap||null;
  const r=POOL.rules;$('rules').textContent=`GK ${r.GK[0]} · DEF ${r.DEF.join('–')} · MID ${r.MID.join('–')} · FWD ${r.FWD.join('–')} · max ${r.max_per_team} per club`;draw();if(PICK.length===8)score()}

@@ -26,7 +26,7 @@ class FootballDataProvider(ABC):
 class DemoProvider(FootballDataProvider):
     name = "demo"
     def fixtures(self, date):
-        return [{"id": "demo-1", "home": "Northbridge Athletic (demo)", "away": "Riverside Rovers (demo)", "demo": True}]
+        return [{"id": "demo-1", "home": "Real Madrid (demo)", "away": "Manchester City (demo)", "demo": True}]
     def live_events(self, fixture_id):
         from .demo_data import DEMO_TIMELINE
         return DEMO_TIMELINE
@@ -34,7 +34,7 @@ class DemoProvider(FootballDataProvider):
         from .demo_data import northbridge, riverside
         return {"home": [p.name for p in northbridge().starters], "away": [p.name for p in riverside().starters]}
     def status(self):
-        return {"provider": self.name, "available": True, "note": "fictional demo data"}
+        return {"provider": self.name, "available": True, "note": "demo data: elite squads, game-estimated ratings"}
 
 
 class _KeyedStub(FootballDataProvider):
