@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import Dict, List
 from touchline_engine.models import Player, Team, Tactics
-from . import api_football as af
+from . import provider as af
 
 GROUP = {"Goalkeeper": "GK", "Defender": "DEF", "Midfielder": "MID", "Attacker": "FWD", "G": "GK", "D": "DEF", "M": "MID", "F": "FWD"}
 STATS_SEASON = 2024  # free plan only exposes 2022-2024 seasons

@@ -1,0 +1,6 @@
+{"id":86,"name":"Real Madrid CF","shortName":"Real Madrid","crest":"c86","venue":"Estadio Santiago Bernabéu","founded":1902,"clubColors":"White","coach":{"name":"Xabi Alonso"},
+"runningCompetitions":[{"code":"PD"},{"code":"CL"},{"code":"CDR"}],
+"squad":[{"id":1,"name":"Thibaut Courtois","position":"Goalkeeper","dateOfBirth":"1992-05-11","shirtNumber":1},
+{"id":2,"name":"Antonio Rüdiger","position":"Centre-Back","dateOfBirth":"1993-03-03"},
+{"id":3,"name":"Jude Bellingham","position":"Midfield","dateOfBirth":"2003-06-29"},
+{"id":4,"name":"Kylian Mbappé","position":"Offence","dateOfBirth":"1998-12-20"}]}

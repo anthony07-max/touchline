@@ -40,7 +40,7 @@ def parse_fixture(fx: dict, seen_event_ids: Optional[set] = None) -> Dict:
             "startXI": [{"id": str(p["player"]["id"]), "name": p["player"]["name"], "number": p["player"].get("number"), "pos": p["player"].get("pos"), "grid": p["player"].get("grid")} for p in lu.get("startXI") or []],
             "substitutes": [{"id": str(p["player"]["id"]), "name": p["player"]["name"], "number": p["player"].get("number"), "pos": p["player"].get("pos")} for p in lu.get("substitutes") or []]}
     out["lineups"] = {"available": bool(lus), "by_team": {str(k): v for k, v in lus.items()},
-                      "note": None if lus else "unavailable: official line-ups usually published ~60 min before kick-off"}
+                      "note": None if lus else ("not in the free data feed; the XI shown is modelled from the squad" if fx.get("source") == "football-data.org" else "unavailable: official line-ups usually published ~60 min before kick-off")}
     # statistics
     stats = {}
     for s in fx.get("statistics") or []:
@@ -51,7 +51,8 @@ def parse_fixture(fx: dict, seen_event_ids: Optional[set] = None) -> Dict:
             "passes_pct": _stat(L, "Passes %"), "xg": _stat(L, "expected_goals")}
     out["statistics"] = {"available": bool(stats), "by_team": stats,
                          "xg_available": any(v.get("xg") is not None for v in stats.values()),
-                         "note": None if stats else "unavailable (not started or not provided for this fixture)"}
+                         "note": None if stats else ("not in the free data feed; possession and shots are modelled" if fx.get("source") == "football-data.org" else "unavailable (not started or not provided for this fixture)")}
+    out["source"] = fx.get("source") or "API-Football"
     return out
 
 

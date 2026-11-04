@@ -9,8 +9,7 @@ _last = [0.0]
 quota = {"limit_day": None, "remaining": None, "plan": None, "calls_this_process": 0, "last_error": None}
 
 
-class APIError(Exception):
-    pass
+from .football_data import APIError  # shared base so callers catch either provider
 
 
 def _path(ep): return os.path.join(CACHE, hashlib.md5(ep.encode()).hexdigest() + ".json")

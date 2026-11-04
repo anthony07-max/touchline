@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from touchline_engine.models import MatchState, Tactics, Substitution, FORMATIONS
 from touchline_engine.simulate import compare, SimConfig
-from . import api_football as af, adapter, squads, matchstate
+from . import provider as af, adapter, squads, matchstate
 
 FIXTURE_ID = int(os.environ.get("LIVE_FIXTURE_ID", "1635695"))
 router = APIRouter()
@@ -76,7 +76,7 @@ def _snapshot():
     live = STATE["live"]
     ph = matchstate.phase(live["status"]["short"], live["kickoff_utc"]) if live else None
     return {"live": live, "phase": ph, "fetched_at": STATE["fetched_at"], "next_poll": STATE["next_poll"], "error": STATE["error"],
-            "quota": {k: v for k, v in af.quota.items()}, "source": "API-Football (api-sports.io), free plan"}
+            "quota": {k: v for k, v in af.quota.items()}, "source": af.active()}
 
 
 @router.get("/api/live/status")

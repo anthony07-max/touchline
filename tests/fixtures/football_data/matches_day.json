@@ -1,0 +1,7 @@
+{"filters":{"dateFrom":"2026-11-04","dateTo":"2026-11-05"},"resultSet":{"count":3},"matches":[
+{"competition":{"id":2021,"name":"Premier League","code":"PL"},"season":{"startDate":"2026-08-15"},"id":600001,"utcDate":"2026-11-04T20:00:00Z","status":"IN_PLAY","minute":"67","matchday":11,"stage":"REGULAR_SEASON",
+ "homeTeam":{"id":65,"name":"Manchester City FC","crest":"c65"},"awayTeam":{"id":64,"name":"Liverpool FC","crest":"c64"},"score":{"duration":"REGULAR","fullTime":{"home":1,"away":1},"halfTime":{"home":1,"away":0}},"referees":[]},
+{"competition":{"id":2014,"name":"Primera Division","code":"PD"},"season":{"startDate":"2026-08-15"},"id":600002,"utcDate":"2026-11-04T19:00:00Z","status":"PAUSED","matchday":11,"stage":"REGULAR_SEASON",
+ "homeTeam":{"id":86,"name":"Real Madrid CF","crest":"c86"},"awayTeam":{"id":90,"name":"Real Betis Balompié","crest":"c90"},"score":{"duration":"REGULAR","fullTime":{"home":0,"away":0},"halfTime":{"home":0,"away":0}},"referees":[]},
+{"competition":{"id":2016,"name":"Championship","code":"ELC"},"season":{"startDate":"2026-08-15"},"id":600003,"utcDate":"2026-11-05T19:45:00Z","status":"TIMED","matchday":15,"stage":"REGULAR_SEASON",
+ "homeTeam":{"id":1076,"name":"Coventry City FC","crest":"c"},"awayTeam":{"id":332,"name":"Watford FC","crest":"c"},"score":{"duration":"REGULAR","fullTime":{"home":null,"away":null},"halfTime":{"home":null,"away":null}},"referees":[]}]}

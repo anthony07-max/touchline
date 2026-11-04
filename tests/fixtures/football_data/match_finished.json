@@ -1,0 +1,12 @@
+{"area":{"id":2077,"name":"Europe","code":"EUR"},"competition":{"id":2001,"name":"UEFA Champions League","code":"CL","type":"CUP","emblem":"https://crests.football-data.org/CL.png"},
+"season":{"id":2318,"startDate":"2024-09-17","endDate":"2025-05-31","currentMatchday":8},"id":551234,"utcDate":"2025-05-31T19:00:00Z","status":"FINISHED","minute":null,"injuryTime":null,
+"venue":"Allianz Arena","matchday":null,"stage":"FINAL","group":null,"lastUpdated":"2025-06-01T00:20:00Z",
+"homeTeam":{"id":524,"name":"Paris Saint-Germain FC","shortName":"PSG","tla":"PSG","crest":"https://crests.football-data.org/524.png"},
+"awayTeam":{"id":108,"name":"FC Internazionale Milano","shortName":"Inter","tla":"INT","crest":"https://crests.football-data.org/108.png"},
+"score":{"winner":"HOME_TEAM","duration":"REGULAR","fullTime":{"home":5,"away":0},"halfTime":{"home":2,"away":0}},
+"goals":[{"minute":12,"injuryTime":null,"type":"REGULAR","team":{"id":524,"name":"Paris Saint-Germain FC"},"scorer":{"id":1,"name":"Achraf Hakimi"},"assist":{"id":2,"name":"Désiré Doué"}},
+{"minute":20,"injuryTime":null,"type":"REGULAR","team":{"id":524,"name":"Paris Saint-Germain FC"},"scorer":{"id":2,"name":"Désiré Doué"},"assist":null},
+{"minute":55,"injuryTime":null,"type":"OWN","team":{"id":524,"name":"Paris Saint-Germain FC"},"scorer":{"id":9,"name":"Inter Defender"},"assist":null}],
+"bookings":[{"minute":40,"team":{"id":108,"name":"FC Internazionale Milano"},"player":{"id":8,"name":"Nicolò Barella"},"card":"YELLOW"}],
+"substitutions":[{"minute":60,"team":{"id":108,"name":"FC Internazionale Milano"},"playerOut":{"id":8,"name":"Nicolò Barella"},"playerIn":{"id":7,"name":"Davide Frattesi"}}],
+"odds":{"msg":"Activate Odds-Package in User-Panel to retrieve odds."},"referees":[{"id":11,"name":"István Kovács","type":"REFEREE","nationality":"Romania"}]}

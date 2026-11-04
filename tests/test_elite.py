@@ -13,11 +13,11 @@ def test_is_elite():
     assert not centre.is_elite("Leyton Orient") and not centre.is_elite("Burnley")
 
 
-def test_rank_orient_then_elite():
+def test_rank_elite_first():
     xs = [_x("Burnley", "Brentford", ko="2026-11-05T12:00:00+00:00"), _x("Liverpool", "Fulham"),
           _x("Real Madrid", "Bayern München", league=2), _x("Leyton Orient", "Wigan")]
     names = [x["home"]["name"] for x in sorted(xs, key=centre._rank)]
-    assert names == ["Leyton Orient", "Real Madrid", "Liverpool", "Burnley"]
+    assert names == ["Real Madrid", "Liverpool", "Burnley", "Leyton Orient"]
 
 
 def test_classic_specs_are_elite_matches():

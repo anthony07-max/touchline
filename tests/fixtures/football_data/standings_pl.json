@@ -1,0 +1,5 @@
+{"competition":{"id":2021,"name":"Premier League","code":"PL"},"season":{"startDate":"2026-08-15","currentMatchday":11},"standings":[
+{"stage":"REGULAR_SEASON","type":"TOTAL","group":null,"table":[
+{"position":1,"team":{"id":57,"name":"Arsenal FC","crest":"c57"},"playedGames":10,"form":"W,W,D,W,W","won":8,"draw":1,"lost":1,"points":25,"goalsFor":20,"goalsAgainst":5,"goalDifference":15},
+{"position":2,"team":{"id":356,"name":"Sheffield United FC","crest":"c"},"playedGames":10,"form":null,"won":7,"draw":1,"lost":2,"points":22,"goalsFor":15,"goalsAgainst":9,"goalDifference":6}]},
+{"stage":"REGULAR_SEASON","type":"HOME","group":null,"table":[]}]}

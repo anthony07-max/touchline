@@ -7,13 +7,14 @@ from typing import Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse, FileResponse
 from pydantic import BaseModel
-from . import api_football as af, adapter, matchstate
+from . import provider as af, adapter, matchstate
 
 router = APIRouter()
 FRONT = os.path.join(os.path.dirname(__file__), "..", "..", "frontend")
 FEATURED = [int(x) for x in os.environ.get("FEATURED_FIXTURES", "1635695").split(",") if x]
 CLASSIC = [1374897]  # 2025 Europa League final (recorded), always available as a replay
-LEAGUES = {39: "Premier League", 2: "Champions League", 3: "Europa League", 848: "Conference League",
+LEAGUES = {61: "Ligue 1", 88: "Eredivisie", 94: "Primeira Liga", 4: "European Championship", 1: "World Cup", 71: "Brasileirão",
+           39: "Premier League", 2: "Champions League", 3: "Europa League", 848: "Conference League",
            45: "FA Cup", 48: "League Cup", 41: "League One", 40: "Championship", 140: "La Liga", 135: "Serie A", 78: "Bundesliga"}
 BIG = {39, 2, 3}
 HOME_CLUB = os.environ.get("HOME_CLUB", "Leyton Orient")
@@ -32,6 +33,7 @@ CLASSIC_SPECS = [
 CLASSICS_FILE = os.path.join(os.path.dirname(__file__), "..", "..", "data", "classics.json")
 CLASSIC_RAW: Dict[int, dict] = {}   # fid -> raw API-Football fixture object (with events/lineups/stats)
 CLASSIC_META: Dict[int, str] = {}
+CLASSIC_SRC: Dict[int, str] = {}
 
 
 def is_elite(name: str) -> bool:
@@ -44,11 +46,13 @@ def _load_classics():
         with open(CLASSICS_FILE) as f: d = json.load(f)
         for it in d.get("classics", []):
             fid = it["fixture"]["fixture"]["id"]; CLASSIC_RAW[fid] = it["fixture"]; CLASSIC_META[fid] = it["title"]
+            CLASSIC_SRC[fid] = it.get("source", "")
     except (OSError, ValueError, KeyError): pass
 
 
 _load_classics()
 _resolving = threading.Lock()
+_bf_tried = [False]
 
 
 def resolve_classics() -> dict:
@@ -72,18 +76,69 @@ def resolve_classics() -> dict:
                 for fx in d.get("response") or []:
                     fid = fx["fixture"]["id"]; CLASSIC_RAW[fid] = fx; CLASSIC_META[fid] = found.get(fid, "Classic")
             except Exception: pass
+        enriched = backfill_from_football_data() if af.active() == "football-data.org" else 0
         DISCOVERY["at"] = 0
-        return {"resolved": len(CLASSIC_RAW)}
+        return {"resolved": len(CLASSIC_RAW), "enriched": enriched}
     finally: _resolving.release()
+
+
+def merge_classic(cur: dict, fdx: dict) -> dict:
+    """Upgrade a curated classic with football-data facts, keeping its id + team ids (so links and events stay valid)."""
+    out = json.loads(json.dumps(cur))
+    hmap = {fdx["teams"]["home"]["id"]: cur["teams"]["home"], fdx["teams"]["away"]["id"]: cur["teams"]["away"]}
+    f = out["fixture"]
+    f["referee"] = fdx["fixture"].get("referee") or f.get("referee")
+    if fdx["fixture"]["venue"].get("name"): f["venue"]["name"] = fdx["fixture"]["venue"]["name"]
+    if fdx["goals"].get("home") is not None: out["goals"] = fdx["goals"]; out["score"]["fulltime"] = fdx["goals"]
+    if (fdx["score"].get("halftime") or {}).get("home") is not None: out["score"]["halftime"] = fdx["score"]["halftime"]
+    def remap(t): return hmap.get(t["id"], t)
+    if fdx.get("events"): out["events"] = [{**e, "team": remap(e["team"])} for e in fdx["events"]]
+    if fdx.get("lineups"): out["lineups"] = [{**l, "team": remap(l["team"])} for l in fdx["lineups"]]
+    if fdx.get("statistics"): out["statistics"] = [{**s, "team": remap(s["team"])} for s in fdx["statistics"]]
+    return out
+
+
+def backfill_from_football_data() -> int:
+    """Server-side, once a FOOTBALL_DATA_KEY exists: one competitions/CL/matches call per (season, stage), cached ~forever.
+    Curated classics get verified score/referee/venue (+events/line-ups if the plan returns them); file is rewritten."""
+    n = 0
+    for season, rnd, h, a, title in CLASSIC_SPECS:
+        fid = next((f for f, t in CLASSIC_META.items() if t == title), None)
+        if fid is None or "football-data" in CLASSIC_SRC.get(fid, ""): continue
+        try: d = af.get(f"fixtures?league=2&season={season}&round={urllib.parse.quote(rnd)}", max_age=86400 * 3650)
+        except Exception: continue
+        for fx in d.get("response") or []:
+            if h.lower() in fx["teams"]["home"]["name"].lower() and a.lower() in fx["teams"]["away"]["name"].lower():
+                CLASSIC_RAW[fid] = merge_classic(CLASSIC_RAW[fid], fx)
+                CLASSIC_SRC[fid] = f"curated, verified against football-data.org match {fx['fixture']['id']}"; n += 1; break
+    if n:
+        try:
+            with open(CLASSICS_FILE, "w") as f:
+                json.dump({"classics": [{"title": CLASSIC_META[i], "source": CLASSIC_SRC.get(i, ""), "fixture": CLASSIC_RAW[i]} for i in classics_order()]}, f, indent=1)
+        except OSError: pass
+    return n
 
 
 def classics_payload() -> dict:
     order = {c[4]: i for i, c in enumerate(CLASSIC_SPECS)}
     fids = sorted(CLASSIC_RAW, key=lambda f: order.get(CLASSIC_META.get(f), 99))
-    return {"classics": [{"title": CLASSIC_META[f], "fixture": CLASSIC_RAW[f]} for f in fids]}
+    return {"classics": [{"title": CLASSIC_META[f], "source": CLASSIC_SRC.get(f, ""), "fixture": CLASSIC_RAW[f]} for f in fids]}
 _mem: Dict[int, dict] = {}
 _lock = threading.Lock()
 DISCOVERY = {"at": 0, "items": [], "note": None}
+
+
+def paused_text(err) -> str:
+    e = str(err or "")
+    if "not set" in e or "No live data key" in e: return "Live feed paused: no live data key is set yet."
+    if "rate limit" in e: return "Live feed briefly paused (rate limit)."
+    return "Live feed paused (provider issue)."
+
+
+def coverage_note(items) -> Optional[str]:
+    """football-data.org's free tier has no lower-league football: say so instead of silently omitting the home club."""
+    if af.active() != "football-data.org": return None
+    return f"League Two ({HOME_CLUB}) games aren't in the free football-data.org feed (it covers the top leagues and European competitions only)."
 
 
 def _now(): return dt.datetime.now(dt.timezone.utc)
@@ -110,7 +165,8 @@ def snapshot(fid: int) -> dict:
         feed_err = af.quota.get("last_error")
         snap = {"fixture_id": fid, "live": live, "state": ph, "fetched_at": time.time(), "next_refresh": time.time() + wait,
                 "quota_remaining": af.quota["remaining"],
-                "feed_warning": ("Live feed paused (provider account issue); showing last cached data" if feed_err else None),
+                "feed_warning": (paused_text(feed_err) + " Showing last cached data." if feed_err else None),
+                "source": live.get("source") or af.active(),
                 "recap": recap(live, ph) if ph["ended"] else None}
         _mem[fid] = {"snap": snap, "at": time.time(), "next": time.time() + wait}
         return snap
@@ -152,10 +208,9 @@ def _summ(fx: dict) -> dict:
 
 
 def _rank(x):
-    hc = HOME_CLUB.lower() in (x["home"]["name"] + x["away"]["name"]).lower()
     p = {"live": 0, "halftime": 0, "prematch": 1, "upcoming": 2, "fulltime": 3, "stale_finished": 3, "postponed": 4}[x["state"]["phase"]]
     el = 0 if (is_elite(x["home"]["name"]) and is_elite(x["away"]["name"])) else 1 if x.get("elite") else 2
-    return (p, 0 if hc else 1, el, 0 if x["league_id"] in BIG else 1, x["kickoff_utc"])
+    return (p, el, 0 if x["league_id"] in BIG else 1, x["kickoff_utc"])
 
 
 def discover(days: int = 3) -> dict:
@@ -169,11 +224,13 @@ def discover(days: int = 3) -> dict:
             d = af.get(f"fixtures?date={day}&timezone=Europe/London", max_age=3600 * 6 if i else 1800)
             for fx in d.get("response") or []:
                 nm = fx["teams"]["home"]["name"] + fx["teams"]["away"]["name"]
-                if fx["league"]["id"] in LEAGUES or HOME_CLUB.lower() in nm.lower():
+                if fx["league"]["id"] in LEAGUES or False:
                     s = _summ(fx); items[s["fixture_id"]] = s
         except Exception as e:
             note = "Fixture feed unavailable right now; showing saved matches."
-    if len(CLASSIC_RAW) < len(CLASSIC_SPECS) and not blocked and not _resolving.locked():
+    need_fd = af.active() == "football-data.org" and any("football-data" not in v for v in CLASSIC_SRC.values())
+    if (len(CLASSIC_RAW) < len(CLASSIC_SPECS) or need_fd) and not blocked and not _resolving.locked() and not _bf_tried[0]:
+        _bf_tried[0] = need_fd
         threading.Thread(target=resolve_classics, daemon=True).start()
     for fid in FEATURED + CLASSIC:
         if fid in items: continue
@@ -190,8 +247,11 @@ def discover(days: int = 3) -> dict:
         try: c = _summ(CLASSIC_RAW[fid]); c["classic"] = True; c["classic_title"] = CLASSIC_META[fid]; classics.append(c)
         except Exception: pass
     done = classics + done
-    DISCOVERY.update(at=time.time(), items=up + done, note=note if (note or af.quota.get("last_error")) else None)
-    if af.quota.get("last_error") and not note: DISCOVERY["note"] = "Live feed paused (provider account issue); showing saved matches."
+    err = af.paused_reason()
+    if err: note = paused_text(err) + " Showing saved matches."
+    cov = coverage_note(up + done)
+    DISCOVERY.update(at=time.time(), items=up + done, note=" ".join(x for x in (note, cov) if x) or None, coverage=cov,
+                     provider=af.active())
     return DISCOVERY
 
 
@@ -209,7 +269,7 @@ def classics():
 @router.get("/api/fixtures")
 def fixtures():
     d = discover()
-    return {"fixtures": d["items"], "note": d["note"], "home_club": HOME_CLUB, "generated": time.time()}
+    return {"fixtures": d["items"], "note": d["note"], "coverage_note": d.get("coverage"), "provider": d.get("provider"), "home_club": HOME_CLUB, "generated": time.time()}
 
 
 @router.get("/api/centre/{fid}")
